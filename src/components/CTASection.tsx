@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Calendar } from 'lucide-react';
+import ContactFormDialog from './ContactFormDialog';
 
 const CTASection = () => {
   return (
@@ -21,14 +22,18 @@ const CTASection = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button variant="hero" size="xl">
-              <Calendar className="w-5 h-5" />
-              Book Free Consultation
-            </Button>
-            <Button variant="heroOutline" size="xl">
-              Contact Us
-              <ArrowRight className="w-5 h-5" />
-            </Button>
+            <ContactFormDialog formType="Book Free Consultation">
+              <Button variant="hero" size="xl">
+                <Calendar className="w-5 h-5" />
+                Book Free Consultation
+              </Button>
+            </ContactFormDialog>
+            <ContactFormDialog formType="Contact Us">
+              <Button variant="heroOutline" size="xl">
+                Contact Us
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </ContactFormDialog>
           </div>
 
           <p className="mt-8 text-sm text-muted-foreground">
