@@ -1,4 +1,4 @@
-import { Bot, Linkedin, Twitter, Github, Mail } from 'lucide-react';
+import { Bot, Linkedin, Twitter, Github, Mail, Phone } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -38,9 +38,25 @@ const Footer = () => {
                 Agentic<span className="text-primary">AI</span>
               </span>
             </a>
-            <p className="text-muted-foreground text-sm mb-6">
+            <p className="text-muted-foreground text-sm mb-4">
               Building the future of autonomous AI systems for enterprise transformation.
             </p>
+            <div className="space-y-2 mb-6">
+              <a 
+                href="mailto:tech.consulting.mum@gmail.com" 
+                className="flex items-center gap-2 text-muted-foreground hover:text-primary text-sm transition-colors"
+              >
+                <Mail className="w-4 h-4" />
+                tech.consulting.mum@gmail.com
+              </a>
+              <a 
+                href="tel:+918652074439" 
+                className="flex items-center gap-2 text-muted-foreground hover:text-primary text-sm transition-colors"
+              >
+                <Phone className="w-4 h-4" />
+                +91 8652074439
+              </a>
+            </div>
             <div className="flex gap-4">
               <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
                 <Linkedin className="w-5 h-5" />
@@ -50,9 +66,6 @@ const Footer = () => {
               </a>
               <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
                 <Github className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <Mail className="w-5 h-5" />
               </a>
             </div>
           </div>
