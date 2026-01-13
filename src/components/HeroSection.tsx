@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import ContactFormDialog from './ContactFormDialog';
 
 const HeroSection = () => {
   return (
@@ -41,10 +42,12 @@ const HeroSection = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up" style={{ animationDelay: '0.3s' }}>
-            <Button variant="hero" size="xl">
-              Schedule Consultation
-              <ArrowRight className="w-5 h-5" />
-            </Button>
+            <ContactFormDialog formType="Schedule Consultation">
+              <Button variant="hero" size="xl">
+                Schedule Consultation
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </ContactFormDialog>
             <Button variant="heroOutline" size="xl">
               View Case Studies
             </Button>
