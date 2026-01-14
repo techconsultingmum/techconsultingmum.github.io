@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import ContactFormDialog from './ContactFormDialog';
@@ -48,9 +49,11 @@ const HeroSection = () => {
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </ContactFormDialog>
-            <Button variant="heroOutline" size="xl">
-              View Case Studies
-            </Button>
+            <Link to="/case-studies">
+              <Button variant="heroOutline" size="xl">
+                View Case Studies
+              </Button>
+            </Link>
           </div>
 
           {/* Stats */}
