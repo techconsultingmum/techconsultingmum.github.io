@@ -1,10 +1,42 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Check, ArrowRight, Bot, Zap, Shield, Users } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ContactFormDialog from '@/components/ContactFormDialog';
+
+const faqs = [
+  {
+    question: 'What is included in each pricing plan?',
+    answer: 'Each plan includes a set number of AI agents, workflow automation capabilities, support levels, and API calls. The Starter plan is great for small businesses, Professional offers advanced features and priority support, while Enterprise provides unlimited resources and custom solutions.',
+  },
+  {
+    question: 'Can I upgrade or downgrade my plan later?',
+    answer: 'Absolutely! You can upgrade or downgrade your plan at any time. When upgrading, you\'ll have immediate access to new features. When downgrading, changes take effect at the start of your next billing cycle.',
+  },
+  {
+    question: 'How long does implementation typically take?',
+    answer: 'Implementation timelines vary based on complexity. Simple automations can be deployed within 1-2 weeks, while comprehensive enterprise solutions typically take 4-8 weeks. We\'ll provide a detailed timeline during your consultation.',
+  },
+  {
+    question: 'Do you offer a free trial or proof of concept?',
+    answer: 'We offer a free 30-minute consultation to discuss your needs. For Enterprise clients, we can arrange a proof of concept to demonstrate value before full commitment.',
+  },
+  {
+    question: 'What kind of support do you provide?',
+    answer: 'Support varies by plan: Starter includes 8x5 support, Professional offers 24/7 priority support with a dedicated account manager, and Enterprise includes dedicated support teams with SLA guarantees.',
+  },
+  {
+    question: 'Can I integrate with my existing systems?',
+    answer: 'Yes! Our AI agents integrate with most popular business tools including CRMs, ERPs, communication platforms, and custom APIs. Professional and Enterprise plans include custom integration support.',
+  },
+  {
+    question: 'Is my data secure?',
+    answer: 'Security is our top priority. We use enterprise-grade encryption, comply with SOC 2 and GDPR requirements, and offer on-premise deployment options for Enterprise clients with strict data residency requirements.',
+  },
+];
 
 const plans = [
   {
@@ -181,6 +213,32 @@ const GetStarted = () => {
                   </CardContent>
                 </Card>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-20">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-center text-foreground mb-4">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-xl text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
+              Got questions? We've got answers. Find everything you need to know about our services.
+            </p>
+            <div className="max-w-3xl mx-auto">
+              <Accordion type="single" collapsible className="w-full">
+                {faqs.map((faq, index) => (
+                  <AccordionItem key={index} value={`item-${index}`} className="border-border">
+                    <AccordionTrigger className="text-left text-foreground hover:text-primary">
+                      {faq.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </div>
           </div>
         </section>
