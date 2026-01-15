@@ -108,7 +108,7 @@ const Careers = () => {
         <section className="py-20">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-display font-bold text-center text-foreground mb-4">
-              Why Join AgenticAI?
+              Why Join AgenticAI Lab?
             </h2>
             <p className="text-xl text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
               We offer more than just a job—we offer an opportunity to shape the future.
@@ -138,7 +138,7 @@ const Careers = () => {
                   Our Culture
                 </h2>
                 <p className="text-muted-foreground text-lg mb-6">
-                  At AgenticAI, we believe in fostering an environment where innovation thrives. 
+                  At AgenticAI Lab, we believe in fostering an environment where innovation thrives. 
                   We're a diverse team united by our passion for AI and our commitment to excellence.
                 </p>
                 <ul className="space-y-4">

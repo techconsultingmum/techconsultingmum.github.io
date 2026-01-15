@@ -36,7 +36,7 @@ const Footer = () => {
                 <Bot className="w-6 h-6 text-primary" />
               </div>
               <span className="font-display font-bold text-xl text-foreground">
-                Agentic<span className="text-primary">AI</span>
+                Agentic<span className="text-primary">AI</span> Lab
               </span>
             </Link>
             <p className="text-muted-foreground text-sm mb-4">
@@ -153,7 +153,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-sm">
-            © {currentYear} AgenticAI. All rights reserved.
+            © {currentYear} AgenticAI Lab. All rights reserved.
           </p>
           <div className="flex gap-6">
             <a href="#" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
