@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Bot, Linkedin, Twitter, Github, Mail, Phone } from 'lucide-react';
 
 const Footer = () => {
@@ -5,22 +6,22 @@ const Footer = () => {
 
   const links = {
     services: [
-      { label: 'Agent Development', href: '#services' },
-      { label: 'Multi-Agent Systems', href: '#services' },
-      { label: 'AI Integration', href: '#services' },
-      { label: 'Strategy Consulting', href: '#services' },
+      { label: 'Agent Development', href: '/#services', isAnchor: true },
+      { label: 'Multi-Agent Systems', href: '/#services', isAnchor: true },
+      { label: 'AI Integration', href: '/#services', isAnchor: true },
+      { label: 'Strategy Consulting', href: '/#services', isAnchor: true },
     ],
     company: [
-      { label: 'About Us', href: '#about' },
-      { label: 'Case Studies', href: '#' },
-      { label: 'Careers', href: '#' },
-      { label: 'Contact', href: '#' },
+      { label: 'About Us', href: '/about', isAnchor: false },
+      { label: 'Case Studies', href: '/case-studies', isAnchor: false },
+      { label: 'Careers', href: '/careers', isAnchor: false },
+      { label: 'Contact', href: '/contact', isAnchor: false },
     ],
     resources: [
-      { label: 'Blog', href: '#' },
-      { label: 'Documentation', href: '#' },
-      { label: 'API Reference', href: '#' },
-      { label: 'Community', href: '#' },
+      { label: 'Blog', href: '#', isAnchor: true },
+      { label: 'Documentation', href: '#', isAnchor: true },
+      { label: 'API Reference', href: '#', isAnchor: true },
+      { label: 'Community', href: '#', isAnchor: true },
     ],
   };
 
@@ -30,14 +31,14 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <a href="#" className="flex items-center gap-3 mb-6">
+            <Link to="/" className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
                 <Bot className="w-6 h-6 text-primary" />
               </div>
               <span className="font-display font-bold text-xl text-foreground">
                 Agentic<span className="text-primary">AI</span>
               </span>
-            </a>
+            </Link>
             <p className="text-muted-foreground text-sm mb-4">
               Building the future of autonomous AI systems for enterprise transformation.
             </p>
@@ -76,12 +77,21 @@ const Footer = () => {
             <ul className="space-y-3">
               {links.services.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                  >
-                    {link.label}
-                  </a>
+                  {link.isAnchor ? (
+                    <a
+                      href={link.href}
+                      className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link
+                      to={link.href}
+                      className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -93,12 +103,21 @@ const Footer = () => {
             <ul className="space-y-3">
               {links.company.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                  >
-                    {link.label}
-                  </a>
+                  {link.isAnchor ? (
+                    <a
+                      href={link.href}
+                      className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link
+                      to={link.href}
+                      className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -110,12 +129,21 @@ const Footer = () => {
             <ul className="space-y-3">
               {links.resources.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                  >
-                    {link.label}
-                  </a>
+                  {link.isAnchor ? (
+                    <a
+                      href={link.href}
+                      className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link
+                      to={link.href}
+                      className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
