@@ -40,7 +40,7 @@ const Header = () => {
               <Bot className="w-6 h-6 text-primary" />
             </div>
             <span className="font-display font-bold text-xl text-foreground">
-              Agentic<span className="text-primary">AI</span>
+              Agentic<span className="text-primary">AI</span> Lab
             </span>
           </Link>
 

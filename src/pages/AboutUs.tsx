@@ -70,7 +70,7 @@ const AboutUs = () => {
             <div className="max-w-3xl mx-auto text-center">
               <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
                 <Bot className="w-4 h-4 text-primary" />
-                <span className="text-primary text-sm font-medium">About AgenticAI</span>
+                <span className="text-primary text-sm font-medium">About AgenticAI Lab</span>
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-6">
                 Pioneering the Future of{' '}
@@ -93,7 +93,7 @@ const AboutUs = () => {
                   Our Mission
                 </h2>
                 <p className="text-muted-foreground text-lg mb-6">
-                  At AgenticAI, we believe that the future of business lies in intelligent automation. 
+                  At AgenticAI Lab, we believe that the future of business lies in intelligent automation. 
                   Our mission is to empower organizations with AI agents that don't just assist—they 
                   autonomously execute, learn, and optimize.
                 </p>
@@ -154,7 +154,7 @@ const AboutUs = () => {
               Leadership Team
             </h2>
             <p className="text-xl text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
-              Meet the experts driving innovation at AgenticAI.
+              Meet the experts driving innovation at AgenticAI Lab.
             </p>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {team.map((member, index) => (

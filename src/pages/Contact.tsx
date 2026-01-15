@@ -39,19 +39,19 @@ const departments = [
     icon: MessageSquare,
     title: 'Sales',
     description: 'Talk to our sales team about enterprise solutions.',
-    email: 'sales@agenticai.com',
+    email: 'sales@agenticailab.com',
   },
   {
     icon: Headphones,
     title: 'Support',
     description: 'Get help with technical issues and questions.',
-    email: 'support@agenticai.com',
+    email: 'support@agenticailab.com',
   },
   {
     icon: Building,
     title: 'Partnerships',
     description: 'Explore partnership and integration opportunities.',
-    email: 'partnerships@agenticai.com',
+    email: 'partnerships@agenticailab.com',
   },
 ];
 
