@@ -11,6 +11,7 @@ const Header = () => {
     { label: 'Services', href: '#services', isRoute: false },
     { label: 'Process', href: '#process', isRoute: false },
     { label: 'Case Studies', href: '/case-studies', isRoute: true },
+    { label: 'Blog', href: '/blog', isRoute: true },
     { label: 'About Us', href: '/about', isRoute: true },
     { label: 'Contact Us', href: '/contact', isRoute: true },
   ];
