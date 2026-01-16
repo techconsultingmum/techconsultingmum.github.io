@@ -11,8 +11,8 @@ const Header = () => {
     { label: 'Services', href: '#services', isRoute: false },
     { label: 'Process', href: '#process', isRoute: false },
     { label: 'Case Studies', href: '/case-studies', isRoute: true },
-    { label: 'About', href: '#about', isRoute: false },
-    { label: 'Testimonials', href: '#testimonials', isRoute: false },
+    { label: 'About Us', href: '/about-us', isRoute: true },
+    { label: 'Contact Us', href: '/contact', isRoute: true },
   ];
 
   const handleNavClick = (link: { href: string; isRoute: boolean }) => {
