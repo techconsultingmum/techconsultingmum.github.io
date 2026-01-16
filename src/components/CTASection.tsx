@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Calendar } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import ContactFormDialog from './ContactFormDialog';
 
 const CTASection = () => {
@@ -28,12 +29,12 @@ const CTASection = () => {
                 Book Free Consultation
               </Button>
             </ContactFormDialog>
-            <ContactFormDialog formType="Contact Us">
+            <Link to="/contact">
               <Button variant="heroOutline" size="xl">
                 Contact Us
                 <ArrowRight className="w-5 h-5" />
               </Button>
-            </ContactFormDialog>
+            </Link>
           </div>
 
           <p className="mt-8 text-sm text-muted-foreground">
