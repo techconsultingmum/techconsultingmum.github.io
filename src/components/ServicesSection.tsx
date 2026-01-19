@@ -1,25 +1,30 @@
 import { Bot, Brain, Cog, LineChart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const services = [
   {
     icon: Bot,
     title: 'Autonomous Agent Development',
     description: 'Design and build custom AI agents that autonomously execute complex tasks, make decisions, and continuously improve through learning.',
+    href: '/services/agent-development',
   },
   {
     icon: Brain,
     title: 'Multi-Agent Systems',
     description: 'Orchestrate multiple specialized AI agents working together to solve intricate business problems with unprecedented efficiency.',
+    href: '/services/multi-agent-systems',
   },
   {
     icon: Cog,
     title: 'AI Integration & Deployment',
     description: 'Seamlessly integrate agentic AI into your existing infrastructure with enterprise-grade security and scalability.',
+    href: '/services/ai-integration',
   },
   {
     icon: LineChart,
     title: 'AI Strategy Consulting',
     description: 'Strategic roadmaps to identify high-impact AI opportunities and prioritize implementations for maximum ROI.',
+    href: '/services/strategy-consulting',
   },
 ];
 
@@ -41,9 +46,10 @@ const ServicesSection = () => {
         {/* Services Grid */}
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           {services.map((service, index) => (
-            <div
+            <Link
               key={service.title}
-              className="group p-8 rounded-2xl bg-glass border border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-glow"
+              to={service.href}
+              className="group p-8 rounded-2xl bg-glass border border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-glow block"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors duration-300">
@@ -55,7 +61,7 @@ const ServicesSection = () => {
               <p className="text-muted-foreground leading-relaxed">
                 {service.description}
               </p>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
