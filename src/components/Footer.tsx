@@ -6,22 +6,20 @@ const Footer = () => {
 
   const links = {
     services: [
-      { label: 'Agent Development', href: '/#services', isAnchor: true },
-      { label: 'Multi-Agent Systems', href: '/#services', isAnchor: true },
-      { label: 'AI Integration', href: '/#services', isAnchor: true },
-      { label: 'Strategy Consulting', href: '/#services', isAnchor: true },
+      { label: 'Agent Development', href: '/services/agent-development' },
+      { label: 'Multi-Agent Systems', href: '/services/multi-agent-systems' },
+      { label: 'AI Integration', href: '/services/ai-integration' },
+      { label: 'Strategy Consulting', href: '/services/strategy-consulting' },
     ],
     company: [
-      { label: 'About Us', href: '/about', isAnchor: false },
-      { label: 'Case Studies', href: '/case-studies', isAnchor: false },
-      { label: 'Careers', href: '/careers', isAnchor: false },
-      { label: 'Contact', href: '/contact', isAnchor: false },
+      { label: 'About Us', href: '/about' },
+      { label: 'Case Studies', href: '/case-studies' },
+      { label: 'Careers', href: '/careers' },
+      { label: 'Contact', href: '/contact' },
     ],
     resources: [
-      { label: 'Blog', href: '#', isAnchor: true },
-      { label: 'Documentation', href: '#', isAnchor: true },
-      { label: 'API Reference', href: '#', isAnchor: true },
-      { label: 'Community', href: '#', isAnchor: true },
+      { label: 'Blog', href: '/blog' },
+      { label: 'Get Started', href: '/get-started' },
     ],
   };
 
@@ -77,21 +75,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {links.services.map((link) => (
                 <li key={link.label}>
-                  {link.isAnchor ? (
-                    <a
-                      href={link.href}
-                      className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                    >
-                      {link.label}
-                    </a>
-                  ) : (
-                    <Link
-                      to={link.href}
-                      className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  )}
+                  <Link
+                    to={link.href}
+                    className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                  >
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -103,21 +92,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {links.company.map((link) => (
                 <li key={link.label}>
-                  {link.isAnchor ? (
-                    <a
-                      href={link.href}
-                      className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                    >
-                      {link.label}
-                    </a>
-                  ) : (
-                    <Link
-                      to={link.href}
-                      className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  )}
+                  <Link
+                    to={link.href}
+                    className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                  >
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -129,21 +109,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {links.resources.map((link) => (
                 <li key={link.label}>
-                  {link.isAnchor ? (
-                    <a
-                      href={link.href}
-                      className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                    >
-                      {link.label}
-                    </a>
-                  ) : (
-                    <Link
-                      to={link.href}
-                      className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  )}
+                  <Link
+                    to={link.href}
+                    className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                  >
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -156,12 +127,12 @@ const Footer = () => {
             © {currentYear} AgenticAI Lab. All rights reserved.
           </p>
           <div className="flex gap-6">
-            <a href="#" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+            <Link to="/privacy-policy" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
               Privacy Policy
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+            </Link>
+            <Link to="/terms-of-service" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
               Terms of Service
-            </a>
+            </Link>
           </div>
         </div>
       </div>
