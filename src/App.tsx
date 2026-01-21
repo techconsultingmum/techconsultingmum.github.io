@@ -17,6 +17,9 @@ import AIIntegration from "./pages/services/AIIntegration";
 import StrategyConsulting from "./pages/services/StrategyConsulting";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import ApiReference from "./pages/ApiReference";
+import Documentation from "./pages/Documentation";
+import CookieConsent from "./components/CookieConsent";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +39,8 @@ const App = () => (
           <Route path="/blog" element={<Blog />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/api-reference" element={<ApiReference />} />
+          <Route path="/documentation" element={<Documentation />} />
           <Route path="/services/agent-development" element={<AgentDevelopment />} />
           <Route path="/services/multi-agent-systems" element={<MultiAgentSystems />} />
           <Route path="/services/ai-integration" element={<AIIntegration />} />
@@ -43,6 +48,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <CookieConsent />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
