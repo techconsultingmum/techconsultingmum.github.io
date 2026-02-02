@@ -5,6 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Bot, Mail, Phone, MapPin, Clock, MessageSquare, Headphones, Building, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -56,24 +63,90 @@ const departments = [
   },
 ];
 
+const budgetOptions = [
+  { value: 'under-5k', label: '< $5k' },
+  { value: '5k-10k', label: '$5k - $10k' },
+  { value: '10k-25k', label: '$10k - $25k' },
+  { value: 'over-25k', label: '$25k+' },
+];
+
+const timelineOptions = [
+  { value: 'immediately', label: 'Immediately' },
+  { value: '1-3-months', label: '1–3 months' },
+  { value: '3-6-months', label: '3–6 months' },
+  { value: 'researching', label: 'Just researching' },
+];
+
+const serviceOptions = [
+  { value: 'ai-automation', label: 'AI Automation' },
+  { value: 'agentic-ai', label: 'Agentic AI Systems' },
+  { value: 'chatbots', label: 'Chatbots' },
+  { value: 'consulting', label: 'Consulting' },
+  { value: 'custom-ai', label: 'Custom AI Development' },
+];
+
+const WEBHOOK_URL = 'https://mogim.app.n8n.cloud/webhook/agenticai-lead-form';
+
 const Contact = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     company: '',
-    subject: '',
+    phone: '',
+    budget: '',
+    timeline: '',
+    serviceInterest: '',
+    problemStatement: '',
     message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      email: '',
+      company: '',
+      phone: '',
+      budget: '',
+      timeline: '',
+      serviceInterest: '',
+      problemStatement: '',
+      message: '',
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+    if (!formData.name.trim() || !formData.email.trim()) {
       toast({
         title: "Error",
         description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate budget and timeline
+    if (!formData.budget || !formData.timeline) {
+      toast({
+        title: "Error",
+        description: "Please select your estimated budget and project timeline.",
         variant: "destructive",
       });
       return;
@@ -93,12 +166,54 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+      // Get labels for the selected values
+      const budgetLabel = budgetOptions.find(o => o.value === formData.budget)?.label || formData.budget;
+      const timelineLabel = timelineOptions.find(o => o.value === formData.timeline)?.label || formData.timeline;
+      const serviceLabel = serviceOptions.find(o => o.value === formData.serviceInterest)?.label || formData.serviceInterest;
+
+      // Prepare webhook payload
+      const webhookPayload = {
+        name: formData.name.trim(),
+        email: formData.email.trim().toLowerCase(),
+        phone: formData.phone.trim() || null,
+        company: formData.company.trim() || null,
+        budget: budgetLabel,
+        timeline: timelineLabel,
+        serviceInterest: serviceLabel || null,
+        problemStatement: formData.problemStatement.trim() || null,
+        message: formData.message.trim() || null,
+        formType: 'Contact Us',
+        submittedAt: new Date().toISOString(),
+        source: 'agenticailab.in',
+      };
+
+      // Send to webhook (fire and forget)
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(webhookPayload),
+      }).catch((err) => {
+        console.error('Webhook error (non-blocking):', err);
+      });
+
+      // Prepare email message
+      const fullMessage = [
+        formData.message ? `Message: ${formData.message}` : '',
+        formData.problemStatement ? `Challenge: ${formData.problemStatement}` : '',
+        `Budget: ${budgetLabel}`,
+        `Timeline: ${timelineLabel}`,
+        serviceLabel ? `Service Interest: ${serviceLabel}` : '',
+      ].filter(Boolean).join('\n\n');
+
+      const { error } = await supabase.functions.invoke('send-contact-email', {
         body: {
-          name: formData.name,
-          email: formData.email,
-          company: formData.company,
-          message: `Subject: ${formData.subject}\n\n${formData.message}`,
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim() || undefined,
+          company: formData.company.trim() || undefined,
+          message: fullMessage,
           formType: 'Contact Us',
         },
       });
@@ -106,17 +221,11 @@ const Contact = () => {
       if (error) throw error;
 
       toast({
-        title: 'Message sent!',
-        description: 'We\'ll get back to you within 24 hours.',
+        title: 'Thanks! 🎉',
+        description: 'Our AI team will review your request shortly.',
       });
 
-      setFormData({
-        name: '',
-        email: '',
-        company: '',
-        subject: '',
-        message: '',
-      });
+      resetForm();
     } catch (error: any) {
       console.error('Error sending message:', error);
       toast({
@@ -142,8 +251,7 @@ const Contact = () => {
                 <span className="text-primary text-sm font-medium">Contact Us</span>
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-6">
-                Let's Start a{' '}
-                <span className="text-primary">Conversation</span>
+                Talk to <span className="text-primary">AgenticAI Lab</span>
               </h1>
               <p className="text-xl text-muted-foreground">
                 Have questions about our AI solutions? We're here to help. 
@@ -188,64 +296,141 @@ const Contact = () => {
                 <CardHeader>
                   <CardTitle className="text-2xl text-foreground">Send us a Message</CardTitle>
                   <CardDescription>
-                    Fill out the form below and we'll get back to you shortly.
+                    Fill out the form below and our AI team will review your request shortly.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-6">
+                  <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="name">Full Name *</Label>
                         <Input
                           id="name"
+                          name="name"
                           placeholder="John Doe"
                           value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          onChange={handleChange}
                           required
+                          maxLength={100}
                         />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="email">Email Address *</Label>
                         <Input
                           id="email"
+                          name="email"
                           type="email"
                           placeholder="john@company.com"
                           value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          onChange={handleChange}
                           required
+                          maxLength={255}
                         />
                       </div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="company">Company</Label>
+                        <Label htmlFor="phone">Phone</Label>
                         <Input
-                          id="company"
-                          placeholder="Your Company"
-                          value={formData.company}
-                          onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          placeholder="+91 000 000 0000"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          maxLength={20}
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="subject">Subject *</Label>
+                        <Label htmlFor="company">Company</Label>
                         <Input
-                          id="subject"
-                          placeholder="How can we help?"
-                          value={formData.subject}
-                          onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                          required
+                          id="company"
+                          name="company"
+                          placeholder="Your Company"
+                          value={formData.company}
+                          onChange={handleChange}
+                          maxLength={100}
                         />
                       </div>
                     </div>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="budget">Estimated Budget *</Label>
+                        <Select
+                          value={formData.budget}
+                          onValueChange={(value) => handleSelectChange('budget', value)}
+                        >
+                          <SelectTrigger className="bg-background">
+                            <SelectValue placeholder="Select budget" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-popover border-border z-50">
+                            {budgetOptions.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="timeline">Project Timeline *</Label>
+                        <Select
+                          value={formData.timeline}
+                          onValueChange={(value) => handleSelectChange('timeline', value)}
+                        >
+                          <SelectTrigger className="bg-background">
+                            <SelectValue placeholder="Select timeline" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-popover border-border z-50">
+                            {timelineOptions.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
                     <div className="space-y-2">
-                      <Label htmlFor="message">Message *</Label>
+                      <Label htmlFor="serviceInterest">Service Interested In</Label>
+                      <Select
+                        value={formData.serviceInterest}
+                        onValueChange={(value) => handleSelectChange('serviceInterest', value)}
+                      >
+                        <SelectTrigger className="bg-background">
+                          <SelectValue placeholder="Select service (optional)" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-popover border-border z-50">
+                          {serviceOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="problemStatement">Briefly describe your challenge</Label>
+                      <Textarea
+                        id="problemStatement"
+                        name="problemStatement"
+                        placeholder="What problem are you looking to solve with AI?"
+                        rows={3}
+                        value={formData.problemStatement}
+                        onChange={handleChange}
+                        maxLength={1000}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="message">Additional Details</Label>
                       <Textarea
                         id="message"
-                        placeholder="Tell us more about your project or inquiry..."
-                        rows={5}
+                        name="message"
+                        placeholder="Any other details you'd like to share..."
+                        rows={2}
                         value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        required
+                        onChange={handleChange}
+                        maxLength={1000}
                       />
                     </div>
                     <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
@@ -255,7 +440,7 @@ const Contact = () => {
                           Sending...
                         </>
                       ) : (
-                        'Send Message'
+                        'Get AI Solution'
                       )}
                     </Button>
                   </form>

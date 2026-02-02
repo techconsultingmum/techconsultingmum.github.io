@@ -13,6 +13,7 @@ const categories = ['All', 'AI Trends', 'Development', 'Case Study', 'Security',
 const blogPosts = [
   {
     id: 1,
+    slug: 'future-of-ai-agents-enterprise-automation',
     title: 'The Future of AI Agents in Enterprise Automation',
     excerpt: 'Discover how autonomous AI agents are revolutionizing business processes, reducing operational costs, and enabling 24/7 intelligent automation across industries.',
     category: 'AI Trends',
@@ -24,6 +25,7 @@ const blogPosts = [
   },
   {
     id: 2,
+    slug: 'building-scalable-ai-solutions-best-practices',
     title: 'Building Scalable AI Solutions: Best Practices',
     excerpt: 'Learn the key principles and architectural patterns for developing AI solutions that can grow seamlessly with your business demands.',
     category: 'Development',
@@ -34,6 +36,7 @@ const blogPosts = [
   },
   {
     id: 3,
+    slug: 'machine-learning-transforming-customer-service',
     title: 'How Machine Learning is Transforming Customer Service',
     excerpt: 'Explore real-world implementations of ML-powered chatbots and virtual assistants that have increased customer satisfaction by 40%.',
     category: 'Case Study',
@@ -44,6 +47,7 @@ const blogPosts = [
   },
   {
     id: 4,
+    slug: 'understanding-large-language-models-business',
     title: 'Understanding Large Language Models for Business',
     excerpt: 'A comprehensive guide to LLMs including GPT, Claude, and Gemini - and how they can be leveraged for various enterprise applications.',
     category: 'AI Trends',
@@ -54,6 +58,7 @@ const blogPosts = [
   },
   {
     id: 5,
+    slug: 'data-privacy-age-of-ai',
     title: 'Data Privacy in the Age of AI',
     excerpt: 'Essential considerations and compliance frameworks for maintaining data privacy while implementing cutting-edge AI solutions.',
     category: 'Security',
@@ -64,6 +69,7 @@ const blogPosts = [
   },
   {
     id: 6,
+    slug: 'getting-started-ai-integration-step-by-step-guide',
     title: 'Getting Started with AI Integration: A Step-by-Step Guide',
     excerpt: 'From assessment to deployment - everything you need to know to successfully incorporate AI into your existing business workflows.',
     category: 'Tutorials',
@@ -122,45 +128,47 @@ const Blog = () => {
       {featuredPost && selectedCategory === 'All' && (
         <section className="py-8 px-4">
           <div className="container mx-auto">
-            <Card className="bg-gradient-to-br from-card via-card to-primary/5 border-primary/20 overflow-hidden group">
-              <div className="grid md:grid-cols-2 gap-8 p-6 md:p-10">
-                <div className="flex flex-col justify-center">
-                  <Badge className="w-fit mb-4 bg-primary/20 text-primary border-primary/30">
-                    Featured Post
-                  </Badge>
-                  <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors">
-                    {featuredPost.title}
-                  </h2>
-                  <p className="text-muted-foreground text-lg mb-6">
-                    {featuredPost.excerpt}
-                  </p>
-                  <div className="flex items-center gap-6 text-sm text-muted-foreground mb-6">
-                    <span className="flex items-center gap-2">
-                      <User className="w-4 h-4" />
-                      {featuredPost.author}
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      {featuredPost.date}
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <Clock className="w-4 h-4" />
-                      {featuredPost.readTime}
-                    </span>
+            <Link to={`/blog/${featuredPost.slug}`}>
+              <Card className="bg-gradient-to-br from-card via-card to-primary/5 border-primary/20 overflow-hidden group cursor-pointer">
+                <div className="grid md:grid-cols-2 gap-8 p-6 md:p-10">
+                  <div className="flex flex-col justify-center">
+                    <Badge className="w-fit mb-4 bg-primary/20 text-primary border-primary/30">
+                      Featured Post
+                    </Badge>
+                    <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors">
+                      {featuredPost.title}
+                    </h2>
+                    <p className="text-muted-foreground text-lg mb-6">
+                      {featuredPost.excerpt}
+                    </p>
+                    <div className="flex items-center gap-6 text-sm text-muted-foreground mb-6">
+                      <span className="flex items-center gap-2">
+                        <User className="w-4 h-4" />
+                        {featuredPost.author}
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        {featuredPost.date}
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        {featuredPost.readTime}
+                      </span>
+                    </div>
+                    <Button className="w-fit group/btn">
+                      Read Article
+                      <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                    </Button>
                   </div>
-                  <Button className="w-fit group/btn">
-                    Read Article
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                  </Button>
-                </div>
-                <div className="relative flex items-center justify-center">
-                  <div className="w-full aspect-square max-w-md bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl flex items-center justify-center">
-                    <featuredPost.icon className="w-32 h-32 text-primary/60" />
+                  <div className="relative flex items-center justify-center">
+                    <div className="w-full aspect-square max-w-md bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl flex items-center justify-center">
+                      <featuredPost.icon className="w-32 h-32 text-primary/60" />
+                    </div>
+                    <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl" />
                   </div>
-                  <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl" />
                 </div>
-              </div>
-            </Card>
+              </Card>
+            </Link>
           </div>
         </section>
       )}
@@ -191,50 +199,51 @@ const Blog = () => {
             {regularPosts.map((post) => {
               const IconComponent = post.icon;
               return (
-                <Card 
-                  key={post.id} 
-                  className="bg-card border-border hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group overflow-hidden"
-                >
-                  <div className="aspect-video bg-gradient-to-br from-muted to-muted/50 relative overflow-hidden flex items-center justify-center">
-                    <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <IconComponent className="w-10 h-10 text-primary" />
+                <Link to={`/blog/${post.slug}`} key={post.id}>
+                  <Card 
+                    className="bg-card border-border hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group overflow-hidden h-full cursor-pointer"
+                  >
+                    <div className="aspect-video bg-gradient-to-br from-muted to-muted/50 relative overflow-hidden flex items-center justify-center">
+                      <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <IconComponent className="w-10 h-10 text-primary" />
+                      </div>
+                      <Badge className="absolute top-4 left-4 bg-background/80 backdrop-blur-sm" variant="secondary">
+                        {post.category}
+                      </Badge>
                     </div>
-                    <Badge className="absolute top-4 left-4 bg-background/80 backdrop-blur-sm" variant="secondary">
-                      {post.category}
-                    </Badge>
-                  </div>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
-                        {post.date}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        {post.readTime}
-                      </span>
-                    </div>
-                    <CardTitle className="text-xl group-hover:text-primary transition-colors line-clamp-2">
-                      {post.title}
-                    </CardTitle>
-                    <CardDescription className="text-muted-foreground line-clamp-3">
-                      {post.excerpt}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between pt-2 border-t border-border">
-                      <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <User className="w-4 h-4 text-primary" />
-                        </div>
-                        {post.author}
-                      </span>
-                      <Button variant="ghost" size="sm" className="group-hover:text-primary">
-                        Read <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4" />
+                          {post.date}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {post.readTime}
+                        </span>
+                      </div>
+                      <CardTitle className="text-xl group-hover:text-primary transition-colors line-clamp-2">
+                        {post.title}
+                      </CardTitle>
+                      <CardDescription className="text-muted-foreground line-clamp-3">
+                        {post.excerpt}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-between pt-2 border-t border-border">
+                        <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                            <User className="w-4 h-4 text-primary" />
+                          </div>
+                          {post.author}
+                        </span>
+                        <span className="flex items-center text-sm group-hover:text-primary transition-colors">
+                          Read <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
               );
             })}
           </div>
