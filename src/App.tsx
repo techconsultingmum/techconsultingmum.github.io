@@ -10,6 +10,7 @@ import AboutUs from "./pages/AboutUs";
 import Careers from "./pages/Careers";
 import Contact from "./pages/Contact";
 import Blog from "./pages/Blog";
+import BlogArticle from "./pages/BlogArticle";
 import NotFound from "./pages/NotFound";
 import AgentDevelopment from "./pages/services/AgentDevelopment";
 import MultiAgentSystems from "./pages/services/MultiAgentSystems";
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/careers" element={<Careers />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogArticle />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/api-reference" element={<ApiReference />} />
