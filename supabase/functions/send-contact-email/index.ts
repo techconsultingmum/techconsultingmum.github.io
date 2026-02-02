@@ -9,6 +9,11 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+// Simple in-memory rate limiting (resets on function cold start)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_MAX = 5; // Max requests per window
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour window
+
 interface ContactEmailRequest {
   name: string;
   email: string;
@@ -18,6 +23,99 @@ interface ContactEmailRequest {
   formType: string;
 }
 
+// Input validation functions
+function validateEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email) && email.length <= 255;
+}
+
+function validatePhone(phone: string): boolean {
+  if (!phone) return true; // Optional field
+  const phoneRegex = /^[\d\s\-+()]+$/;
+  return phoneRegex.test(phone) && phone.length <= 20;
+}
+
+function sanitizeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function validateAndSanitizeInput(data: ContactEmailRequest): { 
+  valid: boolean; 
+  errors: string[]; 
+  sanitized: ContactEmailRequest 
+} {
+  const errors: string[] = [];
+  
+  // Validate required fields
+  if (!data.name || typeof data.name !== 'string') {
+    errors.push("Name is required");
+  } else if (data.name.trim().length === 0 || data.name.length > 100) {
+    errors.push("Name must be between 1 and 100 characters");
+  }
+  
+  if (!data.email || typeof data.email !== 'string') {
+    errors.push("Email is required");
+  } else if (!validateEmail(data.email)) {
+    errors.push("Invalid email format or too long");
+  }
+  
+  if (!data.message || typeof data.message !== 'string') {
+    errors.push("Message is required");
+  } else if (data.message.trim().length === 0 || data.message.length > 5000) {
+    errors.push("Message must be between 1 and 5000 characters");
+  }
+  
+  if (!data.formType || typeof data.formType !== 'string') {
+    errors.push("Form type is required");
+  } else if (data.formType.length > 50) {
+    errors.push("Form type is too long");
+  }
+  
+  // Validate optional fields
+  if (data.phone && !validatePhone(data.phone)) {
+    errors.push("Invalid phone format");
+  }
+  
+  if (data.company && (typeof data.company !== 'string' || data.company.length > 100)) {
+    errors.push("Company name must be less than 100 characters");
+  }
+  
+  // Sanitize all inputs for HTML email rendering
+  const sanitized: ContactEmailRequest = {
+    name: sanitizeHtml((data.name || '').trim().slice(0, 100)),
+    email: (data.email || '').trim().slice(0, 255).toLowerCase(),
+    phone: data.phone ? sanitizeHtml(data.phone.trim().slice(0, 20)) : undefined,
+    company: data.company ? sanitizeHtml(data.company.trim().slice(0, 100)) : undefined,
+    message: sanitizeHtml((data.message || '').trim().slice(0, 5000)),
+    formType: sanitizeHtml((data.formType || '').trim().slice(0, 50)),
+  };
+  
+  return { valid: errors.length === 0, errors, sanitized };
+}
+
+function checkRateLimit(clientIp: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(clientIp);
+  
+  if (!record || now > record.resetTime) {
+    // Create new rate limit window
+    rateLimitMap.set(clientIp, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+  
+  if (record.count >= RATE_LIMIT_MAX) {
+    return false; // Rate limited
+  }
+  
+  record.count++;
+  return true;
+}
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -25,9 +123,46 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { name, email, phone, company, message, formType }: ContactEmailRequest = await req.json();
+    // Get client IP for rate limiting
+    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || 
+                     req.headers.get("cf-connecting-ip") || 
+                     "unknown";
+    
+    // Check rate limit
+    if (!checkRateLimit(clientIp)) {
+      console.warn(`Rate limit exceeded for IP: ${clientIp}`);
+      return new Response(
+        JSON.stringify({ error: "Too many requests. Please try again later." }),
+        {
+          status: 429,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
 
-    console.log("Received contact form submission:", { name, email, phone, company, formType });
+    const rawData = await req.json();
+    
+    // Validate and sanitize input
+    const { valid, errors, sanitized } = validateAndSanitizeInput(rawData);
+    
+    if (!valid) {
+      console.warn("Validation failed:", errors);
+      return new Response(
+        JSON.stringify({ error: "Invalid input. Please check your form data." }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+    
+    const { name, email, phone, company, message, formType } = sanitized;
+
+    console.log("Received contact form submission:", { 
+      name: name.slice(0, 20) + "...", 
+      emailDomain: email.split("@")[1], 
+      formType 
+    });
 
     // Send notification email to the business
     const notificationEmail = await resend.emails.send({
@@ -47,7 +182,7 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Notification email sent:", notificationEmail);
+    console.log("Notification email sent:", notificationEmail.data?.id || "success");
 
     // Send confirmation email to the user
     const confirmationEmail = await resend.emails.send({
@@ -65,7 +200,7 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Confirmation email sent:", confirmationEmail);
+    console.log("Confirmation email sent:", confirmationEmail.data?.id || "success");
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
@@ -75,9 +210,16 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
   } catch (error: any) {
-    console.error("Error in send-contact-email function:", error);
+    // Log full error details server-side for debugging
+    console.error("Error in send-contact-email function:", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+    });
+    
+    // Return generic error message to client - never expose internal details
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Unable to send message. Please try again later." }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
