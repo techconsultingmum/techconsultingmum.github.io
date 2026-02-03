@@ -4,9 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Calendar, Clock, ArrowRight, User, Bot, Brain, Shield, Code, TrendingUp, Sparkles } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, User, Bot, Brain, Shield, Code, TrendingUp, Sparkles, Loader2, CheckCircle } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { useToast } from '@/hooks/use-toast';
+import { newsletterSchema } from '@/lib/validations';
+import { WEBHOOK_URL } from '@/lib/form-config';
 
 const categories = ['All', 'AI Trends', 'Development', 'Case Study', 'Security', 'Tutorials'];
 
@@ -83,6 +86,10 @@ const blogPosts = [
 const Blog = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [email, setEmail] = useState('');
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const { toast } = useToast();
 
   const filteredPosts = selectedCategory === 'All' 
     ? blogPosts 
@@ -91,10 +98,50 @@ const Blog = () => {
   const featuredPost = blogPosts.find(post => post.featured);
   const regularPosts = filteredPosts.filter(post => !post.featured || selectedCategory !== 'All');
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle subscription
-    setEmail('');
+    setEmailError('');
+    
+    // Validate email
+    const result = newsletterSchema.safeParse({ email });
+    if (!result.success) {
+      setEmailError(result.error.errors[0]?.message || 'Invalid email');
+      return;
+    }
+
+    setIsSubscribing(true);
+
+    try {
+      // Send to webhook
+      await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          formType: 'Newsletter Subscription',
+          submittedAt: new Date().toISOString(),
+          source: 'agenticailab.in',
+        }),
+      });
+
+      setIsSubscribed(true);
+      setEmail('');
+      toast({
+        title: "You're subscribed! 🎉",
+        description: "Thanks for joining our newsletter. Stay tuned for AI insights!",
+      });
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      toast({
+        title: "Subscription failed",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubscribing(false);
+    }
   };
 
   return (
@@ -274,20 +321,46 @@ const Blog = () => {
                 <p className="text-muted-foreground mb-8 max-w-xl mx-auto text-lg">
                   Get exclusive AI insights, industry trends, and expert tips delivered to your inbox weekly.
                 </p>
-                <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-                  <Input 
-                    type="email" 
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-background/80 backdrop-blur-sm"
-                    required
-                  />
-                  <Button type="submit" size="lg">
-                    Subscribe
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </form>
+                {isSubscribed ? (
+                  <div className="flex items-center justify-center gap-2 text-primary py-3">
+                    <CheckCircle className="w-5 h-5" />
+                    <span className="font-medium">You're subscribed! Check your inbox.</span>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+                    <div className="flex-1">
+                      <Input 
+                        type="email" 
+                        placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          if (emailError) setEmailError('');
+                        }}
+                        className={`bg-background/80 backdrop-blur-sm ${emailError ? 'border-destructive' : ''}`}
+                        disabled={isSubscribing}
+                        aria-label="Email for newsletter"
+                        aria-invalid={!!emailError}
+                      />
+                      {emailError && (
+                        <p className="text-sm text-destructive mt-1 text-left">{emailError}</p>
+                      )}
+                    </div>
+                    <Button type="submit" size="lg" disabled={isSubscribing}>
+                      {isSubscribing ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Subscribing...
+                        </>
+                      ) : (
+                        <>
+                          Subscribe
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                )}
                 <p className="text-sm text-muted-foreground mt-4">
                   No spam. Unsubscribe anytime.
                 </p>

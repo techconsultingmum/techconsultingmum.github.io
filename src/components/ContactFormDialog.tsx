@@ -21,57 +21,41 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
+import {
+  budgetOptions,
+  timelineOptions,
+  serviceOptions,
+  WEBHOOK_URL,
+  getBudgetLabel,
+  getTimelineLabel,
+  getServiceLabel,
+  initialFormData,
+  type FormType,
+} from '@/lib/form-config';
+import { contactFormSchema } from '@/lib/validations';
 
 interface ContactFormDialogProps {
   children: React.ReactNode;
-  formType: 'Schedule Consultation' | 'Book Free Consultation' | 'Contact Us';
+  formType: FormType;
 }
-
-const budgetOptions = [
-  { value: 'under-5k', label: '< $5k' },
-  { value: '5k-10k', label: '$5k - $10k' },
-  { value: '10k-25k', label: '$10k - $25k' },
-  { value: 'over-25k', label: '$25k+' },
-];
-
-const timelineOptions = [
-  { value: 'immediately', label: 'Immediately' },
-  { value: '1-3-months', label: '1–3 months' },
-  { value: '3-6-months', label: '3–6 months' },
-  { value: 'researching', label: 'Just researching' },
-];
-
-const serviceOptions = [
-  { value: 'ai-automation', label: 'AI Automation' },
-  { value: 'agentic-ai', label: 'Agentic AI Systems' },
-  { value: 'chatbots', label: 'Chatbots' },
-  { value: 'consulting', label: 'Consulting' },
-  { value: 'custom-ai', label: 'Custom AI Development' },
-];
-
-const WEBHOOK_URL = 'https://mogim.app.n8n.cloud/webhook/agenticai-lead-form';
 
 const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    company: '',
-    budget: '',
-    timeline: '',
-    serviceInterest: '',
-    problemStatement: '',
-    message: '',
-  });
+  const [formData, setFormData] = useState(initialFormData);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleSelectChange = (name: string, value: string) => {
@@ -79,54 +63,49 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
       ...prev,
       [name]: value,
     }));
+    // Clear error when user selects
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
   const resetForm = () => {
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      company: '',
-      budget: '',
-      timeline: '',
-      serviceInterest: '',
-      problemStatement: '',
-      message: '',
-    });
+    setFormData(initialFormData);
+    setErrors({});
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
     
-    // Validate required fields
-    if (!formData.name.trim() || !formData.email.trim()) {
+    // Validate using Zod schema
+    const result = contactFormSchema.safeParse(formData);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(fieldErrors);
       toast({
-        title: "Error",
-        description: "Please fill in all required fields.",
+        title: "Validation Error",
+        description: "Please check the form for errors.",
         variant: "destructive",
       });
       return;
     }
 
     // Validate budget and timeline for consultation forms
-    if (formType !== 'Contact Us' && (!formData.budget || !formData.timeline)) {
-      toast({
-        title: "Error",
-        description: "Please select your estimated budget and project timeline.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast({
-        title: "Error",
-        description: "Please enter a valid email address.",
-        variant: "destructive",
-      });
-      return;
+    if (formType !== 'Contact Us') {
+      if (!formData.budget) {
+        setErrors((prev) => ({ ...prev, budget: 'Please select your estimated budget' }));
+        return;
+      }
+      if (!formData.timeline) {
+        setErrors((prev) => ({ ...prev, timeline: 'Please select your project timeline' }));
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -220,24 +199,30 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
             Fill out the form below and our AI team will review your request shortly.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4" noValidate>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Name *</Label>
+              <Label htmlFor="dialog-name">Name *</Label>
               <Input
-                id="name"
+                id="dialog-name"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Your name"
                 required
                 maxLength={100}
+                aria-invalid={!!errors.name}
+                aria-describedby={errors.name ? "dialog-name-error" : undefined}
+                className={errors.name ? 'border-destructive' : ''}
               />
+              {errors.name && (
+                <p id="dialog-name-error" className="text-sm text-destructive">{errors.name}</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email *</Label>
+              <Label htmlFor="dialog-email">Email *</Label>
               <Input
-                id="email"
+                id="dialog-email"
                 name="email"
                 type="email"
                 value={formData.email}
@@ -245,27 +230,38 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
                 placeholder="your@email.com"
                 required
                 maxLength={255}
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? "dialog-email-error" : undefined}
+                className={errors.email ? 'border-destructive' : ''}
               />
+              {errors.email && (
+                <p id="dialog-email-error" className="text-sm text-destructive">{errors.email}</p>
+              )}
             </div>
           </div>
           
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="dialog-phone">Phone</Label>
               <Input
-                id="phone"
+                id="dialog-phone"
                 name="phone"
                 type="tel"
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="+91 000 000 0000"
                 maxLength={20}
+                aria-invalid={!!errors.phone}
+                className={errors.phone ? 'border-destructive' : ''}
               />
+              {errors.phone && (
+                <p className="text-sm text-destructive">{errors.phone}</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="company">Company</Label>
+              <Label htmlFor="dialog-company">Company</Label>
               <Input
-                id="company"
+                id="dialog-company"
                 name="company"
                 value={formData.company}
                 onChange={handleChange}
@@ -279,12 +275,15 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
             <>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="budget">Estimated Budget *</Label>
+                  <Label htmlFor="dialog-budget">Estimated Budget *</Label>
                   <Select
                     value={formData.budget}
                     onValueChange={(value) => handleSelectChange('budget', value)}
                   >
-                    <SelectTrigger className="bg-background">
+                    <SelectTrigger 
+                      className={`bg-background ${errors.budget ? 'border-destructive' : ''}`}
+                      aria-invalid={!!errors.budget}
+                    >
                       <SelectValue placeholder="Select budget" />
                     </SelectTrigger>
                     <SelectContent className="bg-popover border-border z-50">
@@ -295,14 +294,20 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
                       ))}
                     </SelectContent>
                   </Select>
+                  {errors.budget && (
+                    <p className="text-sm text-destructive">{errors.budget}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="timeline">Project Timeline *</Label>
+                  <Label htmlFor="dialog-timeline">Project Timeline *</Label>
                   <Select
                     value={formData.timeline}
                     onValueChange={(value) => handleSelectChange('timeline', value)}
                   >
-                    <SelectTrigger className="bg-background">
+                    <SelectTrigger 
+                      className={`bg-background ${errors.timeline ? 'border-destructive' : ''}`}
+                      aria-invalid={!!errors.timeline}
+                    >
                       <SelectValue placeholder="Select timeline" />
                     </SelectTrigger>
                     <SelectContent className="bg-popover border-border z-50">
@@ -313,11 +318,14 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
                       ))}
                     </SelectContent>
                   </Select>
+                  {errors.timeline && (
+                    <p className="text-sm text-destructive">{errors.timeline}</p>
+                  )}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="serviceInterest">Service Interested In</Label>
+                <Label htmlFor="dialog-serviceInterest">Service Interested In</Label>
                 <Select
                   value={formData.serviceInterest}
                   onValueChange={(value) => handleSelectChange('serviceInterest', value)}
@@ -336,9 +344,9 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="problemStatement">Briefly describe your challenge</Label>
+                <Label htmlFor="dialog-problemStatement">Briefly describe your challenge</Label>
                 <Textarea
-                  id="problemStatement"
+                  id="dialog-problemStatement"
                   name="problemStatement"
                   value={formData.problemStatement}
                   onChange={handleChange}
@@ -349,7 +357,6 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
               </div>
             </>
           )}
-
           <div className="space-y-2">
             <Label htmlFor="message">{isConsultationForm ? 'Additional Details' : 'Message *'}</Label>
             <Textarea

@@ -17,6 +17,14 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import {
+  budgetOptions,
+  timelineOptions,
+  serviceOptions,
+  WEBHOOK_URL,
+  initialFormData,
+} from '@/lib/form-config';
+import { contactFormSchema } from '@/lib/validations';
 
 const contactMethods = [
   {
@@ -63,50 +71,21 @@ const departments = [
   },
 ];
 
-const budgetOptions = [
-  { value: 'under-5k', label: '< $5k' },
-  { value: '5k-10k', label: '$5k - $10k' },
-  { value: '10k-25k', label: '$10k - $25k' },
-  { value: 'over-25k', label: '$25k+' },
-];
-
-const timelineOptions = [
-  { value: 'immediately', label: 'Immediately' },
-  { value: '1-3-months', label: '1–3 months' },
-  { value: '3-6-months', label: '3–6 months' },
-  { value: 'researching', label: 'Just researching' },
-];
-
-const serviceOptions = [
-  { value: 'ai-automation', label: 'AI Automation' },
-  { value: 'agentic-ai', label: 'Agentic AI Systems' },
-  { value: 'chatbots', label: 'Chatbots' },
-  { value: 'consulting', label: 'Consulting' },
-  { value: 'custom-ai', label: 'Custom AI Development' },
-];
-
-const WEBHOOK_URL = 'https://mogim.app.n8n.cloud/webhook/agenticai-lead-form';
-
 const Contact = () => {
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    company: '',
-    phone: '',
-    budget: '',
-    timeline: '',
-    serviceInterest: '',
-    problemStatement: '',
-    message: '',
-  });
+  const [formData, setFormData] = useState(initialFormData);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleSelectChange = (name: string, value: string) => {
@@ -114,52 +93,45 @@ const Contact = () => {
       ...prev,
       [name]: value,
     }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
   const resetForm = () => {
-    setFormData({
-      name: '',
-      email: '',
-      company: '',
-      phone: '',
-      budget: '',
-      timeline: '',
-      serviceInterest: '',
-      problemStatement: '',
-      message: '',
-    });
+    setFormData(initialFormData);
+    setErrors({});
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
     
-    if (!formData.name.trim() || !formData.email.trim()) {
+    // Validate using Zod
+    const result = contactFormSchema.safeParse(formData);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(fieldErrors);
       toast({
-        title: "Error",
-        description: "Please fill in all required fields.",
+        title: "Validation Error",
+        description: "Please check the form for errors.",
         variant: "destructive",
       });
       return;
     }
 
     // Validate budget and timeline
-    if (!formData.budget || !formData.timeline) {
-      toast({
-        title: "Error",
-        description: "Please select your estimated budget and project timeline.",
-        variant: "destructive",
-      });
+    if (!formData.budget) {
+      setErrors((prev) => ({ ...prev, budget: 'Please select your estimated budget' }));
       return;
     }
-
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast({
-        title: "Error",
-        description: "Please enter a valid email address.",
-        variant: "destructive",
-      });
+    if (!formData.timeline) {
+      setErrors((prev) => ({ ...prev, timeline: 'Please select your project timeline' }));
       return;
     }
 
@@ -300,24 +272,29 @@ const Contact = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-5">
+                  <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="name">Full Name *</Label>
+                        <Label htmlFor="contact-name">Full Name *</Label>
                         <Input
-                          id="name"
+                          id="contact-name"
                           name="name"
                           placeholder="John Doe"
                           value={formData.name}
                           onChange={handleChange}
                           required
                           maxLength={100}
+                          aria-invalid={!!errors.name}
+                          className={errors.name ? 'border-destructive' : ''}
                         />
+                        {errors.name && (
+                          <p className="text-sm text-destructive">{errors.name}</p>
+                        )}
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email Address *</Label>
+                        <Label htmlFor="contact-email">Email Address *</Label>
                         <Input
-                          id="email"
+                          id="contact-email"
                           name="email"
                           type="email"
                           placeholder="john@company.com"
@@ -325,26 +302,36 @@ const Contact = () => {
                           onChange={handleChange}
                           required
                           maxLength={255}
+                          aria-invalid={!!errors.email}
+                          className={errors.email ? 'border-destructive' : ''}
                         />
+                        {errors.email && (
+                          <p className="text-sm text-destructive">{errors.email}</p>
+                        )}
                       </div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="phone">Phone</Label>
+                        <Label htmlFor="contact-phone">Phone</Label>
                         <Input
-                          id="phone"
+                          id="contact-phone"
                           name="phone"
                           type="tel"
                           placeholder="+91 000 000 0000"
                           value={formData.phone}
                           onChange={handleChange}
                           maxLength={20}
+                          aria-invalid={!!errors.phone}
+                          className={errors.phone ? 'border-destructive' : ''}
                         />
+                        {errors.phone && (
+                          <p className="text-sm text-destructive">{errors.phone}</p>
+                        )}
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="company">Company</Label>
+                        <Label htmlFor="contact-company">Company</Label>
                         <Input
-                          id="company"
+                          id="contact-company"
                           name="company"
                           placeholder="Your Company"
                           value={formData.company}
@@ -355,12 +342,15 @@ const Contact = () => {
                     </div>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="budget">Estimated Budget *</Label>
+                        <Label htmlFor="contact-budget">Estimated Budget *</Label>
                         <Select
                           value={formData.budget}
                           onValueChange={(value) => handleSelectChange('budget', value)}
                         >
-                          <SelectTrigger className="bg-background">
+                          <SelectTrigger 
+                            className={`bg-background ${errors.budget ? 'border-destructive' : ''}`}
+                            aria-invalid={!!errors.budget}
+                          >
                             <SelectValue placeholder="Select budget" />
                           </SelectTrigger>
                           <SelectContent className="bg-popover border-border z-50">
@@ -371,14 +361,20 @@ const Contact = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        {errors.budget && (
+                          <p className="text-sm text-destructive">{errors.budget}</p>
+                        )}
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="timeline">Project Timeline *</Label>
+                        <Label htmlFor="contact-timeline">Project Timeline *</Label>
                         <Select
                           value={formData.timeline}
                           onValueChange={(value) => handleSelectChange('timeline', value)}
                         >
-                          <SelectTrigger className="bg-background">
+                          <SelectTrigger 
+                            className={`bg-background ${errors.timeline ? 'border-destructive' : ''}`}
+                            aria-invalid={!!errors.timeline}
+                          >
                             <SelectValue placeholder="Select timeline" />
                           </SelectTrigger>
                           <SelectContent className="bg-popover border-border z-50">
@@ -389,6 +385,9 @@ const Contact = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        {errors.timeline && (
+                          <p className="text-sm text-destructive">{errors.timeline}</p>
+                        )}
                       </div>
                     </div>
                     <div className="space-y-2">
