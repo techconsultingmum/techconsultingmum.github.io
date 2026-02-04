@@ -1,11 +1,13 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import SkipToContent from '@/components/SkipToContent';
 
 const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SkipToContent />
       <Header />
-      <main className="pt-32 pb-20">
+      <main id="main-content" className="pt-32 pb-20">
         <div className="container mx-auto px-4 max-w-4xl">
           <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">
             Privacy Policy

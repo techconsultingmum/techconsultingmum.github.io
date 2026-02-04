@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Calendar, Clock, User, Share2, Linkedin, Twitter, Facebook, Bot, Code, TrendingUp, Brain, Shield, Sparkles } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import SkipToContent from '@/components/SkipToContent';
 import ContactFormDialog from '@/components/ContactFormDialog';
 
 const blogPosts: Record<string, {
@@ -253,9 +254,10 @@ const BlogArticle = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SkipToContent />
       <Header />
       
-      <main className="pt-24 pb-20">
+      <main id="main-content" className="pt-24 pb-20">
         {/* Hero Section */}
         <section className="py-12 px-4 relative overflow-hidden">
           <div className="absolute inset-0 -z-10">

@@ -6,6 +6,7 @@ import { Check, ArrowRight, Bot, Zap, Shield, Users } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ContactFormDialog from '@/components/ContactFormDialog';
+import SkipToContent from '@/components/SkipToContent';
 
 const faqs = [
   {
@@ -114,8 +115,9 @@ const steps = [
 const GetStarted = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SkipToContent />
       <Header />
-      <main className="pt-20">
+      <main id="main-content" className="pt-20">
         {/* Hero Section */}
         <section className="py-20 md:py-28">
           <div className="container mx-auto px-4">

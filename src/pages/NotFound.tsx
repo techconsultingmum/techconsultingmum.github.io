@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft, Search } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SkipToContent from "@/components/SkipToContent";
 
 const NotFound = () => {
   const location = useLocation();
@@ -14,9 +15,10 @@ const NotFound = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SkipToContent />
       <Header />
       
-      <main className="flex-1 flex items-center justify-center px-4 py-20">
+      <main id="main-content" className="flex-1 flex items-center justify-center px-4 py-20">
         <div className="text-center max-w-lg mx-auto">
           {/* 404 Number */}
           <div className="relative mb-8">

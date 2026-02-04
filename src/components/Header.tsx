@@ -96,18 +96,25 @@ const Header = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 text-foreground"
+            className="md:hidden p-2 text-foreground rounded-lg hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
+            aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
           >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMenuOpen ? <X className="w-6 h-6" aria-hidden="true" /> : <Menu className="w-6 h-6" aria-hidden="true" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-card border-t border-border">
-          <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
+        <nav
+          id="mobile-menu"
+          className="md:hidden bg-card border-t border-border"
+          aria-label="Mobile navigation"
+        >
+          <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
             {/* Mobile Services Section */}
             <div className="space-y-2">
               <span className="text-sm font-semibold text-foreground">Services</span>
@@ -140,8 +147,8 @@ const Header = () => {
                 Get Started
               </Button>
             </Link>
-          </nav>
-        </div>
+          </div>
+        </nav>
       )}
     </header>
   );

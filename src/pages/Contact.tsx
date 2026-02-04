@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import SkipToContent from '@/components/SkipToContent';
 import {
   budgetOptions,
   timelineOptions,
@@ -212,8 +213,9 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SkipToContent />
       <Header />
-      <main className="pt-20">
+      <main id="main-content" className="pt-20">
         {/* Hero Section */}
         <section className="py-20 bg-gradient-to-b from-primary/5 to-transparent">
           <div className="container mx-auto px-4">
