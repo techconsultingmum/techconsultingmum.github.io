@@ -21,6 +21,11 @@ interface ContactEmailRequest {
   company?: string;
   message: string;
   formType: string;
+  budget?: string;
+  timeline?: string;
+  serviceInterest?: string;
+  problemStatement?: string;
+  website?: string; // Honeypot field - should be empty
 }
 
 // Input validation functions
@@ -47,9 +52,16 @@ function sanitizeHtml(str: string): string {
 function validateAndSanitizeInput(data: ContactEmailRequest): { 
   valid: boolean; 
   errors: string[]; 
-  sanitized: ContactEmailRequest 
+  sanitized: ContactEmailRequest;
+  isBot: boolean;
 } {
   const errors: string[] = [];
+  
+  // Honeypot check - if website field is filled, it's likely a bot
+  if (data.website && data.website.trim().length > 0) {
+    console.warn("Honeypot triggered - likely bot submission");
+    return { valid: false, errors: ["Invalid submission"], sanitized: data, isBot: true };
+  }
   
   // Validate required fields
   if (!data.name || typeof data.name !== 'string') {
@@ -85,6 +97,22 @@ function validateAndSanitizeInput(data: ContactEmailRequest): {
     errors.push("Company name must be less than 100 characters");
   }
   
+  if (data.budget && (typeof data.budget !== 'string' || data.budget.length > 50)) {
+    errors.push("Budget selection is invalid");
+  }
+  
+  if (data.timeline && (typeof data.timeline !== 'string' || data.timeline.length > 50)) {
+    errors.push("Timeline selection is invalid");
+  }
+  
+  if (data.serviceInterest && (typeof data.serviceInterest !== 'string' || data.serviceInterest.length > 100)) {
+    errors.push("Service interest is invalid");
+  }
+  
+  if (data.problemStatement && (typeof data.problemStatement !== 'string' || data.problemStatement.length > 1000)) {
+    errors.push("Problem statement must be less than 1000 characters");
+  }
+  
   // Sanitize all inputs for HTML email rendering
   const sanitized: ContactEmailRequest = {
     name: sanitizeHtml((data.name || '').trim().slice(0, 100)),
@@ -93,9 +121,13 @@ function validateAndSanitizeInput(data: ContactEmailRequest): {
     company: data.company ? sanitizeHtml(data.company.trim().slice(0, 100)) : undefined,
     message: sanitizeHtml((data.message || '').trim().slice(0, 5000)),
     formType: sanitizeHtml((data.formType || '').trim().slice(0, 50)),
+    budget: data.budget ? sanitizeHtml(data.budget.trim().slice(0, 50)) : undefined,
+    timeline: data.timeline ? sanitizeHtml(data.timeline.trim().slice(0, 50)) : undefined,
+    serviceInterest: data.serviceInterest ? sanitizeHtml(data.serviceInterest.trim().slice(0, 100)) : undefined,
+    problemStatement: data.problemStatement ? sanitizeHtml(data.problemStatement.trim().slice(0, 1000)) : undefined,
   };
   
-  return { valid: errors.length === 0, errors, sanitized };
+  return { valid: errors.length === 0, errors, sanitized, isBot: false };
 }
 
 function checkRateLimit(clientIp: string): boolean {
@@ -143,7 +175,15 @@ const handler = async (req: Request): Promise<Response> => {
     const rawData = await req.json();
     
     // Validate and sanitize input
-    const { valid, errors, sanitized } = validateAndSanitizeInput(rawData);
+    const { valid, errors, sanitized, isBot } = validateAndSanitizeInput(rawData);
+    
+    // Silently accept but don't process bot submissions (honeypot)
+    if (isBot) {
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
     
     if (!valid) {
       console.warn("Validation failed:", errors);
@@ -156,7 +196,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
     
-    const { name, email, phone, company, message, formType } = sanitized;
+    const { name, email, phone, company, message, formType, budget, timeline, serviceInterest, problemStatement } = sanitized;
 
     console.log("Received contact form submission:", { 
       name: name.slice(0, 20) + "...", 
@@ -175,6 +215,10 @@ const handler = async (req: Request): Promise<Response> => {
         <p><strong>Email:</strong> ${email}</p>
         ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ''}
         ${company ? `<p><strong>Company:</strong> ${company}</p>` : ''}
+        ${budget ? `<p><strong>Budget:</strong> ${budget}</p>` : ''}
+        ${timeline ? `<p><strong>Timeline:</strong> ${timeline}</p>` : ''}
+        ${serviceInterest ? `<p><strong>Service Interest:</strong> ${serviceInterest}</p>` : ''}
+        ${problemStatement ? `<p><strong>Problem Statement:</strong></p><p>${problemStatement}</p>` : ''}
         <p><strong>Message:</strong></p>
         <p>${message}</p>
         <hr>

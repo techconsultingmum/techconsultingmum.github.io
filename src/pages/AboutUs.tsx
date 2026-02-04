@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Bot, Target, Users, Award, Lightbulb, Heart, ArrowRight } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import SkipToContent from '@/components/SkipToContent';
 
 const values = [
   {
@@ -62,8 +63,9 @@ const milestones = [
 const AboutUs = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SkipToContent />
       <Header />
-      <main className="pt-20">
+      <main id="main-content" className="pt-20">
         {/* Hero Section */}
         <section className="py-20 bg-gradient-to-b from-primary/5 to-transparent">
           <div className="container mx-auto px-4">

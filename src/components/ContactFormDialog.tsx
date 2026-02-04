@@ -45,6 +45,7 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
   const [formData, setFormData] = useState(initialFormData);
+  const [honeypot, setHoneypot] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -72,6 +73,7 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
   const resetForm = () => {
     setFormData(initialFormData);
     setErrors({});
+    setHoneypot('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -159,8 +161,13 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
           email: formData.email.trim(),
           phone: formData.phone.trim() || undefined,
           company: formData.company.trim() || undefined,
+          budget: budgetLabel,
+          timeline: timelineLabel,
+          serviceInterest: serviceLabel || undefined,
+          problemStatement: formData.problemStatement.trim() || undefined,
           message: fullMessage,
           formType,
+          website: honeypot, // Honeypot field for bot detection
         },
       });
 
@@ -358,9 +365,9 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
             </>
           )}
           <div className="space-y-2">
-            <Label htmlFor="message">{isConsultationForm ? 'Additional Details' : 'Message *'}</Label>
+            <Label htmlFor="dialog-message">{isConsultationForm ? 'Additional Details' : 'Message *'}</Label>
             <Textarea
-              id="message"
+              id="dialog-message"
               name="message"
               value={formData.message}
               onChange={handleChange}
@@ -368,6 +375,20 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
               rows={isConsultationForm ? 2 : 4}
               required={!isConsultationForm}
               maxLength={1000}
+            />
+          </div>
+          
+          {/* Honeypot field - hidden from users, visible to bots */}
+          <div className="absolute -left-[9999px]" aria-hidden="true">
+            <label htmlFor="website-field">Website</label>
+            <input
+              type="text"
+              id="website-field"
+              name="website"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
             />
           </div>
           

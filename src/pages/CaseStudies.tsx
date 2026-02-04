@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import ContactFormDialog from '@/components/ContactFormDialog';
+import ImageWithLoading from '@/components/ui/image-with-loading';
+import SkipToContent from '@/components/SkipToContent';
 
 const caseStudies = [
   {
@@ -102,8 +104,10 @@ const caseStudies = [
 const CaseStudies = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SkipToContent />
       <Header />
       
+      <main id="main-content">
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4">
         <div className="container mx-auto text-center">
@@ -140,13 +144,11 @@ const CaseStudies = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {caseStudies.map((study) => (
               <Card key={study.id} className="overflow-hidden bg-card/50 border-border/50 hover:border-primary/30 transition-all duration-300 group">
-                <div className="aspect-video overflow-hidden">
-                  <img 
-                    src={study.image} 
-                    alt={study.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
+                <ImageWithLoading 
+                  src={study.image} 
+                  alt={`${study.title} - ${study.client} case study`}
+                  className="aspect-video"
+                />
                 <CardHeader>
                   <div className="flex flex-wrap gap-2 mb-3">
                     <Badge variant="secondary">{study.industry}</Badge>
@@ -185,7 +187,7 @@ const CaseStudies = () => {
           </div>
         </div>
       </section>
-
+      </main>
       {/* CTA Section */}
       {/* CTA Section */}
       <section className="py-20 px-4">

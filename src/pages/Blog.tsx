@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Calendar, Clock, ArrowRight, User, Bot, Brain, Shield, Code, TrendingUp, Sparkles, Loader2, CheckCircle } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import SkipToContent from '@/components/SkipToContent';
 import { useToast } from '@/hooks/use-toast';
 import { newsletterSchema } from '@/lib/validations';
 import { WEBHOOK_URL } from '@/lib/form-config';
@@ -146,8 +147,10 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SkipToContent />
       <Header />
       
+      <main id="main-content">
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4 relative overflow-hidden">
         {/* Background decoration */}
@@ -369,6 +372,7 @@ const Blog = () => {
           </Card>
         </div>
       </section>
+      </main>
 
       <Footer />
     </div>
