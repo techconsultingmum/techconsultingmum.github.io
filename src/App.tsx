@@ -1,8 +1,9 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+ import { Toaster } from "@/components/ui/toaster";
+ import { Toaster as Sonner } from "@/components/ui/sonner";
+ import { TooltipProvider } from "@/components/ui/tooltip";
+ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+ import { BrowserRouter, Routes, Route } from "react-router-dom";
+ import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import CaseStudies from "./pages/CaseStudies";
 import GetStarted from "./pages/GetStarted";
@@ -20,40 +21,47 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import ApiReference from "./pages/ApiReference";
 import Documentation from "./pages/Documentation";
-import CookieConsent from "./components/CookieConsent";
+ import CookieConsent from "./components/CookieConsent";
+ import ScrollToTop from "./components/ScrollToTop";
+ import ErrorBoundary from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/case-studies" element={<CaseStudies />} />
-          <Route path="/get-started" element={<GetStarted />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/careers" element={<Careers />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:slug" element={<BlogArticle />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-of-service" element={<TermsOfService />} />
-          <Route path="/api-reference" element={<ApiReference />} />
-          <Route path="/documentation" element={<Documentation />} />
-          <Route path="/services/agent-development" element={<AgentDevelopment />} />
-          <Route path="/services/multi-agent-systems" element={<MultiAgentSystems />} />
-          <Route path="/services/ai-integration" element={<AIIntegration />} />
-          <Route path="/services/strategy-consulting" element={<StrategyConsulting />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <CookieConsent />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+ const App = () => (
+   <HelmetProvider>
+     <QueryClientProvider client={queryClient}>
+       <TooltipProvider>
+         <Toaster />
+         <Sonner />
+         <BrowserRouter>
+           <ErrorBoundary>
+             <Routes>
+               <Route path="/" element={<Index />} />
+               <Route path="/case-studies" element={<CaseStudies />} />
+               <Route path="/get-started" element={<GetStarted />} />
+               <Route path="/about" element={<AboutUs />} />
+               <Route path="/careers" element={<Careers />} />
+               <Route path="/contact" element={<Contact />} />
+               <Route path="/blog" element={<Blog />} />
+               <Route path="/blog/:slug" element={<BlogArticle />} />
+               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+               <Route path="/terms-of-service" element={<TermsOfService />} />
+               <Route path="/api-reference" element={<ApiReference />} />
+               <Route path="/documentation" element={<Documentation />} />
+               <Route path="/services/agent-development" element={<AgentDevelopment />} />
+               <Route path="/services/multi-agent-systems" element={<MultiAgentSystems />} />
+               <Route path="/services/ai-integration" element={<AIIntegration />} />
+               <Route path="/services/strategy-consulting" element={<StrategyConsulting />} />
+               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+               <Route path="*" element={<NotFound />} />
+             </Routes>
+             <CookieConsent />
+             <ScrollToTop />
+           </ErrorBoundary>
+         </BrowserRouter>
+       </TooltipProvider>
+     </QueryClientProvider>
+   </HelmetProvider>
+ );
 
 export default App;

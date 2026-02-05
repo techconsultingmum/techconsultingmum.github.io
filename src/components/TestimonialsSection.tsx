@@ -1,4 +1,6 @@
 import { Quote } from 'lucide-react';
+ import { motion } from 'framer-motion';
+ import AnimatedSection from './AnimatedSection';
 
 const testimonials = [
   {
@@ -26,7 +28,7 @@ const TestimonialsSection = () => {
     <section id="testimonials" className="py-24 relative bg-card/30">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+         <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-primary font-semibold text-sm uppercase tracking-wider">Testimonials</span>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mt-4 mb-6">
             Trusted by Innovative Teams
@@ -34,13 +36,17 @@ const TestimonialsSection = () => {
           <p className="text-muted-foreground text-lg">
             Hear from leaders who've transformed their businesses with our agentic AI solutions.
           </p>
-        </div>
+         </AnimatedSection>
 
         {/* Testimonials Grid */}
         <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {testimonials.map((testimonial, index) => (
-            <div
+             <motion.div
               key={testimonial.author}
+               initial={{ opacity: 0, y: 40 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true, margin: '-50px' }}
+               transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
               className="p-8 rounded-2xl bg-glass border border-border/50 hover:border-primary/30 transition-all duration-500"
             >
               <Quote className="w-10 h-10 text-primary/30 mb-6" />
@@ -53,7 +59,7 @@ const TestimonialsSection = () => {
                   {testimonial.role}, {testimonial.company}
                 </div>
               </div>
-            </div>
+             </motion.div>
           ))}
         </div>
       </div>

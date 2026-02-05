@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Check, ArrowRight, Bot, Zap, Shield, Users } from 'lucide-react';
-import Header from '@/components/Header';
+ import Header from '@/components/Header';
+ import SEOHead from '@/components/SEOHead';
 import Footer from '@/components/Footer';
 import ContactFormDialog from '@/components/ContactFormDialog';
 import SkipToContent from '@/components/SkipToContent';
@@ -115,7 +116,12 @@ const steps = [
 const GetStarted = () => {
   return (
     <div className="min-h-screen bg-background">
-      <SkipToContent />
+       <SEOHead 
+         title="Get Started"
+         description="Transform your business with intelligent AI automation. Choose from flexible pricing plans and start your AI journey today with AgenticAI Lab."
+         canonicalUrl="/get-started"
+       />
+       <SkipToContent />
       <Header />
       <main id="main-content" className="pt-20">
         {/* Hero Section */}

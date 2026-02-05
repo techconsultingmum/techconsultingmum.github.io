@@ -8,6 +8,7 @@ import { Calendar, Clock, ArrowRight, User, Bot, Brain, Shield, Code, TrendingUp
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
+ import SEOHead from '@/components/SEOHead';
 import { useToast } from '@/hooks/use-toast';
 import { newsletterSchema } from '@/lib/validations';
 import { WEBHOOK_URL } from '@/lib/form-config';
@@ -148,6 +149,11 @@ const Blog = () => {
   return (
     <div className="min-h-screen bg-background">
       <SkipToContent />
+       <SEOHead 
+         title="Blog"
+         description="Explore insights on AI agents, automation strategies, and the future of intelligent systems from AgenticAI Lab experts."
+         canonicalUrl="/blog"
+       />
       <Header />
       
       <main id="main-content">

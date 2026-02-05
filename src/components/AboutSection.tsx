@@ -1,4 +1,6 @@
 import { CheckCircle2 } from 'lucide-react';
+ import { motion } from 'framer-motion';
+ import AnimatedSection from './AnimatedSection';
 
 const features = [
   'Deep expertise in LLMs, RAG, and agent frameworks',
@@ -15,7 +17,7 @@ const AboutSection = () => {
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
           {/* Left: Content */}
-          <div>
+           <AnimatedSection animation="slideLeft">
             <span className="text-primary font-semibold text-sm uppercase tracking-wider">Why Choose Us</span>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mt-4 mb-6">
               Trusted by Industry Leaders in AI Innovation
@@ -33,10 +35,10 @@ const AboutSection = () => {
                 </div>
               ))}
             </div>
-          </div>
+           </AnimatedSection>
 
           {/* Right: Visual */}
-          <div className="relative">
+           <AnimatedSection animation="slideRight" delay={0.2} className="relative">
             <div className="aspect-square rounded-3xl bg-gradient-to-br from-primary/20 via-card to-card border border-border/50 p-8 flex items-center justify-center">
               {/* Abstract AI visualization */}
               <div className="relative w-full h-full">
@@ -95,7 +97,7 @@ const AboutSection = () => {
 
             {/* Decorative glow */}
             <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl" />
-          </div>
+           </AnimatedSection>
         </div>
       </div>
     </section>

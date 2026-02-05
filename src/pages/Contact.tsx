@@ -18,6 +18,7 @@ import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
+ import SEOHead from '@/components/SEOHead';
 import {
   budgetOptions,
   timelineOptions,
@@ -214,6 +215,11 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-background">
       <SkipToContent />
+       <SEOHead 
+         title="Contact Us"
+         description="Get in touch with AgenticAI Lab. Schedule a consultation or send us a message about your AI automation needs."
+         canonicalUrl="/contact"
+       />
       <Header />
       <main id="main-content" className="pt-20">
         {/* Hero Section */}

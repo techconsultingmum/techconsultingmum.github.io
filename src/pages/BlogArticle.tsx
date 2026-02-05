@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
 import ContactFormDialog from '@/components/ContactFormDialog';
+ import SEOHead from '@/components/SEOHead';
 
 const blogPosts: Record<string, {
   id: number;
@@ -255,6 +256,17 @@ const BlogArticle = () => {
   return (
     <div className="min-h-screen bg-background">
       <SkipToContent />
+       <SEOHead 
+         title={post.title}
+         description={post.excerpt}
+         canonicalUrl={`/blog/${post.slug}`}
+         ogType="article"
+         article={{
+           publishedTime: post.date,
+           author: post.author,
+           section: post.category,
+         }}
+       />
       <Header />
       
       <main id="main-content" className="pt-24 pb-20">

@@ -5,6 +5,7 @@ import { Home, ArrowLeft, Search } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SkipToContent from "@/components/SkipToContent";
+ import SEOHead from "@/components/SEOHead";
 
 const NotFound = () => {
   const location = useLocation();
@@ -16,6 +17,11 @@ const NotFound = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SkipToContent />
+       <SEOHead 
+         title="Page Not Found"
+         description="The page you're looking for doesn't exist or has been moved."
+         noIndex={true}
+       />
       <Header />
       
       <main id="main-content" className="flex-1 flex items-center justify-center px-4 py-20">
