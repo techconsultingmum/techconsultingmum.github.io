@@ -5,6 +5,7 @@ import { Bot, MapPin, Clock, Briefcase, Heart, Zap, Users, GraduationCap, ArrowR
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
+ import SEOHead from '@/components/SEOHead';
 
 const benefits = [
   {
@@ -78,6 +79,11 @@ const Careers = () => {
   return (
     <div className="min-h-screen bg-background">
       <SkipToContent />
+       <SEOHead 
+         title="Careers"
+         description="Join AgenticAI Lab and help build the future of autonomous AI systems. Explore open positions and grow your career."
+         canonicalUrl="/careers"
+       />
       <Header />
       <main id="main-content" className="pt-20">
         {/* Hero Section */}

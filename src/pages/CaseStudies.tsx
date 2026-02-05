@@ -7,6 +7,7 @@ import { ArrowRight } from 'lucide-react';
 import ContactFormDialog from '@/components/ContactFormDialog';
 import ImageWithLoading from '@/components/ui/image-with-loading';
 import SkipToContent from '@/components/SkipToContent';
+ import SEOHead from '@/components/SEOHead';
 
 const caseStudies = [
   {
@@ -105,6 +106,11 @@ const CaseStudies = () => {
   return (
     <div className="min-h-screen bg-background">
       <SkipToContent />
+       <SEOHead 
+         title="Case Studies"
+         description="See how AgenticAI Lab has helped businesses transform with autonomous AI agents. Real results from real clients."
+         canonicalUrl="/case-studies"
+       />
       <Header />
       
       <main id="main-content">

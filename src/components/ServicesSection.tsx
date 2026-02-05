@@ -1,5 +1,7 @@
 import { Bot, Brain, Cog, LineChart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+ import { motion } from 'framer-motion';
+ import AnimatedSection from './AnimatedSection';
 
 const services = [
   {
@@ -33,7 +35,7 @@ const ServicesSection = () => {
     <section id="services" className="py-24 relative">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+         <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-primary font-semibold text-sm uppercase tracking-wider">Our Services</span>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mt-4 mb-6">
             End-to-End Agentic AI Solutions
@@ -41,27 +43,33 @@ const ServicesSection = () => {
           <p className="text-muted-foreground text-lg">
             From strategy to deployment, we deliver autonomous AI systems that transform how your business operates.
           </p>
-        </div>
+         </AnimatedSection>
 
         {/* Services Grid */}
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           {services.map((service, index) => (
-            <Link
+             <motion.div
               key={service.title}
-              to={service.href}
-              className="group p-8 rounded-2xl bg-glass border border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-glow block"
-              style={{ animationDelay: `${index * 0.1}s` }}
+               initial={{ opacity: 0, y: 40 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true, margin: '-50px' }}
+               transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors duration-300">
-                <service.icon className="w-7 h-7 text-primary" />
-              </div>
-              <h3 className="font-display text-xl font-semibold mb-4 text-foreground">
-                {service.title}
-              </h3>
-              <p className="text-muted-foreground leading-relaxed">
-                {service.description}
-              </p>
-            </Link>
+               <Link
+                 to={service.href}
+                 className="group p-8 rounded-2xl bg-glass border border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-glow block h-full"
+               >
+                 <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors duration-300">
+                   <service.icon className="w-7 h-7 text-primary" />
+                 </div>
+                 <h3 className="font-display text-xl font-semibold mb-4 text-foreground">
+                   {service.title}
+                 </h3>
+                 <p className="text-muted-foreground leading-relaxed">
+                   {service.description}
+                 </p>
+               </Link>
+             </motion.div>
           ))}
         </div>
       </div>

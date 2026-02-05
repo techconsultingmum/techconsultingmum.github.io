@@ -1,4 +1,5 @@
-import Header from '@/components/Header';
+ import Header from '@/components/Header';
+ import SEOHead from '@/components/SEOHead';
 import HeroSection from '@/components/HeroSection';
 import ServicesSection from '@/components/ServicesSection';
 import ProcessSection from '@/components/ProcessSection';
@@ -11,7 +12,11 @@ import SkipToContent from '@/components/SkipToContent';
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
-      <SkipToContent />
+       <SEOHead 
+         canonicalUrl="/"
+         description="Transform your business with autonomous AI agents that think, learn, and act. AgenticAI Lab designs and deploys cutting-edge agentic systems tailored to your unique challenges."
+       />
+       <SkipToContent />
       <Header />
       <main id="main-content">
         <HeroSection />

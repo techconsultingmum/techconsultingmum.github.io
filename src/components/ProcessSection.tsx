@@ -1,4 +1,6 @@
 import { Search, Lightbulb, Code2, Rocket } from 'lucide-react';
+ import { motion } from 'framer-motion';
+ import AnimatedSection from './AnimatedSection';
 
 const steps = [
   {
@@ -32,7 +34,7 @@ const ProcessSection = () => {
     <section id="process" className="py-24 relative bg-card/30">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+         <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-primary font-semibold text-sm uppercase tracking-wider">Our Process</span>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mt-4 mb-6">
             From Concept to Autonomous Operation
@@ -40,14 +42,18 @@ const ProcessSection = () => {
           <p className="text-muted-foreground text-lg">
             A proven methodology to deliver AI agents that exceed expectations.
           </p>
-        </div>
+         </AnimatedSection>
 
         {/* Process Steps */}
         <div className="max-w-4xl mx-auto">
           {steps.map((step, index) => (
-            <div
+             <motion.div
               key={step.number}
-              className="flex gap-6 md:gap-10 mb-12 last:mb-0"
+               initial={{ opacity: 0, x: -30 }}
+               whileInView={{ opacity: 1, x: 0 }}
+               viewport={{ once: true, margin: '-50px' }}
+               transition={{ duration: 0.6, delay: index * 0.15, ease: [0.22, 1, 0.36, 1] }}
+               className="flex gap-6 md:gap-10 mb-12 last:mb-0"
             >
               {/* Left: Number & Line */}
               <div className="flex flex-col items-center">
@@ -69,7 +75,7 @@ const ProcessSection = () => {
                   {step.description}
                 </p>
               </div>
-            </div>
+             </motion.div>
           ))}
         </div>
       </div>

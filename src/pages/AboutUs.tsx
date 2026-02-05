@@ -5,6 +5,7 @@ import { Bot, Target, Users, Award, Lightbulb, Heart, ArrowRight } from 'lucide-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
+ import SEOHead from '@/components/SEOHead';
 
 const values = [
   {
@@ -64,6 +65,11 @@ const AboutUs = () => {
   return (
     <div className="min-h-screen bg-background">
       <SkipToContent />
+       <SEOHead 
+         title="About Us"
+         description="Meet the team behind AgenticAI Lab. We combine deep research expertise with hands-on engineering to deliver AI agents that work in production."
+         canonicalUrl="/about"
+       />
       <Header />
       <main id="main-content" className="pt-20">
         {/* Hero Section */}

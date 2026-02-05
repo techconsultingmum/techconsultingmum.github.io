@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
+ import { motion } from 'framer-motion';
 import ContactFormDialog from './ContactFormDialog';
 
 const HeroSection = () => {
@@ -23,26 +24,46 @@ const HeroSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8 animate-fade-up">
+           <motion.div 
+             initial={{ opacity: 0, y: 20 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8"
+           >
             <Sparkles className="w-4 h-4 text-primary" />
             <span className="text-sm font-medium text-primary">AI-Powered Transformation</span>
-          </div>
+           </motion.div>
 
           {/* Headline */}
-          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 animate-fade-up" style={{ animationDelay: '0.1s' }}>
+           <motion.h1 
+             initial={{ opacity: 0, y: 30 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+             className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6"
+           >
             Build Intelligent
             <br />
             <span className="text-gradient">Agentic AI Solutions</span>
-          </h1>
+           </motion.h1>
 
           {/* Subheadline */}
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-up" style={{ animationDelay: '0.2s' }}>
+           <motion.p 
+             initial={{ opacity: 0, y: 30 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
+           >
             Transform your business with autonomous AI agents that think, learn, and act. 
             We design and deploy cutting-edge agentic systems tailored to your unique challenges.
-          </p>
+           </motion.p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up" style={{ animationDelay: '0.3s' }}>
+           <motion.div 
+             initial={{ opacity: 0, y: 30 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+             className="flex flex-col sm:flex-row items-center justify-center gap-4"
+           >
             <ContactFormDialog formType="Schedule Consultation">
               <Button variant="hero" size="xl">
                 Schedule Consultation
@@ -54,10 +75,15 @@ const HeroSection = () => {
                 View Case Studies
               </Button>
             </Link>
-          </div>
+           </motion.div>
 
           {/* Stats */}
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 animate-fade-up" style={{ animationDelay: '0.4s' }}>
+           <motion.div 
+             initial={{ opacity: 0, y: 30 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+             className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8"
+           >
             {[
               { value: '150+', label: 'AI Agents Deployed' },
               { value: '98%', label: 'Client Satisfaction' },
@@ -71,7 +97,7 @@ const HeroSection = () => {
                 <div className="text-sm text-muted-foreground">{stat.label}</div>
               </div>
             ))}
-          </div>
+           </motion.div>
         </div>
       </div>
 
