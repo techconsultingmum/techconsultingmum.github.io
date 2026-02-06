@@ -25,20 +25,20 @@ import {
   budgetOptions,
   timelineOptions,
   serviceOptions,
+  industryOptions,
   getBudgetLabel,
   getTimelineLabel,
   getServiceLabel,
+  getIndustryLabel,
   initialFormData,
-  type FormType,
 } from '@/lib/form-config';
 import { contactFormSchema } from '@/lib/validations';
 
 interface ContactFormDialogProps {
   children: React.ReactNode;
-  formType: FormType;
 }
 
-const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
+const ContactFormDialog = ({ children }: ContactFormDialogProps) => {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -97,66 +97,50 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
       return;
     }
 
-    // Validate budget and timeline for consultation forms
-    if (formType !== 'Contact Us') {
-      if (!formData.budget) {
-        setErrors((prev) => ({ ...prev, budget: 'Please select your estimated budget' }));
-        return;
-      }
-      if (!formData.timeline) {
-        setErrors((prev) => ({ ...prev, timeline: 'Please select your project timeline' }));
-        return;
-      }
+    // Validate budget and timeline
+    if (!formData.budget) {
+      setErrors((prev) => ({ ...prev, budget: 'Please select your estimated budget' }));
+      return;
+    }
+    if (!formData.timeline) {
+      setErrors((prev) => ({ ...prev, timeline: 'Please select your project timeline' }));
+      return;
     }
 
     setIsSubmitting(true);
 
     try {
       // Get labels for the selected values
-      const budgetLabel = budgetOptions.find(o => o.value === formData.budget)?.label || formData.budget;
-      const timelineLabel = timelineOptions.find(o => o.value === formData.timeline)?.label || formData.timeline;
-      const serviceLabel = serviceOptions.find(o => o.value === formData.serviceInterest)?.label || formData.serviceInterest;
-
-      // Prepare webhook payload
-      const webhookPayload = {
-        name: formData.name.trim(),
-        email: formData.email.trim().toLowerCase(),
-        phone: formData.phone.trim() || null,
-        company: formData.company.trim() || null,
-        budget: budgetLabel,
-        timeline: timelineLabel,
-        serviceInterest: serviceLabel || null,
-        problemStatement: formData.problemStatement.trim() || null,
-        message: formData.message.trim() || null,
-        formType,
-        submittedAt: new Date().toISOString(),
-        source: 'agenticailab.in',
-      };
-
-      // Webhook is now handled server-side by the edge function for security
+      const budgetLabel = getBudgetLabel(formData.budget);
+      const timelineLabel = getTimelineLabel(formData.timeline);
+      const serviceLabel = getServiceLabel(formData.serviceInterest);
+      const industryLabel = getIndustryLabel(formData.industry);
 
       // Prepare email message
       const fullMessage = [
-        formData.message ? `Message: ${formData.message}` : '',
         formData.problemStatement ? `Challenge: ${formData.problemStatement}` : '',
         `Budget: ${budgetLabel}`,
         `Timeline: ${timelineLabel}`,
         serviceLabel ? `Service Interest: ${serviceLabel}` : '',
+        formData.jobTitle ? `Job Title: ${formData.jobTitle}` : '',
+        industryLabel ? `Industry: ${industryLabel}` : '',
       ].filter(Boolean).join('\n\n');
 
-      // Send confirmation email via edge function
+      // Send via edge function (webhook handled server-side)
       const { error } = await supabase.functions.invoke('send-contact-email', {
         body: {
           name: formData.name.trim(),
           email: formData.email.trim(),
           phone: formData.phone.trim() || undefined,
           company: formData.company.trim() || undefined,
+          jobTitle: formData.jobTitle.trim() || undefined,
+          industry: industryLabel || undefined,
           budget: budgetLabel,
           timeline: timelineLabel,
           serviceInterest: serviceLabel || undefined,
           problemStatement: formData.problemStatement.trim() || undefined,
           message: fullMessage,
-          formType,
+          formType: 'Talk to AgenticAI Lab',
           website: honeypot, // Honeypot field for bot detection
         },
       });
@@ -170,7 +154,7 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
 
       resetForm();
       setOpen(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error sending message:', error);
       toast({
         title: "Error",
@@ -181,8 +165,6 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
       setIsSubmitting(false);
     }
   };
-
-  const isConsultationForm = formType !== 'Contact Us';
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -268,102 +250,122 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
             </div>
           </div>
 
-          {isConsultationForm && (
-            <>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="dialog-budget">Estimated Budget *</Label>
-                  <Select
-                    value={formData.budget}
-                    onValueChange={(value) => handleSelectChange('budget', value)}
-                  >
-                    <SelectTrigger 
-                      className={`bg-background ${errors.budget ? 'border-destructive' : ''}`}
-                      aria-invalid={!!errors.budget}
-                    >
-                      <SelectValue placeholder="Select budget" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-popover border-border z-50">
-                      {budgetOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.budget && (
-                    <p className="text-sm text-destructive">{errors.budget}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="dialog-timeline">Project Timeline *</Label>
-                  <Select
-                    value={formData.timeline}
-                    onValueChange={(value) => handleSelectChange('timeline', value)}
-                  >
-                    <SelectTrigger 
-                      className={`bg-background ${errors.timeline ? 'border-destructive' : ''}`}
-                      aria-invalid={!!errors.timeline}
-                    >
-                      <SelectValue placeholder="Select timeline" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-popover border-border z-50">
-                      {timelineOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.timeline && (
-                    <p className="text-sm text-destructive">{errors.timeline}</p>
-                  )}
-                </div>
-              </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="dialog-jobTitle">Job Title / Role</Label>
+              <Input
+                id="dialog-jobTitle"
+                name="jobTitle"
+                value={formData.jobTitle}
+                onChange={handleChange}
+                placeholder="e.g. CTO, Product Manager"
+                maxLength={100}
+                aria-invalid={!!errors.jobTitle}
+                className={errors.jobTitle ? 'border-destructive' : ''}
+              />
+              {errors.jobTitle && (
+                <p className="text-sm text-destructive">{errors.jobTitle}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="dialog-industry">Industry</Label>
+              <Select
+                value={formData.industry}
+                onValueChange={(value) => handleSelectChange('industry', value)}
+              >
+                <SelectTrigger className="bg-background">
+                  <SelectValue placeholder="Select industry" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-border z-50">
+                  {industryOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="dialog-serviceInterest">Service Interested In</Label>
-                <Select
-                  value={formData.serviceInterest}
-                  onValueChange={(value) => handleSelectChange('serviceInterest', value)}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="dialog-budget">Estimated Budget *</Label>
+              <Select
+                value={formData.budget}
+                onValueChange={(value) => handleSelectChange('budget', value)}
+              >
+                <SelectTrigger 
+                  className={`bg-background ${errors.budget ? 'border-destructive' : ''}`}
+                  aria-invalid={!!errors.budget}
                 >
-                  <SelectTrigger className="bg-background">
-                    <SelectValue placeholder="Select service (optional)" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border-border z-50">
-                    {serviceOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  <SelectValue placeholder="Select budget" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-border z-50">
+                  {budgetOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.budget && (
+                <p className="text-sm text-destructive">{errors.budget}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="dialog-timeline">Project Timeline *</Label>
+              <Select
+                value={formData.timeline}
+                onValueChange={(value) => handleSelectChange('timeline', value)}
+              >
+                <SelectTrigger 
+                  className={`bg-background ${errors.timeline ? 'border-destructive' : ''}`}
+                  aria-invalid={!!errors.timeline}
+                >
+                  <SelectValue placeholder="Select timeline" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-border z-50">
+                  {timelineOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.timeline && (
+                <p className="text-sm text-destructive">{errors.timeline}</p>
+              )}
+            </div>
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="dialog-problemStatement">Briefly describe your challenge</Label>
-                <Textarea
-                  id="dialog-problemStatement"
-                  name="problemStatement"
-                  value={formData.problemStatement}
-                  onChange={handleChange}
-                  placeholder="What problem are you looking to solve with AI?"
-                  rows={3}
-                  maxLength={1000}
-                />
-              </div>
-            </>
-          )}
           <div className="space-y-2">
-            <Label htmlFor="dialog-message">{isConsultationForm ? 'Additional Details' : 'Message *'}</Label>
+            <Label htmlFor="dialog-serviceInterest">Service Interested In</Label>
+            <Select
+              value={formData.serviceInterest}
+              onValueChange={(value) => handleSelectChange('serviceInterest', value)}
+            >
+              <SelectTrigger className="bg-background">
+                <SelectValue placeholder="Select service (optional)" />
+              </SelectTrigger>
+              <SelectContent className="bg-popover border-border z-50">
+                {serviceOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="dialog-problemStatement">Briefly describe your challenge</Label>
             <Textarea
-              id="dialog-message"
-              name="message"
-              value={formData.message}
+              id="dialog-problemStatement"
+              name="problemStatement"
+              value={formData.problemStatement}
               onChange={handleChange}
-              placeholder={isConsultationForm ? "Any other details you'd like to share..." : "Tell us about your project or inquiry..."}
-              rows={isConsultationForm ? 2 : 4}
-              required={!isConsultationForm}
+              placeholder="What problem are you looking to solve with AI?"
+              rows={3}
               maxLength={1000}
             />
           </div>

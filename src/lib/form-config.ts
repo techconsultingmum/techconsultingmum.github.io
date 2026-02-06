@@ -23,6 +23,19 @@ export const serviceOptions = [
   { value: 'custom-ai', label: 'Custom AI Development' },
 ] as const;
 
+export const industryOptions = [
+  { value: 'technology', label: 'Technology' },
+  { value: 'finance', label: 'Finance & Banking' },
+  { value: 'healthcare', label: 'Healthcare' },
+  { value: 'retail', label: 'Retail & E-commerce' },
+  { value: 'manufacturing', label: 'Manufacturing' },
+  { value: 'education', label: 'Education' },
+  { value: 'real-estate', label: 'Real Estate' },
+  { value: 'legal', label: 'Legal' },
+  { value: 'marketing', label: 'Marketing & Advertising' },
+  { value: 'other', label: 'Other' },
+] as const;
+
 // Webhook URL removed from client-side code for security
 // All webhook calls now go through the edge function
 
@@ -36,19 +49,23 @@ export const getTimelineLabel = (value: string): string =>
 export const getServiceLabel = (value: string): string => 
   serviceOptions.find(o => o.value === value)?.label || value;
 
+export const getIndustryLabel = (value: string): string => 
+  industryOptions.find(o => o.value === value)?.label || value;
+
 // Form types
-export type FormType = 'Schedule Consultation' | 'Book Free Consultation' | 'Contact Us';
+export type FormType = 'Talk to AgenticAI Lab' | 'Newsletter Subscription';
 
 export interface ContactFormData {
   name: string;
   email: string;
   phone: string;
   company: string;
+  jobTitle: string;
+  industry: string;
   budget: string;
   timeline: string;
   serviceInterest: string;
   problemStatement: string;
-  message: string;
 }
 
 export const initialFormData: ContactFormData = {
@@ -56,9 +73,10 @@ export const initialFormData: ContactFormData = {
   email: '',
   phone: '',
   company: '',
+  jobTitle: '',
+  industry: '',
   budget: '',
   timeline: '',
   serviceInterest: '',
   problemStatement: '',
-  message: '',
 };
