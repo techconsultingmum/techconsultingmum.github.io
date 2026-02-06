@@ -3,11 +3,35 @@ import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+// Webhook URL stored server-side only
+const WEBHOOK_URL = Deno.env.get("N8N_WEBHOOK_URL") || "https://mogim.app.n8n.cloud/webhook/agenticai-lead-form";
+
+// Allowed origins for CORS - restrict to known domains
+const ALLOWED_ORIGINS = [
+  "https://agenticailab.in",
+  "https://www.agenticailab.in",
+  "https://agenticailab.com",
+  "https://www.agenticailab.com",
+  "http://localhost:8080",
+  "http://localhost:5173",
+  "http://localhost:3000",
+];
+
+// Include Lovable preview domains
+const LOVABLE_PREVIEW_PATTERN = /^https:\/\/[a-z0-9-]+--[a-z0-9-]+\.lovable\.app$/;
+
+function getCorsHeaders(origin: string | null): Record<string, string> {
+  const allowedOrigin = origin && (
+    ALLOWED_ORIGINS.includes(origin) || 
+    LOVABLE_PREVIEW_PATTERN.test(origin)
+  ) ? origin : ALLOWED_ORIGINS[0];
+  
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+}
 
 // Simple in-memory rate limiting (resets on function cold start)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -148,7 +172,31 @@ function checkRateLimit(clientIp: string): boolean {
   return true;
 }
 
+async function sendToWebhook(payload: Record<string, unknown>): Promise<void> {
+  try {
+    const response = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    
+    if (!response.ok) {
+      console.warn(`Webhook returned status ${response.status}`);
+    } else {
+      console.log("Webhook notification sent successfully");
+    }
+  } catch (error) {
+    // Fire and forget - don't fail the main request
+    console.error("Webhook error (non-blocking):", error);
+  }
+}
+
 const handler = async (req: Request): Promise<Response> => {
+  const origin = req.headers.get("origin");
+  const corsHeaders = getCorsHeaders(origin);
+
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -204,6 +252,22 @@ const handler = async (req: Request): Promise<Response> => {
       formType 
     });
 
+    // Send to n8n webhook (fire and forget)
+    sendToWebhook({
+      name,
+      email,
+      phone: phone || null,
+      company: company || null,
+      budget: budget || null,
+      timeline: timeline || null,
+      serviceInterest: serviceInterest || null,
+      problemStatement: problemStatement || null,
+      message,
+      formType,
+      submittedAt: new Date().toISOString(),
+      source: 'agenticailab.in',
+    });
+
     // Send notification email to the business
     const notificationEmail = await resend.emails.send({
       from: "Contact Form <onboarding@resend.dev>",
@@ -253,12 +317,13 @@ const handler = async (req: Request): Promise<Response> => {
         ...corsHeaders,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Log full error details server-side for debugging
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
     console.error("Error in send-contact-email function:", {
-      message: error.message,
-      stack: error.stack,
-      name: error.name,
+      message: errorMessage,
+      stack: errorStack,
     });
     
     // Return generic error message to client - never expose internal details

@@ -11,7 +11,7 @@ import SkipToContent from '@/components/SkipToContent';
  import SEOHead from '@/components/SEOHead';
 import { useToast } from '@/hooks/use-toast';
 import { newsletterSchema } from '@/lib/validations';
-import { WEBHOOK_URL } from '@/lib/form-config';
+import { supabase } from '@/integrations/supabase/client';
 
 const categories = ['All', 'AI Trends', 'Development', 'Case Study', 'Security', 'Tutorials'];
 
@@ -114,19 +114,17 @@ const Blog = () => {
     setIsSubscribing(true);
 
     try {
-      // Send to webhook
-      await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      // Send via edge function (webhook handled server-side)
+      const { error } = await supabase.functions.invoke('send-contact-email', {
+        body: {
+          name: 'Newsletter Subscriber',
           email: email.trim().toLowerCase(),
+          message: 'Newsletter subscription request',
           formType: 'Newsletter Subscription',
-          submittedAt: new Date().toISOString(),
-          source: 'agenticailab.in',
-        }),
+        },
       });
+
+      if (error) throw error;
 
       setIsSubscribed(true);
       setEmail('');

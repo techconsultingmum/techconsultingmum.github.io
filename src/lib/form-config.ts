@@ -23,7 +23,8 @@ export const serviceOptions = [
   { value: 'custom-ai', label: 'Custom AI Development' },
 ] as const;
 
-export const WEBHOOK_URL = 'https://mogim.app.n8n.cloud/webhook/agenticai-lead-form';
+// Webhook URL removed from client-side code for security
+// All webhook calls now go through the edge function
 
 // Helper functions to get labels from values
 export const getBudgetLabel = (value: string): string => 

@@ -25,7 +25,6 @@ import {
   budgetOptions,
   timelineOptions,
   serviceOptions,
-  WEBHOOK_URL,
   getBudgetLabel,
   getTimelineLabel,
   getServiceLabel,
@@ -134,16 +133,7 @@ const ContactFormDialog = ({ children, formType }: ContactFormDialogProps) => {
         source: 'agenticailab.in',
       };
 
-      // Send to webhook (fire and forget - don't block on failure)
-      fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(webhookPayload),
-      }).catch((err) => {
-        console.error('Webhook error (non-blocking):', err);
-      });
+      // Webhook is now handled server-side by the edge function for security
 
       // Prepare email message
       const fullMessage = [

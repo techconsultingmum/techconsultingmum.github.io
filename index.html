@@ -64,7 +64,13 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+    <!-- ElevenLabs ConvAI Widget - pinned to specific version for stability -->
+    <script 
+      src="https://unpkg.com/@elevenlabs/convai-widget-embed@0.0.5/dist/bundle.js" 
+      async 
+      type="text/javascript"
+      crossorigin="anonymous"
+    ></script>
     <elevenlabs-convai agent-id="agent_9701kesa17azf6kafsmjzebj5ecn"></elevenlabs-convai>
   </body>
 </html>
