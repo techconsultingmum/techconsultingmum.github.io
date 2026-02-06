@@ -208,7 +208,7 @@ const GetStarted = () => {
                         </li>
                       ))}
                     </ul>
-                    <ContactFormDialog formType="Schedule Consultation">
+                    <ContactFormDialog>
                       <Button
                         variant={plan.popular ? 'default' : 'outline'}
                         className="w-full"
