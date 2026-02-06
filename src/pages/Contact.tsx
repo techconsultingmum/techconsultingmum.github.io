@@ -160,16 +160,7 @@ const Contact = () => {
         source: 'agenticailab.in',
       };
 
-      // Send to webhook (fire and forget)
-      fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(webhookPayload),
-      }).catch((err) => {
-        console.error('Webhook error (non-blocking):', err);
-      });
+      // Webhook is now handled server-side by the edge function for security
 
       // Prepare email message
       const fullMessage = [
