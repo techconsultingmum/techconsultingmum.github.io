@@ -64,7 +64,7 @@ const HeroSection = () => {
              transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
              className="flex flex-col sm:flex-row items-center justify-center gap-4"
            >
-            <ContactFormDialog formType="Schedule Consultation">
+            <ContactFormDialog>
               <Button variant="hero" size="xl">
                 Schedule Consultation
                 <ArrowRight className="w-5 h-5" />

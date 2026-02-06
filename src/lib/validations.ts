@@ -29,6 +29,17 @@ export const contactFormSchema = z.object({
     .max(100, { message: 'Company must be less than 100 characters' })
     .optional()
     .or(z.literal('')),
+  jobTitle: z
+    .string()
+    .trim()
+    .max(100, { message: 'Job title must be less than 100 characters' })
+    .optional()
+    .or(z.literal('')),
+  industry: z
+    .string()
+    .max(100, { message: 'Industry selection is invalid' })
+    .optional()
+    .or(z.literal('')),
   budget: z.string().optional(),
   timeline: z.string().optional(),
   serviceInterest: z.string().optional(),
@@ -36,12 +47,6 @@ export const contactFormSchema = z.object({
     .string()
     .trim()
     .max(1000, { message: 'Description must be less than 1000 characters' })
-    .optional()
-    .or(z.literal('')),
-  message: z
-    .string()
-    .trim()
-    .max(1000, { message: 'Message must be less than 1000 characters' })
     .optional()
     .or(z.literal('')),
 });
@@ -53,12 +58,6 @@ export const consultationFormSchema = contactFormSchema.refine(
 ).refine(
   (data) => data.timeline && data.timeline.length > 0,
   { message: 'Please select your project timeline', path: ['timeline'] }
-);
-
-// Simple contact form requires message
-export const simpleContactFormSchema = contactFormSchema.refine(
-  (data) => data.message && data.message.trim().length > 0,
-  { message: 'Message is required', path: ['message'] }
 );
 
 // Newsletter subscription schema

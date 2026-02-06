@@ -18,11 +18,16 @@ import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
- import SEOHead from '@/components/SEOHead';
+import SEOHead from '@/components/SEOHead';
 import {
   budgetOptions,
   timelineOptions,
   serviceOptions,
+  industryOptions,
+  getBudgetLabel,
+  getTimelineLabel,
+  getServiceLabel,
+  getIndustryLabel,
   initialFormData,
 } from '@/lib/form-config';
 import { contactFormSchema } from '@/lib/validations';
@@ -77,6 +82,7 @@ const Contact = () => {
   const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [honeypot, setHoneypot] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -102,6 +108,7 @@ const Contact = () => {
   const resetForm = () => {
     setFormData(initialFormData);
     setErrors({});
+    setHoneypot('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -140,35 +147,19 @@ const Contact = () => {
 
     try {
       // Get labels for the selected values
-      const budgetLabel = budgetOptions.find(o => o.value === formData.budget)?.label || formData.budget;
-      const timelineLabel = timelineOptions.find(o => o.value === formData.timeline)?.label || formData.timeline;
-      const serviceLabel = serviceOptions.find(o => o.value === formData.serviceInterest)?.label || formData.serviceInterest;
-
-      // Prepare webhook payload
-      const webhookPayload = {
-        name: formData.name.trim(),
-        email: formData.email.trim().toLowerCase(),
-        phone: formData.phone.trim() || null,
-        company: formData.company.trim() || null,
-        budget: budgetLabel,
-        timeline: timelineLabel,
-        serviceInterest: serviceLabel || null,
-        problemStatement: formData.problemStatement.trim() || null,
-        message: formData.message.trim() || null,
-        formType: 'Contact Us',
-        submittedAt: new Date().toISOString(),
-        source: 'agenticailab.in',
-      };
-
-      // Webhook is now handled server-side by the edge function for security
+      const budgetLabel = getBudgetLabel(formData.budget);
+      const timelineLabel = getTimelineLabel(formData.timeline);
+      const serviceLabel = getServiceLabel(formData.serviceInterest);
+      const industryLabel = getIndustryLabel(formData.industry);
 
       // Prepare email message
       const fullMessage = [
-        formData.message ? `Message: ${formData.message}` : '',
         formData.problemStatement ? `Challenge: ${formData.problemStatement}` : '',
         `Budget: ${budgetLabel}`,
         `Timeline: ${timelineLabel}`,
         serviceLabel ? `Service Interest: ${serviceLabel}` : '',
+        formData.jobTitle ? `Job Title: ${formData.jobTitle}` : '',
+        industryLabel ? `Industry: ${industryLabel}` : '',
       ].filter(Boolean).join('\n\n');
 
       const { error } = await supabase.functions.invoke('send-contact-email', {
@@ -177,8 +168,15 @@ const Contact = () => {
           email: formData.email.trim(),
           phone: formData.phone.trim() || undefined,
           company: formData.company.trim() || undefined,
+          jobTitle: formData.jobTitle.trim() || undefined,
+          industry: industryLabel || undefined,
+          budget: budgetLabel,
+          timeline: timelineLabel,
+          serviceInterest: serviceLabel || undefined,
+          problemStatement: formData.problemStatement.trim() || undefined,
           message: fullMessage,
-          formType: 'Contact Us',
+          formType: 'Talk to AgenticAI Lab',
+          website: honeypot, // Honeypot field for bot detection
         },
       });
 
@@ -190,7 +188,7 @@ const Contact = () => {
       });
 
       resetForm();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error sending message:', error);
       toast({
         title: "Error",
@@ -205,11 +203,11 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-background">
       <SkipToContent />
-       <SEOHead 
-         title="Contact Us"
-         description="Get in touch with AgenticAI Lab. Schedule a consultation or send us a message about your AI automation needs."
-         canonicalUrl="/contact"
-       />
+      <SEOHead 
+        title="Contact Us"
+        description="Get in touch with AgenticAI Lab. Schedule a consultation or send us a message about your AI automation needs."
+        canonicalUrl="/contact"
+      />
       <Header />
       <main id="main-content" className="pt-20">
         {/* Hero Section */}
@@ -264,7 +262,7 @@ const Contact = () => {
               {/* Contact Form */}
               <Card className="bg-card border-border">
                 <CardHeader>
-                  <CardTitle className="text-2xl text-foreground">Send us a Message</CardTitle>
+                  <CardTitle className="text-2xl text-foreground">Talk to AgenticAI Lab</CardTitle>
                   <CardDescription>
                     Fill out the form below and our AI team will review your request shortly.
                   </CardDescription>
@@ -336,6 +334,42 @@ const Contact = () => {
                           onChange={handleChange}
                           maxLength={100}
                         />
+                      </div>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="contact-jobTitle">Job Title / Role</Label>
+                        <Input
+                          id="contact-jobTitle"
+                          name="jobTitle"
+                          placeholder="e.g. CTO, Product Manager"
+                          value={formData.jobTitle}
+                          onChange={handleChange}
+                          maxLength={100}
+                          aria-invalid={!!errors.jobTitle}
+                          className={errors.jobTitle ? 'border-destructive' : ''}
+                        />
+                        {errors.jobTitle && (
+                          <p className="text-sm text-destructive">{errors.jobTitle}</p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="contact-industry">Industry</Label>
+                        <Select
+                          value={formData.industry}
+                          onValueChange={(value) => handleSelectChange('industry', value)}
+                        >
+                          <SelectTrigger className="bg-background">
+                            <SelectValue placeholder="Select industry" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-popover border-border z-50">
+                            {industryOptions.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-4">
@@ -418,18 +452,21 @@ const Contact = () => {
                         maxLength={1000}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="message">Additional Details</Label>
-                      <Textarea
-                        id="message"
-                        name="message"
-                        placeholder="Any other details you'd like to share..."
-                        rows={2}
-                        value={formData.message}
-                        onChange={handleChange}
-                        maxLength={1000}
+                    
+                    {/* Honeypot field - hidden from users, visible to bots */}
+                    <div className="absolute -left-[9999px]" aria-hidden="true">
+                      <label htmlFor="contact-website-field">Website</label>
+                      <input
+                        type="text"
+                        id="contact-website-field"
+                        name="website"
+                        value={honeypot}
+                        onChange={(e) => setHoneypot(e.target.value)}
+                        tabIndex={-1}
+                        autoComplete="off"
                       />
                     </div>
+                    
                     <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
                       {isSubmitting ? (
                         <>
@@ -445,23 +482,28 @@ const Contact = () => {
               </Card>
 
               {/* Departments */}
-              <div>
-                <h2 className="text-2xl font-display font-bold text-foreground mb-6">
-                  Contact by Department
-                </h2>
+              <div className="space-y-8">
+                <div>
+                  <h2 className="text-2xl font-display font-bold text-foreground mb-4">
+                    Contact Our Teams
+                  </h2>
+                  <p className="text-muted-foreground mb-6">
+                    Reach out to the right team for your specific needs.
+                  </p>
+                </div>
                 <div className="space-y-4">
                   {departments.map((dept, index) => (
                     <Card key={index} className="bg-card border-border hover:border-primary/50 transition-all">
-                      <CardContent className="pt-6">
+                      <CardContent className="p-6">
                         <div className="flex items-start gap-4">
-                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <dept.icon className="w-5 h-5 text-primary" />
+                          <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                            <dept.icon className="w-6 h-6 text-primary" />
                           </div>
                           <div>
                             <h3 className="text-lg font-semibold text-foreground mb-1">{dept.title}</h3>
                             <p className="text-muted-foreground text-sm mb-2">{dept.description}</p>
-                            <a
-                              href={`mailto:${dept.email}`}
+                            <a 
+                              href={`mailto:${dept.email}`} 
                               className="text-primary hover:underline text-sm font-medium"
                             >
                               {dept.email}
@@ -473,19 +515,27 @@ const Contact = () => {
                   ))}
                 </div>
 
-                {/* Office Hours */}
-                <Card className="bg-card border-border mt-6">
-                  <CardContent className="pt-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                {/* Business Hours */}
+                <Card className="bg-gradient-to-br from-primary/10 to-transparent border-primary/20">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
                         <Clock className="w-5 h-5 text-primary" />
                       </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-foreground mb-1">Office Hours</h3>
-                        <p className="text-muted-foreground text-sm">
-                          Monday - Friday: 9:00 AM - 6:00 PM IST<br />
-                          Saturday - Sunday: Closed
-                        </p>
+                      <h3 className="text-lg font-semibold text-foreground">Business Hours</h3>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Monday - Friday</span>
+                        <span className="text-foreground font-medium">9:00 AM - 6:00 PM IST</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Saturday</span>
+                        <span className="text-foreground font-medium">10:00 AM - 2:00 PM IST</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Sunday</span>
+                        <span className="text-foreground font-medium">Closed</span>
                       </div>
                     </div>
                   </CardContent>
@@ -495,23 +545,29 @@ const Contact = () => {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-20 bg-card/50">
+        {/* FAQ CTA */}
+        <section className="py-20 bg-gradient-to-b from-transparent to-primary/5">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">
-              Ready to Get Started?
-            </h2>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Schedule a free consultation to discuss your AI automation needs.
-            </p>
-            <Link to="/get-started">
-              <Button size="lg">
-                View Our Plans
-              </Button>
-            </Link>
+            <div className="max-w-2xl mx-auto">
+              <h2 className="text-3xl font-display font-bold text-foreground mb-4">
+                Have More Questions?
+              </h2>
+              <p className="text-muted-foreground mb-8">
+                Check out our documentation or schedule a free consultation with our AI experts.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button asChild variant="outline" size="lg">
+                  <Link to="/documentation">View Documentation</Link>
+                </Button>
+                <Button asChild size="lg">
+                  <Link to="/get-started">Schedule Consultation</Link>
+                </Button>
+              </div>
+            </div>
           </div>
         </section>
       </main>
+
       <Footer />
     </div>
   );

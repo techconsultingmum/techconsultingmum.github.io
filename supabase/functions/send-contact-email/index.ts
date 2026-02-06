@@ -43,6 +43,8 @@ interface ContactEmailRequest {
   email: string;
   phone?: string;
   company?: string;
+  jobTitle?: string;
+  industry?: string;
   message: string;
   formType: string;
   budget?: string;
@@ -121,6 +123,14 @@ function validateAndSanitizeInput(data: ContactEmailRequest): {
     errors.push("Company name must be less than 100 characters");
   }
   
+  if (data.jobTitle && (typeof data.jobTitle !== 'string' || data.jobTitle.length > 100)) {
+    errors.push("Job title must be less than 100 characters");
+  }
+  
+  if (data.industry && (typeof data.industry !== 'string' || data.industry.length > 100)) {
+    errors.push("Industry must be less than 100 characters");
+  }
+  
   if (data.budget && (typeof data.budget !== 'string' || data.budget.length > 50)) {
     errors.push("Budget selection is invalid");
   }
@@ -143,6 +153,8 @@ function validateAndSanitizeInput(data: ContactEmailRequest): {
     email: (data.email || '').trim().slice(0, 255).toLowerCase(),
     phone: data.phone ? sanitizeHtml(data.phone.trim().slice(0, 20)) : undefined,
     company: data.company ? sanitizeHtml(data.company.trim().slice(0, 100)) : undefined,
+    jobTitle: data.jobTitle ? sanitizeHtml(data.jobTitle.trim().slice(0, 100)) : undefined,
+    industry: data.industry ? sanitizeHtml(data.industry.trim().slice(0, 100)) : undefined,
     message: sanitizeHtml((data.message || '').trim().slice(0, 5000)),
     formType: sanitizeHtml((data.formType || '').trim().slice(0, 50)),
     budget: data.budget ? sanitizeHtml(data.budget.trim().slice(0, 50)) : undefined,
@@ -244,7 +256,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
     
-    const { name, email, phone, company, message, formType, budget, timeline, serviceInterest, problemStatement } = sanitized;
+    const { name, email, phone, company, jobTitle, industry, message, formType, budget, timeline, serviceInterest, problemStatement } = sanitized;
 
     console.log("Received contact form submission:", { 
       name: name.slice(0, 20) + "...", 
@@ -258,6 +270,8 @@ const handler = async (req: Request): Promise<Response> => {
       email,
       phone: phone || null,
       company: company || null,
+      jobTitle: jobTitle || null,
+      industry: industry || null,
       budget: budget || null,
       timeline: timeline || null,
       serviceInterest: serviceInterest || null,
@@ -279,6 +293,8 @@ const handler = async (req: Request): Promise<Response> => {
         <p><strong>Email:</strong> ${email}</p>
         ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ''}
         ${company ? `<p><strong>Company:</strong> ${company}</p>` : ''}
+        ${jobTitle ? `<p><strong>Job Title:</strong> ${jobTitle}</p>` : ''}
+        ${industry ? `<p><strong>Industry:</strong> ${industry}</p>` : ''}
         ${budget ? `<p><strong>Budget:</strong> ${budget}</p>` : ''}
         ${timeline ? `<p><strong>Timeline:</strong> ${timeline}</p>` : ''}
         ${serviceInterest ? `<p><strong>Service Interest:</strong> ${serviceInterest}</p>` : ''}
@@ -294,7 +310,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send confirmation email to the user
     const confirmationEmail = await resend.emails.send({
-      from: "Tech Consulting <onboarding@resend.dev>",
+      from: "AgenticAI Lab <onboarding@resend.dev>",
       to: [email],
       subject: "We received your message!",
       html: `
@@ -304,7 +320,7 @@ const handler = async (req: Request): Promise<Response> => {
         <blockquote style="background: #f9f9f9; padding: 15px; border-left: 3px solid #333;">
           ${message}
         </blockquote>
-        <p>Best regards,<br>The Tech Consulting Team</p>
+        <p>Best regards,<br>The AgenticAI Lab Team</p>
       `,
     });
 
