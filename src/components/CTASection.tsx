@@ -30,7 +30,7 @@ const CTASection = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <ContactFormDialog formType="Book Free Consultation">
+            <ContactFormDialog>
               <Button variant="hero" size="xl">
                 <Calendar className="w-5 h-5" />
                 Book Free Consultation

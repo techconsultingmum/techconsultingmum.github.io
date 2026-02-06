@@ -206,7 +206,7 @@ const CaseStudies = () => {
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
                 Let's discuss how AI can transform your business operations and drive measurable results.
               </p>
-              <ContactFormDialog formType="Schedule Consultation">
+              <ContactFormDialog>
                 <Button size="lg">
                   Start Your AI Journey
                   <ArrowRight className="ml-2 w-5 h-5" />

@@ -261,7 +261,7 @@ const GetStarted = () => {
               Schedule a free consultation and discover how AI agents can revolutionize your operations.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <ContactFormDialog formType="Schedule Consultation">
+              <ContactFormDialog>
                 <Button size="lg" className="text-lg px-8">
                   Schedule Consultation
                   <ArrowRight className="w-5 h-5 ml-2" />

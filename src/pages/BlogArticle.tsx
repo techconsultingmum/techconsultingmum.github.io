@@ -444,7 +444,7 @@ const BlogArticle = () => {
             <p className="text-xl text-muted-foreground mb-8">
               Let's discuss how AI agents can revolutionize your operations.
             </p>
-            <ContactFormDialog formType="Schedule Consultation">
+            <ContactFormDialog>
               <Button size="lg">
                 Schedule a Consultation
               </Button>
