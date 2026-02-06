@@ -11,7 +11,7 @@ import SkipToContent from '@/components/SkipToContent';
  import SEOHead from '@/components/SEOHead';
 import { useToast } from '@/hooks/use-toast';
 import { newsletterSchema } from '@/lib/validations';
-import { WEBHOOK_URL } from '@/lib/form-config';
+import { supabase } from '@/integrations/supabase/client';
 
 const categories = ['All', 'AI Trends', 'Development', 'Case Study', 'Security', 'Tutorials'];
 
