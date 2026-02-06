@@ -25,7 +25,6 @@ import {
   budgetOptions,
   timelineOptions,
   serviceOptions,
-  WEBHOOK_URL,
   getBudgetLabel,
   getTimelineLabel,
   getServiceLabel,
