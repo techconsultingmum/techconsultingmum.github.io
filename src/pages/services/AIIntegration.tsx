@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
+import SEOHead from '@/components/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Cog, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -32,6 +33,7 @@ const useCases = [
 const AIIntegration = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="AI Integration & Deployment" description="Seamlessly integrate agentic AI into your existing infrastructure with enterprise-grade security and scalability." canonicalUrl="/services/ai-integration" />
       <SkipToContent />
       <Header />
       <main id="main-content">

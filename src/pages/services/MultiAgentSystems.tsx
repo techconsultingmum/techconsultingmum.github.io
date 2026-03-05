@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
+import SEOHead from '@/components/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Brain, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -32,6 +33,7 @@ const useCases = [
 const MultiAgentSystems = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="Multi-Agent Systems" description="Orchestrate multiple specialized AI agents working together to solve complex business problems with unprecedented efficiency." canonicalUrl="/services/multi-agent-systems" />
       <SkipToContent />
       <Header />
       <main id="main-content">

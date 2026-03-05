@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
+import SEOHead from '@/components/SEOHead';
 import { Button } from '@/components/ui/button';
 import { LineChart, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -32,6 +33,7 @@ const useCases = [
 const StrategyConsulting = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="AI Strategy Consulting" description="Strategic roadmaps to identify high-impact AI opportunities and prioritize implementations for maximum ROI." canonicalUrl="/services/strategy-consulting" />
       <SkipToContent />
       <Header />
       <main id="main-content">

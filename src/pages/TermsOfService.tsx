@@ -1,10 +1,12 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
+import SEOHead from '@/components/SEOHead';
 
 const TermsOfService = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="Terms of Service" description="AgenticAI Lab's terms of service governing the use of our AI solutions and platform." canonicalUrl="/terms-of-service" />
       <SkipToContent />
       <Header />
       <main id="main-content" className="pt-32 pb-20">

@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
+import SEOHead from '@/components/SEOHead';
 
 const ApiReference = () => {
   const endpoints = [
@@ -16,32 +17,32 @@ const ApiReference = () => {
     },
     {
       method: 'GET',
-      path: '/api/v1/agents/{id}',
+      path: '/api/v1/agents/:id',
       description: 'Retrieve agent details and current status',
       auth: 'Bearer Token',
     },
     {
       method: 'POST',
-      path: '/api/v1/agents/{id}/execute',
-      description: 'Execute a task using the specified agent',
+      path: '/api/v1/agents/:id/execute',
+      description: 'Execute an agent with given input parameters',
       auth: 'Bearer Token',
     },
     {
       method: 'GET',
-      path: '/api/v1/agents/{id}/logs',
-      description: 'Fetch execution logs for an agent',
+      path: '/api/v1/agents/:id/logs',
+      description: 'Retrieve execution logs and performance metrics',
+      auth: 'Bearer Token',
+    },
+    {
+      method: 'PUT',
+      path: '/api/v1/agents/:id/config',
+      description: 'Update agent configuration and behavior settings',
       auth: 'Bearer Token',
     },
     {
       method: 'DELETE',
-      path: '/api/v1/agents/{id}',
-      description: 'Deactivate and remove an agent',
-      auth: 'Bearer Token',
-    },
-    {
-      method: 'POST',
-      path: '/api/v1/workflows/create',
-      description: 'Create a multi-agent workflow',
+      path: '/api/v1/agents/:id',
+      description: 'Deactivate and remove an agent instance',
       auth: 'Bearer Token',
     },
   ];
@@ -50,7 +51,17 @@ const ApiReference = () => {
     {
       icon: Key,
       title: 'Authentication',
-      description: 'Secure API key and OAuth 2.0 authentication methods',
+      description: 'Secure API key and OAuth 2.0 authentication with role-based access control',
+    },
+    {
+      icon: Server,
+      title: 'RESTful Design',
+      description: 'Clean, predictable URL patterns following REST best practices',
+    },
+    {
+      icon: Code,
+      title: 'SDK Support',
+      description: 'Official SDKs for Python, JavaScript, Go, and more',
     },
     {
       icon: Zap,
@@ -63,14 +74,15 @@ const ApiReference = () => {
       description: 'Enterprise-grade rate limiting with customizable thresholds',
     },
     {
-      icon: Server,
-      title: 'Webhooks',
-      description: 'Configure webhooks for agent events and workflow completions',
+      icon: BookOpen,
+      title: 'Comprehensive Docs',
+      description: 'Detailed documentation with examples for every endpoint',
     },
   ];
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="API Reference" description="Complete API documentation for AgenticAI Lab's AI agent platform with endpoints, authentication, and code examples." canonicalUrl="/api-reference" />
       <SkipToContent />
       <Header />
       

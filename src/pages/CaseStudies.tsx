@@ -193,29 +193,28 @@ const CaseStudies = () => {
           </div>
         </div>
       </section>
+        {/* CTA Section */}
+        <section className="py-20 px-4">
+          <div className="container mx-auto">
+            <Card className="bg-gradient-to-br from-primary/10 via-background to-primary/5 border-primary/20">
+              <CardContent className="p-12 text-center">
+                <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
+                  Ready to Write Your Success Story?
+                </h2>
+                <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+                  Let's discuss how AI can transform your business operations and drive measurable results.
+                </p>
+                <ContactFormDialog>
+                  <Button size="lg">
+                    Start Your AI Journey
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </ContactFormDialog>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
       </main>
-      {/* CTA Section */}
-      {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto">
-          <Card className="bg-gradient-to-br from-primary/10 via-background to-primary/5 border-primary/20">
-            <CardContent className="p-12 text-center">
-              <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-                Ready to Write Your Success Story?
-              </h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-                Let's discuss how AI can transform your business operations and drive measurable results.
-              </p>
-              <ContactFormDialog>
-                <Button size="lg">
-                  Start Your AI Journey
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </ContactFormDialog>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
 
       <Footer />
     </div>
