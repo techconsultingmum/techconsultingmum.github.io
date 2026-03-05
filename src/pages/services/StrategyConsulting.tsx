@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
+import SEOHead from '@/components/SEOHead';
 import { Button } from '@/components/ui/button';
 import { LineChart, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';

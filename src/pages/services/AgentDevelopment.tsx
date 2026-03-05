@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
+import SEOHead from '@/components/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Bot, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -32,6 +33,7 @@ const useCases = [
 const AgentDevelopment = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="Agent Development" description="Custom autonomous AI agent development with natural language understanding, decision-making, and continuous learning capabilities." canonicalUrl="/services/agent-development" />
       <SkipToContent />
       <Header />
       <main id="main-content">
