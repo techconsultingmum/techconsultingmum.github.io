@@ -5,72 +5,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
+import SEOHead from '@/components/SEOHead';
 
 const ApiReference = () => {
   const endpoints = [
-    {
-      method: 'POST',
-      path: '/api/v1/agents/create',
-      description: 'Create a new AI agent with specified configuration',
-      auth: 'Bearer Token',
-    },
-    {
-      method: 'GET',
-      path: '/api/v1/agents/{id}',
-      description: 'Retrieve agent details and current status',
-      auth: 'Bearer Token',
-    },
-    {
-      method: 'POST',
-      path: '/api/v1/agents/{id}/execute',
-      description: 'Execute a task using the specified agent',
-      auth: 'Bearer Token',
-    },
-    {
-      method: 'GET',
-      path: '/api/v1/agents/{id}/logs',
-      description: 'Fetch execution logs for an agent',
-      auth: 'Bearer Token',
-    },
-    {
-      method: 'DELETE',
-      path: '/api/v1/agents/{id}',
-      description: 'Deactivate and remove an agent',
-      auth: 'Bearer Token',
-    },
-    {
-      method: 'POST',
-      path: '/api/v1/workflows/create',
-      description: 'Create a multi-agent workflow',
-      auth: 'Bearer Token',
-    },
-  ];
-
-  const features = [
-    {
-      icon: Key,
-      title: 'Authentication',
-      description: 'Secure API key and OAuth 2.0 authentication methods',
-    },
-    {
-      icon: Zap,
-      title: 'Real-time Updates',
-      description: 'WebSocket support for live agent status and execution updates',
-    },
-    {
-      icon: Shield,
-      title: 'Rate Limiting',
-      description: 'Enterprise-grade rate limiting with customizable thresholds',
-    },
-    {
-      icon: Server,
-      title: 'Webhooks',
-      description: 'Configure webhooks for agent events and workflow completions',
-    },
+...
   ];
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="API Reference" description="Complete API documentation for AgenticAI Lab's AI agent platform with endpoints, authentication, and code examples." canonicalUrl="/api-reference" />
       <SkipToContent />
       <Header />
       
