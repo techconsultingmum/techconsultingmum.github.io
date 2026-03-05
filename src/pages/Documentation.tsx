@@ -55,6 +55,7 @@ const Documentation = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="Documentation" description="Complete documentation for AgenticAI Lab's AI agent platform, APIs, and integration guides." canonicalUrl="/documentation" />
       <SkipToContent />
       <Header />
       

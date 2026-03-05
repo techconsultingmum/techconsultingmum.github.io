@@ -1,10 +1,12 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
+import SEOHead from '@/components/SEOHead';
 
 const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="Privacy Policy" description="AgenticAI Lab's privacy policy covering data collection, usage, and your rights." canonicalUrl="/privacy-policy" />
       <SkipToContent />
       <Header />
       <main id="main-content" className="pt-32 pb-20">
