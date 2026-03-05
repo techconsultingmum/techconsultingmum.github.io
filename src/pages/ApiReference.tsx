@@ -9,7 +9,75 @@ import SEOHead from '@/components/SEOHead';
 
 const ApiReference = () => {
   const endpoints = [
-...
+    {
+      method: 'POST',
+      path: '/api/v1/agents/create',
+      description: 'Create a new AI agent with specified configuration',
+      auth: 'Bearer Token',
+    },
+    {
+      method: 'GET',
+      path: '/api/v1/agents/:id',
+      description: 'Retrieve agent details and current status',
+      auth: 'Bearer Token',
+    },
+    {
+      method: 'POST',
+      path: '/api/v1/agents/:id/execute',
+      description: 'Execute an agent with given input parameters',
+      auth: 'Bearer Token',
+    },
+    {
+      method: 'GET',
+      path: '/api/v1/agents/:id/logs',
+      description: 'Retrieve execution logs and performance metrics',
+      auth: 'Bearer Token',
+    },
+    {
+      method: 'PUT',
+      path: '/api/v1/agents/:id/config',
+      description: 'Update agent configuration and behavior settings',
+      auth: 'Bearer Token',
+    },
+    {
+      method: 'DELETE',
+      path: '/api/v1/agents/:id',
+      description: 'Deactivate and remove an agent instance',
+      auth: 'Bearer Token',
+    },
+  ];
+
+  const features = [
+    {
+      icon: Key,
+      title: 'Authentication',
+      description: 'Secure API key and OAuth 2.0 authentication with role-based access control',
+    },
+    {
+      icon: Server,
+      title: 'RESTful Design',
+      description: 'Clean, predictable URL patterns following REST best practices',
+    },
+    {
+      icon: Code,
+      title: 'SDK Support',
+      description: 'Official SDKs for Python, JavaScript, Go, and more',
+    },
+    {
+      icon: Zap,
+      title: 'Real-time Updates',
+      description: 'WebSocket support for live agent status and execution updates',
+    },
+    {
+      icon: Shield,
+      title: 'Rate Limiting',
+      description: 'Enterprise-grade rate limiting with customizable thresholds',
+    },
+    {
+      icon: BookOpen,
+      title: 'Comprehensive Docs',
+      description: 'Detailed documentation with examples for every endpoint',
+    },
   ];
 
   return (
