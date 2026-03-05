@@ -70,28 +70,30 @@ const AboutSection = () => {
                   );
                 })}
 
-                {/* Connection lines */}
-                <svg className="absolute inset-0 w-full h-full" style={{ zIndex: -1 }}>
-                  {[0, 1, 2, 3, 4, 5].map((i) => {
-                    const angle = (i * 60) * (Math.PI / 180);
-                    const radius = 120;
-                    const x = Math.cos(angle) * radius;
-                    const y = Math.sin(angle) * radius;
-                    
-                    return (
-                      <line
-                        key={i}
-                        x1="50%"
-                        y1="50%"
-                        x2={`calc(50% + ${x}px)`}
-                        y2={`calc(50% + ${y}px)`}
-                        stroke="hsl(var(--primary) / 0.2)"
-                        strokeWidth="1"
-                        strokeDasharray="4 4"
-                      />
-                    );
-                  })}
-                </svg>
+                {/* Connection lines - rendered as divs since SVG calc() is unsupported */}
+                {[0, 1, 2, 3, 4, 5].map((i) => {
+                  const angle = (i * 60) * (Math.PI / 180);
+                  const radius = 120;
+                  const x = Math.cos(angle) * radius;
+                  const y = Math.sin(angle) * radius;
+                  const length = Math.sqrt(x * x + y * y);
+                  const angleDeg = Math.atan2(y, x) * (180 / Math.PI);
+                  
+                  return (
+                    <div
+                      key={`line-${i}`}
+                      className="absolute border-t border-dashed border-primary/20"
+                      style={{
+                        width: `${length}px`,
+                        top: '50%',
+                        left: '50%',
+                        transformOrigin: '0 0',
+                        transform: `rotate(${angleDeg}deg)`,
+                        zIndex: -1,
+                      }}
+                    />
+                  );
+                })}
               </div>
             </div>
 
