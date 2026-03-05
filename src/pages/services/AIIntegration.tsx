@@ -33,6 +33,7 @@ const useCases = [
 const AIIntegration = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="AI Integration & Deployment" description="Seamlessly integrate agentic AI into your existing infrastructure with enterprise-grade security and scalability." canonicalUrl="/services/ai-integration" />
       <SkipToContent />
       <Header />
       <main id="main-content">

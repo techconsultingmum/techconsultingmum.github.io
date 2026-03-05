@@ -33,6 +33,7 @@ const useCases = [
 const MultiAgentSystems = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="Multi-Agent Systems" description="Orchestrate multiple specialized AI agents working together to solve complex business problems with unprecedented efficiency." canonicalUrl="/services/multi-agent-systems" />
       <SkipToContent />
       <Header />
       <main id="main-content">

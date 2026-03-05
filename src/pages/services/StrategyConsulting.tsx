@@ -33,6 +33,7 @@ const useCases = [
 const StrategyConsulting = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="AI Strategy Consulting" description="Strategic roadmaps to identify high-impact AI opportunities and prioritize implementations for maximum ROI." canonicalUrl="/services/strategy-consulting" />
       <SkipToContent />
       <Header />
       <main id="main-content">
