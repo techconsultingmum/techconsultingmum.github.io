@@ -5,7 +5,8 @@ import { Bot, MapPin, Clock, Briefcase, Heart, Zap, Users, GraduationCap, ArrowR
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
- import SEOHead from '@/components/SEOHead';
+import SEOHead from '@/components/SEOHead';
+import ContactFormDialog from '@/components/ContactFormDialog';
 
 const benefits = [
   {
@@ -213,7 +214,9 @@ const Careers = () => {
                         <CardTitle className="text-foreground">{job.title}</CardTitle>
                         <CardDescription className="mt-1">{job.description}</CardDescription>
                       </div>
-                      <Button>Apply Now</Button>
+                      <ContactFormDialog>
+                        <Button>Apply Now</Button>
+                      </ContactFormDialog>
                     </div>
                   </CardHeader>
                   <CardContent>

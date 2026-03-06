@@ -281,10 +281,11 @@ const Contact = () => {
                           required
                           maxLength={100}
                           aria-invalid={!!errors.name}
+                          aria-describedby={errors.name ? 'contact-name-error' : undefined}
                           className={errors.name ? 'border-destructive' : ''}
                         />
                         {errors.name && (
-                          <p className="text-sm text-destructive">{errors.name}</p>
+                          <p id="contact-name-error" className="text-sm text-destructive">{errors.name}</p>
                         )}
                       </div>
                       <div className="space-y-2">
@@ -299,10 +300,11 @@ const Contact = () => {
                           required
                           maxLength={255}
                           aria-invalid={!!errors.email}
+                          aria-describedby={errors.email ? 'contact-email-error' : undefined}
                           className={errors.email ? 'border-destructive' : ''}
                         />
                         {errors.email && (
-                          <p className="text-sm text-destructive">{errors.email}</p>
+                          <p id="contact-email-error" className="text-sm text-destructive">{errors.email}</p>
                         )}
                       </div>
                     </div>
@@ -318,10 +320,11 @@ const Contact = () => {
                           onChange={handleChange}
                           maxLength={20}
                           aria-invalid={!!errors.phone}
+                          aria-describedby={errors.phone ? 'contact-phone-error' : undefined}
                           className={errors.phone ? 'border-destructive' : ''}
                         />
                         {errors.phone && (
-                          <p className="text-sm text-destructive">{errors.phone}</p>
+                          <p id="contact-phone-error" className="text-sm text-destructive">{errors.phone}</p>
                         )}
                       </div>
                       <div className="space-y-2">
