@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Bot, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,9 +48,7 @@ const Header = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-              <Bot className="w-6 h-6 text-primary" />
-            </div>
+            <img src={logoImg} alt="AgenticAI Lab" className="w-10 h-10 rounded-lg object-contain" />
             <span className="font-display font-bold text-xl text-foreground">
               Agentic<span className="text-primary">AI</span> Lab
             </span>
