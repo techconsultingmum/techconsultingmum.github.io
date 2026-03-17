@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Bot, Linkedin, Twitter, Github, Mail, Phone } from 'lucide-react';
+import { Linkedin, Twitter, Github, Mail, Phone } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
