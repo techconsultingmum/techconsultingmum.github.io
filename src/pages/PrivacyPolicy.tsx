@@ -26,7 +26,7 @@ const PrivacyPolicy = () => {
                 Welcome to AgenticAI Lab ("we," "our," or "us"). We are committed to protecting your 
                 personal information and your right to privacy. This Privacy Policy explains how we 
                 collect, use, disclose, and safeguard your information when you visit our website 
-                agenticailab.in or engage with our AI consulting services.
+                agenticailab.com or engage with our AI consulting services.
               </p>
             </section>
 
