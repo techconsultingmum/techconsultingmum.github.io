@@ -1,4 +1,4 @@
- import { useState, useCallback } from 'react';
+ import { useState, useCallback, useRef } from 'react';
  
  interface AsyncState<T> {
    data: T | null;
@@ -11,33 +11,37 @@
    onError?: (error: Error) => void;
  }
  
- export function useAsync<T>(
-   asyncFunction: (...args: unknown[]) => Promise<T>,
-   options: UseAsyncOptions<T> = {}
- ) {
-   const [state, setState] = useState<AsyncState<T>>({
-     data: null,
-     isLoading: false,
-     error: null,
-   });
- 
-   const execute = useCallback(
-     async (...args: unknown[]) => {
-       setState((prev) => ({ ...prev, isLoading: true, error: null }));
-       try {
-         const data = await asyncFunction(...args);
-         setState({ data, isLoading: false, error: null });
-         options.onSuccess?.(data);
-         return data;
-       } catch (error) {
-         const err = error instanceof Error ? error : new Error(String(error));
-         setState({ data: null, isLoading: false, error: err });
-         options.onError?.(err);
-         throw err;
-       }
-     },
-     [asyncFunction, options.onSuccess, options.onError]
-   );
+export function useAsync<T>(
+  asyncFunction: (...args: unknown[]) => Promise<T>,
+  options: UseAsyncOptions<T> = {}
+) {
+  const [state, setState] = useState<AsyncState<T>>({
+    data: null,
+    isLoading: false,
+    error: null,
+  });
+
+  // Use refs to avoid stale closures in the callback
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
+
+  const execute = useCallback(
+    async (...args: unknown[]) => {
+      setState((prev) => ({ ...prev, isLoading: true, error: null }));
+      try {
+        const data = await asyncFunction(...args);
+        setState({ data, isLoading: false, error: null });
+        optionsRef.current.onSuccess?.(data);
+        return data;
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        setState({ data: null, isLoading: false, error: err });
+        optionsRef.current.onError?.(err);
+        throw err;
+      }
+    },
+    [asyncFunction]
+  );
  
    const reset = useCallback(() => {
      setState({ data: null, isLoading: false, error: null });

@@ -44,43 +44,91 @@
      ? `${defaultMeta.siteUrl}${canonicalUrl}`
      : undefined;
  
-   return (
-     <Helmet>
-       {/* Basic Meta Tags */}
-       <title>{fullTitle}</title>
-       <meta name="description" content={description} />
-       {noIndex && <meta name="robots" content="noindex, nofollow" />}
-       {canonical && <link rel="canonical" href={canonical} />}
- 
-       {/* Open Graph Tags */}
-       <meta property="og:title" content={fullTitle} />
-       <meta property="og:description" content={description} />
-       <meta property="og:type" content={ogType} />
-       <meta property="og:image" content={fullOgImage} />
-       {canonical && <meta property="og:url" content={canonical} />}
-       <meta property="og:site_name" content="AgenticAI Lab" />
- 
-       {/* Twitter Card Tags */}
-       <meta name="twitter:card" content="summary_large_image" />
-       <meta name="twitter:title" content={fullTitle} />
-       <meta name="twitter:description" content={description} />
-       <meta name="twitter:image" content={fullOgImage} />
- 
-       {/* Article-specific meta (for blog posts) */}
-       {ogType === 'article' && article?.publishedTime && (
-         <meta property="article:published_time" content={article.publishedTime} />
-       )}
-       {ogType === 'article' && article?.modifiedTime && (
-         <meta property="article:modified_time" content={article.modifiedTime} />
-       )}
-       {ogType === 'article' && article?.author && (
-         <meta property="article:author" content={article.author} />
-       )}
-       {ogType === 'article' && article?.section && (
-         <meta property="article:section" content={article.section} />
-       )}
-     </Helmet>
-   );
+    // Build JSON-LD for homepage
+    const isHomePage = canonicalUrl === '/';
+
+    return (
+      <Helmet>
+        {/* Basic Meta Tags */}
+        <title>{fullTitle}</title>
+        <meta name="description" content={description} />
+        {noIndex && <meta name="robots" content="noindex, nofollow" />}
+        {canonical && <link rel="canonical" href={canonical} />}
+  
+        {/* Open Graph Tags */}
+        <meta property="og:title" content={fullTitle} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content={ogType} />
+        <meta property="og:image" content={fullOgImage} />
+        {canonical && <meta property="og:url" content={canonical} />}
+        <meta property="og:site_name" content="AgenticAI Lab" />
+  
+        {/* Twitter Card Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={fullTitle} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={fullOgImage} />
+  
+        {/* Article-specific meta (for blog posts) */}
+        {ogType === 'article' && article?.publishedTime && (
+          <meta property="article:published_time" content={article.publishedTime} />
+        )}
+        {ogType === 'article' && article?.modifiedTime && (
+          <meta property="article:modified_time" content={article.modifiedTime} />
+        )}
+        {ogType === 'article' && article?.author && (
+          <meta property="article:author" content={article.author} />
+        )}
+        {ogType === 'article' && article?.section && (
+          <meta property="article:section" content={article.section} />
+        )}
+
+        {/* JSON-LD WebSite schema for homepage */}
+        {isHomePage && (
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "AgenticAI Lab",
+              "url": defaultMeta.siteUrl,
+              "description": description,
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": `${defaultMeta.siteUrl}/blog?q={search_term_string}`,
+                "query-input": "required name=search_term_string"
+              }
+            })}
+          </script>
+        )}
+
+        {/* JSON-LD Article schema for blog posts */}
+        {ogType === 'article' && article && (
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Article",
+              "headline": title,
+              "description": description,
+              "image": fullOgImage,
+              "author": {
+                "@type": "Person",
+                "name": article.author || "AgenticAI Lab"
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "AgenticAI Lab",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": `${defaultMeta.siteUrl}/og-image.png`
+                }
+              },
+              ...(article.publishedTime && { "datePublished": article.publishedTime }),
+              ...(article.modifiedTime && { "dateModified": article.modifiedTime })
+            })}
+          </script>
+        )}
+      </Helmet>
+    );
  };
  
  export default SEOHead;
