@@ -34,7 +34,7 @@ const team = [
   {
     name: 'Sateesh Singh',
     role: 'CEO & Co-Founder',
-    bio: 'Former AI Research Lead at Google with 20+ years in machine learning.',
+    bio: 'Former AI Research Lead at Atos/Eviden with 20+ years in machine learning.',
   },
   {
     name: 'Marcus Johnson',

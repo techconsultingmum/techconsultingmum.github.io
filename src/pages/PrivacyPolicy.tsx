@@ -165,8 +165,8 @@ const PrivacyPolicy = () => {
                 <p className="text-foreground font-semibold text-lg">AgenticAI Lab</p>
                 <p className="text-muted-foreground">
                   <strong>Email:</strong>{' '}
-                  <a href="mailto:tech.consulting.mum@gmail.com" className="text-primary hover:underline">
-                    tech.consulting.mum@gmail.com
+                  <a href="mailto:support@agenticailab.in" className="text-primary hover:underline">
+                    support@agenticailab.in
                   </a>
                 </p>
                 <p className="text-muted-foreground">
