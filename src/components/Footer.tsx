@@ -33,7 +33,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link to="/" className="flex items-center gap-3 mb-6">
-              <img src={logoImg} alt="AgenticAI Lab" className="w-10 h-10 rounded-lg object-contain" />
+              <img src={logoImg} alt="AgenticAI Lab" className="w-14 h-14 rounded-lg object-contain" />
               <span className="font-display font-bold text-xl text-foreground">
                 Agentic<span className="text-primary">AI</span> Lab
               </span>
