@@ -279,7 +279,7 @@ const handler = async (req: Request): Promise<Response> => {
       message,
       formType,
       submittedAt: new Date().toISOString(),
-      source: 'agenticailab.in',
+      source: 'agenticailab.com',
     });
 
     // Send notification email to the business

@@ -180,8 +180,8 @@ const PrivacyPolicy = () => {
                 </p>
                 <p className="text-muted-foreground">
                   <strong>Website:</strong>{' '}
-                  <a href="https://agenticailab.in" className="text-primary hover:underline">
-                    agenticailab.in
+                  <a href="https://agenticailab.com" className="text-primary hover:underline">
+                    agenticailab.com
                   </a>
                 </p>
               </div>

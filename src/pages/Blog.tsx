@@ -22,7 +22,7 @@ const blogPosts = [
     title: 'The Future of AI Agents in Enterprise Automation',
     excerpt: 'Discover how autonomous AI agents are revolutionizing business processes, reducing operational costs, and enabling 24/7 intelligent automation across industries.',
     category: 'AI Trends',
-    author: 'Dr. Sarah Chen',
+    author: 'Sateesh Singh',
     date: 'Jan 15, 2026',
     readTime: '5 min read',
     icon: Bot,
