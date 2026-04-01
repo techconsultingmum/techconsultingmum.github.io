@@ -121,7 +121,7 @@ const TermsOfService = () => {
                 For questions about these Terms of Service, please contact us at:
               </p>
               <p className="text-muted-foreground mt-2">
-                Email: <a href="mailto:tech.consulting.mum@gmail.com" className="text-primary hover:underline">tech.consulting.mum@gmail.com</a>
+                Email: <a href="mailto:support@agenticailab.in" className="text-primary hover:underline">support@agenticailab.in</a>
               </p>
             </section>
           </div>

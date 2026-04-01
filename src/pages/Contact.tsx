@@ -37,8 +37,8 @@ const contactMethods = [
     icon: Mail,
     title: 'Email Us',
     description: 'Send us an email anytime',
-    value: 'tech.consulting.mum@gmail.com',
-    href: 'mailto:tech.consulting.mum@gmail.com',
+    value: 'support@agenticailab.in',
+    href: 'mailto:support@agenticailab.in',
   },
   {
     icon: Phone,
@@ -61,19 +61,19 @@ const departments = [
     icon: MessageSquare,
     title: 'Sales',
     description: 'Talk to our sales team about enterprise solutions.',
-    email: 'tech.consulting.mum@gmail.com',
+    email: 'support@agenticailab.in',
   },
   {
     icon: Headphones,
     title: 'Support',
     description: 'Get help with technical issues and questions.',
-    email: 'tech.consulting.mum@gmail.com',
+    email: 'support@agenticailab.in',
   },
   {
     icon: Building,
     title: 'Partnerships',
     description: 'Explore partnership and integration opportunities.',
-    email: 'tech.consulting.mum@gmail.com',
+    email: 'support@agenticailab.in',
   },
 ];
 
