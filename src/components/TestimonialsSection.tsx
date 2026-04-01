@@ -5,7 +5,7 @@ import { Quote } from 'lucide-react';
 const testimonials = [
   {
     quote: "AgenticAI Lab transformed our customer service operations. Their AI agents handle 80% of inquiries autonomously, with better satisfaction scores than before.",
-    author: "Sarah Chen",
+    author: "Priya Sharma",
     role: "VP of Operations",
     company: "TechFlow Inc.",
   },
