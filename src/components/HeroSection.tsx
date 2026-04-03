@@ -41,9 +41,9 @@ const HeroSection = () => {
              transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
              className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6"
            >
-            The First
+            Build Intelligent
             <br />
-            <span className="text-gradient">AI-Governed Consulting Firm</span>
+            <span className="text-gradient">Agentic AI Solutions</span>
            </motion.h1>
 
           {/* Subheadline */}
