@@ -31,7 +31,7 @@ const HeroSection = () => {
              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8"
            >
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">AI-Powered Transformation</span>
+            <span className="text-sm font-medium text-primary">The First AI-Governed Consulting Firm</span>
            </motion.div>
 
           {/* Headline */}
@@ -41,9 +41,9 @@ const HeroSection = () => {
              transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
              className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6"
            >
-            Build Intelligent
+            The First
             <br />
-            <span className="text-gradient">Agentic AI Solutions</span>
+            <span className="text-gradient">AI-Governed Consulting Firm</span>
            </motion.h1>
 
           {/* Subheadline */}
@@ -53,8 +53,8 @@ const HeroSection = () => {
              transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
              className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
            >
-            Transform your business with autonomous AI agents that think, learn, and act. 
-            We design and deploy cutting-edge agentic systems tailored to your unique challenges.
+            A consulting company where strategic, operational, and financial decisions are 
+            autonomously executed by an AI CEO system — under legal governance.
            </motion.p>
 
           {/* CTA Buttons */}

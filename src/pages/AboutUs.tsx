@@ -101,14 +101,14 @@ const AboutUs = () => {
                   Our Mission
                 </h2>
                 <p className="text-muted-foreground text-lg mb-6">
-                  At AgenticAI Lab, we believe that the future of business lies in intelligent automation. 
-                  Our mission is to empower organizations with AI agents that don't just assist—they 
-                  autonomously execute, learn, and optimize.
+                  AgenticAI Lab is pioneering a new era: the first AI-governed consulting firm. 
+                  Our AI CEO system autonomously executes strategic, operational, and financial decisions 
+                  — all under legal governance and human oversight.
                 </p>
                 <p className="text-muted-foreground text-lg mb-6">
-                  We're building a world where businesses can focus on strategy and innovation while 
-                  AI handles the complexity of execution. From customer service to operations, our 
-                  agents work tirelessly to drive efficiency and growth.
+                  We're building a future where consulting is driven by data, intelligence, and 
+                  autonomous execution — not just advice. Our AI systems don't just recommend; 
+                  they act, learn, and optimize in real time.
                 </p>
                 <div className="flex gap-4">
                   <Link to="/get-started">
