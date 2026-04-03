@@ -33,10 +33,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link to="/" className="flex items-center gap-3 mb-6">
-              <img src={logoImg} alt="AgenticAI Lab" className="w-20 h-20 rounded-lg object-contain" />
-              <span className="font-display font-bold text-xl text-foreground">
-                Agentic<span className="text-primary">AI</span> Lab
-              </span>
+              <img src={logoImg} alt="AgenticAI Lab" className="w-25 h-25 rounded-lg object-contain font-bold" />
             </Link>
             <p className="text-muted-foreground text-sm mb-4">
               Building the future of autonomous AI systems for enterprise transformation.
