@@ -81,12 +81,12 @@ const AboutUs = () => {
                 <span className="text-primary text-sm font-medium">About AgenticAI Lab</span>
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-6">
-                Pioneering the Future of{' '}
-                <span className="text-primary">Autonomous AI</span>
+                The First{' '}
+                <span className="text-primary">AI-Governed Consulting Firm</span>
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
-                We're a team of AI researchers, engineers, and business strategists on a mission 
-                to transform how enterprises operate through intelligent automation.
+                A consulting company where strategic, operational, and financial decisions are 
+                autonomously executed by an AI CEO system — under legal governance.
               </p>
             </div>
           </div>
