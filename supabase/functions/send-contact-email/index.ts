@@ -4,7 +4,7 @@ import { Resend } from "https://esm.sh/resend@2.0.0";
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 // Webhook URL stored server-side only
-const WEBHOOK_URL = Deno.env.get("N8N_WEBHOOK_URL") || "https://tamako.app.n8n.cloud/webhook/agenticai-lead";
+const WEBHOOK_URL = Deno.env.get("N8N_WEBHOOK_URL") || "https://toveyej.app.n8n.cloud/webhook/agenticai-lead";
 
 // Allowed origins for CORS - restrict to known domains
 const ALLOWED_ORIGINS = [

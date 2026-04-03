@@ -14,7 +14,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
        <SEOHead 
          canonicalUrl="/"
-         description="Transform your business with autonomous AI agents that think, learn, and act. AgenticAI Lab designs and deploys cutting-edge agentic systems tailored to your unique challenges."
+         description="AgenticAI Lab is the first AI-governed consulting firm where strategic, operational, and financial decisions are autonomously executed by an AI CEO system — under legal governance."
        />
        <SkipToContent />
       <Header />

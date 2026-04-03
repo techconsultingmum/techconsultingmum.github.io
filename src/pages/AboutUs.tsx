@@ -67,7 +67,7 @@ const AboutUs = () => {
       <SkipToContent />
        <SEOHead 
          title="About Us"
-         description="Meet the team behind AgenticAI Lab. We combine deep research expertise with hands-on engineering to deliver AI agents that work in production."
+         description="AgenticAI Lab is the first AI-governed consulting firm. Strategic, operational, and financial decisions are autonomously executed by an AI CEO system — under legal governance."
          canonicalUrl="/about"
        />
       <Header />
@@ -81,12 +81,12 @@ const AboutUs = () => {
                 <span className="text-primary text-sm font-medium">About AgenticAI Lab</span>
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-6">
-                Pioneering the Future of{' '}
-                <span className="text-primary">Autonomous AI</span>
+                The First{' '}
+                <span className="text-primary">AI-Governed Consulting Firm</span>
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
-                We're a team of AI researchers, engineers, and business strategists on a mission 
-                to transform how enterprises operate through intelligent automation.
+                A consulting company where strategic, operational, and financial decisions are 
+                autonomously executed by an AI CEO system — under legal governance.
               </p>
             </div>
           </div>
@@ -101,14 +101,14 @@ const AboutUs = () => {
                   Our Mission
                 </h2>
                 <p className="text-muted-foreground text-lg mb-6">
-                  At AgenticAI Lab, we believe that the future of business lies in intelligent automation. 
-                  Our mission is to empower organizations with AI agents that don't just assist—they 
-                  autonomously execute, learn, and optimize.
+                  AgenticAI Lab is pioneering a new era: the first AI-governed consulting firm. 
+                  Our AI CEO system autonomously executes strategic, operational, and financial decisions 
+                  — all under legal governance and human oversight.
                 </p>
                 <p className="text-muted-foreground text-lg mb-6">
-                  We're building a world where businesses can focus on strategy and innovation while 
-                  AI handles the complexity of execution. From customer service to operations, our 
-                  agents work tirelessly to drive efficiency and growth.
+                  We're building a future where consulting is driven by data, intelligence, and 
+                  autonomous execution — not just advice. Our AI systems don't just recommend; 
+                  they act, learn, and optimize in real time.
                 </p>
                 <div className="flex gap-4">
                   <Link to="/get-started">

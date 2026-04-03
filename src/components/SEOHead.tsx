@@ -15,10 +15,10 @@
    noIndex?: boolean;
  }
  
- const defaultMeta = {
-   title: 'AgenticAI Lab - Build Intelligent Agentic AI Solutions',
+const defaultMeta = {
+   title: 'AgenticAI Lab — The First AI-Governed Consulting Firm',
    description:
-     'Transform your business with autonomous AI agents that think, learn, and act. We design and deploy cutting-edge agentic systems tailored to your unique challenges.',
+     'AgenticAI Lab is the first AI-governed consulting firm where strategic, operational, and financial decisions are autonomously executed by an AI CEO system — under legal governance.',
    ogImage: '/og-image.png',
    siteUrl: 'https://agenticailab.com',
  };

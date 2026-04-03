@@ -20,11 +20,11 @@ const AboutSection = () => {
            <AnimatedSection animation="slideLeft">
             <span className="text-primary font-semibold text-sm uppercase tracking-wider">Why Choose Us</span>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mt-4 mb-6">
-              Trusted by Industry Leaders in AI Innovation
+              The First AI-Governed Consulting Firm
             </h2>
             <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
-              We're not just consultants—we're builders. Our team combines deep research expertise 
-              with hands-on engineering to deliver AI agents that actually work in production.
+              We are not just consultants — we are a consulting company where strategic, operational, 
+              and financial decisions are autonomously executed by an AI CEO system under legal governance.
             </p>
 
             <div className="grid sm:grid-cols-2 gap-4">
