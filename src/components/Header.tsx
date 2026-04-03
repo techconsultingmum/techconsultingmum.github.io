@@ -48,10 +48,7 @@ const Header = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <img src={logoImg} alt="AgenticAI Lab" className="w-20 h-20 rounded-lg object-contain" />
-            <span className="font-display font-bold text-xl text-foreground">
-              Agentic<span className="text-primary">AI</span> Lab
-            </span>
+            <img src={logoImg} alt="AgenticAI Lab" className="rounded-lg object-contain" style={{ width: '6.25rem', height: '6.25rem' }} />
           </Link>
 
           {/* Desktop Navigation */}
