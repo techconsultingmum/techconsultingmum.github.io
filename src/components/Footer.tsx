@@ -39,7 +39,7 @@ const Footer = () => {
               </span>
             </Link>
             <p className="text-muted-foreground text-sm mb-4">
-              The first AI-governed consulting firm — where decisions are autonomously executed by an AI CEO system under legal governance.
+              Building the future of autonomous AI systems for enterprise transformation.
             </p>
             <div className="space-y-2 mb-6">
               <a 
