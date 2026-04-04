@@ -14,11 +14,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    # ✅ REQUIRED (fixes your error)
+    # ✅ REQUIRED (fixes deployment error)
     environment:
       name: github-pages
 
-    # ✅ Optional (removes Node 20 warning)
+    # ✅ Future-proof (Node 24 compatibility)
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -29,10 +29,10 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20   # ✅ updated (better than 18)
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci   # ✅ faster + more reliable than npm install
 
       - name: Build
         run: npm run build
