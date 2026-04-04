@@ -32,8 +32,9 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link to="/" className="flex items-center gap-3 mb-6">
-              <img src={logoImg} alt="AgenticAI Lab" className="object-contain" style={{ width: '3.5rem', height: '3.5rem' }} />
+            <Link to="/" className="flex items-center gap-2 mb-6">
+              <img src={logoImg} alt="AgenticAI Lab" className="object-contain" style={{ width: '2.75rem', height: '2.75rem' }} />
+              <span className="text-lg font-bold text-foreground tracking-tight">AgenticAI Lab</span>
             </Link>
             <p className="text-muted-foreground text-sm mb-4">
               Building the future of autonomous AI systems for enterprise transformation.
