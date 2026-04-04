@@ -10,37 +10,37 @@ permissions:
   pages: write
   id-token: write
 
+env:
+  # ✅ Removes Node 20 warning (forces Node 24)
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    # ✅ REQUIRED (fixes deployment error)
+    # ✅ REQUIRED for Pages deployment
     environment:
       name: github-pages
-
-    # ✅ Future-proof (Node 24 compatibility)
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20   # ✅ updated (better than 18)
+          node-version: 20
 
       - name: Install dependencies
-        run: npm ci   # ✅ faster + more reliable than npm install
+        run: npm ci
 
-      - name: Build
+      - name: Build project
         run: npm run build
 
-      - name: Upload Pages artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist   # ✅ correct for Vite
+          path: dist   # ✅ Vite output
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy
         uses: actions/deploy-pages@v4
