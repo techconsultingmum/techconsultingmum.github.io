@@ -20,7 +20,7 @@ const defaultMeta = {
    description:
      'AgenticAI Lab is the first AI-governed consulting firm where strategic, operational, and financial decisions are autonomously executed by an AI CEO system — under legal governance.',
    ogImage: '/og-image.png',
-   siteUrl: 'https://agenticailab.com',
+   siteUrl: 'https://agenticailab.in',
  };
  
  const SEOHead = ({

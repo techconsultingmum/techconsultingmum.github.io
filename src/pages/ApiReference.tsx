@@ -179,7 +179,7 @@ const ApiReference = () => {
               <CardContent className="p-0">
                 <pre className="p-6 overflow-x-auto text-sm">
                   <code className="text-muted-foreground">
-{`curl -X POST https://api.agenticailab.com/v1/agents/create \\
+{`curl -X POST https://api.agenticailab.in/v1/agents/create \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{

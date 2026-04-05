@@ -10,8 +10,8 @@ const WEBHOOK_URL = Deno.env.get("N8N_WEBHOOK_URL") || "https://toveyej.app.n8n.
 const ALLOWED_ORIGINS = [
   "https://agenticailab.in",
   "https://www.agenticailab.in",
-  "https://agenticailab.com",
-  "https://www.agenticailab.com",
+  "https://agenticailab.in",
+  "https://www.agenticailab.in",
   "http://localhost:8080",
   "http://localhost:5173",
   "http://localhost:3000",
@@ -279,7 +279,7 @@ const handler = async (req: Request): Promise<Response> => {
       message,
       formType,
       submittedAt: new Date().toISOString(),
-      source: 'agenticailab.com',
+      source: 'agenticailab.in',
     });
 
     // Send notification email to the business
