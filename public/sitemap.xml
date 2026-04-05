@@ -1,107 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://agenticailab.com/</loc>
+    <loc>https://agenticailab.in/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/about</loc>
+    <loc>https://agenticailab.in/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/contact</loc>
+    <loc>https://agenticailab.in/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/get-started</loc>
+    <loc>https://agenticailab.in/get-started</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/case-studies</loc>
+    <loc>https://agenticailab.in/case-studies</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/blog</loc>
+    <loc>https://agenticailab.in/blog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/blog/future-of-ai-agents-enterprise-automation</loc>
+    <loc>https://agenticailab.in/blog/future-of-ai-agents-enterprise-automation</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/blog/building-scalable-ai-solutions-best-practices</loc>
+    <loc>https://agenticailab.in/blog/building-scalable-ai-solutions-best-practices</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/blog/machine-learning-transforming-customer-service</loc>
+    <loc>https://agenticailab.in/blog/machine-learning-transforming-customer-service</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/blog/understanding-large-language-models-business</loc>
+    <loc>https://agenticailab.in/blog/understanding-large-language-models-business</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/blog/data-privacy-age-of-ai</loc>
+    <loc>https://agenticailab.in/blog/data-privacy-age-of-ai</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/blog/getting-started-ai-integration-step-by-step-guide</loc>
+    <loc>https://agenticailab.in/blog/getting-started-ai-integration-step-by-step-guide</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/careers</loc>
+    <loc>https://agenticailab.in/careers</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/services/agent-development</loc>
+    <loc>https://agenticailab.in/services/agent-development</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/services/multi-agent-systems</loc>
+    <loc>https://agenticailab.in/services/multi-agent-systems</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/services/ai-integration</loc>
+    <loc>https://agenticailab.in/services/ai-integration</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/services/strategy-consulting</loc>
+    <loc>https://agenticailab.in/services/strategy-consulting</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/documentation</loc>
+    <loc>https://agenticailab.in/documentation</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/api-reference</loc>
+    <loc>https://agenticailab.in/api-reference</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/privacy-policy</loc>
+    <loc>https://agenticailab.in/privacy-policy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://agenticailab.com/terms-of-service</loc>
+    <loc>https://agenticailab.in/terms-of-service</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

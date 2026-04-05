@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://agenticailab.com/sitemap.xml
+Sitemap: https://agenticailab.in/sitemap.xml
