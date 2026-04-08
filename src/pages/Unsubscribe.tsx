@@ -18,7 +18,10 @@ const UnsubscribePage = () => {
         .then((res) => res.json())
         .then(() => {
           setMessage(
-            "You have been unsubscribed successfully. You may now close this tab."
+            "You have been unsubscribed successfully. You may now close this tab.
+            Cheers,
+            The AgenticAI Lab Team
+            © 2026 AgenticAI Lab. All rights reserved."
           );
         })
         .catch(() => {
