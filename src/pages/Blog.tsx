@@ -104,36 +104,36 @@ const Blog = () => {
     e.preventDefault();
     setEmailError('');
     
-    // Validate email
-    const result = newsletterSchema.safeParse({ email });
-    if (!result.success) {
-      setEmailError(result.error.errors[0]?.message || 'Invalid email');
-      return;
-    }
+// Validate email
+const result = newsletterSchema.safeParse({ email });
+if (!result.success) {
+  setEmailError(result.error.errors[0]?.message || 'Invalid email');
+  return;
+}
 
-    setIsSubscribing(true);
-
-    try {
-      const sanitizedEmail = email.trim().toLowerCase();
-
-// Send to newsletter webhook (fire and forget)
-const webhookPromise = fetch(
-  `https://licimis.app.n8n.cloud/webhook/Newsletter?email=${encodeURIComponent(sanitizedEmail)}`,
-  { method: 'GET' }
-)
-  .then(res => {
-    if (!res.ok) console.warn('Newsletter webhook returned', res.status);
-  })
-  .catch(err =>
-    console.warn('Newsletter webhook error (non-blocking):', err)
-  );
+setIsSubscribing(true);
 
 try {
-  // Wait only for webhook (or even skip await if you truly want fire-and-forget)
+  const sanitizedEmail = email.trim().toLowerCase();
+
+  // Send to newsletter webhook (fire and forget)
+  const webhookPromise = fetch(
+    `https://licimis.app.n8n.cloud/webhook/Newsletter?email=${encodeURIComponent(sanitizedEmail)}`,
+    { method: 'GET' }
+  )
+    .then(res => {
+      if (!res.ok) console.warn('Newsletter webhook returned', res.status);
+    })
+    .catch(err =>
+      console.warn('Newsletter webhook error (non-blocking):', err)
+    );
+
+  // Wait for webhook (optional, but safer)
   await webhookPromise;
 
   setIsSubscribed(true);
   setEmail('');
+
   toast({
     title: "You're subscribed! 🎉",
     description: "Thanks for joining our newsletter. Stay tuned for AI insights!",
@@ -141,11 +141,13 @@ try {
 
 } catch (error) {
   console.error('Newsletter subscription error:', error);
+
   toast({
     title: "Subscription failed",
     description: "Please try again later.",
     variant: "destructive",
   });
+
 } finally {
   setIsSubscribing(false);
 }
