@@ -28,6 +28,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const ApiReference = lazy(() => import("./pages/ApiReference"));
 const Documentation = lazy(() => import("./pages/Documentation"));
+const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 
 const queryClient = new QueryClient();
 
@@ -63,6 +64,7 @@ const App = () => (
                 <Route path="/services/multi-agent-systems" element={<MultiAgentSystems />} />
                 <Route path="/services/ai-integration" element={<AIIntegration />} />
                 <Route path="/services/strategy-consulting" element={<StrategyConsulting />} />
+                <Route path="/unsubscribe" element={<Unsubscribe />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
