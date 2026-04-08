@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 
 const UnsubscribePage = () => {
   const [searchParams] = useSearchParams();
-  const email = searchParams.get("email"); // get ?email=...
+  const email = searchParams.get("email");
 
   const [message, setMessage] = useState(
     "Processing your unsubscribe request..."
@@ -12,9 +12,7 @@ const UnsubscribePage = () => {
 
   useEffect(() => {
     if (email) {
-      const apiUrl = `https://licimis.app.n8n.cloud/webhook/Newsletter?action=unsubscribe&Email=${encodeURIComponent(
-        email
-      )}`;
+      const apiUrl = `https://licimis.app.n8n.cloud/webhook/Newsletter?action=unsubscribe&Email=${encodeURIComponent(email)}`;
 
       fetch(apiUrl)
         .then((res) => res.json())
