@@ -101,58 +101,52 @@ const Blog = () => {
   const regularPosts = filteredPosts.filter(post => !post.featured || selectedCategory !== 'All');
 
   const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setEmailError('');
-    
-// Validate email
-    const result = newsletterSchema.safeParse({ email });
-    if (!result.success) {
-      setEmailError(result.error.errors[0]?.message || 'Invalid email');
-      return;
-    }
+  e.preventDefault();
+  setEmailError('');
 
-    setIsSubscribing(true);
+  // Validate email
+  const result = newsletterSchema.safeParse({ email });
+  if (!result.success) {
+    setEmailError(result.error.errors[0]?.message || 'Invalid email');
+    return;
+  }
 
-    try {
-      const sanitizedEmail = email.trim().toLowerCase();
+  setIsSubscribing(true);
 
-      // Send to newsletter webhook (fire and forget) 
-      const webhookPromise = fetch(`https://licimis.app.n8n.cloud/webhook/Newsletter?email=${encodeURIComponent(sanitizedEmail)}`, {
-        method: 'GET',
-      }).then(res => {
-        if (!res.ok) console.warn('Newsletter webhook returned', res.status);
-      }).catch(err => console.warn('Newsletter webhook error (non-blocking):', err));
+  try {
+    const sanitizedEmail = email.trim().toLowerCase();
 
-      // Also send via edge function for email notification
-      const edgeFnPromise = supabase.functions.invoke('send-contact-email', {
-        body: {
-          name: 'Newsletter Subscriber',
-          email: sanitizedEmail,
-          message: 'Newsletter subscription request',
-          formType: 'Newsletter Subscription',
-        },
-      });
+    // Send to newsletter webhook (ONLY this)
+    await fetch(
+      'https://licimis.app.n8n.cloud/webhook/Newsletter',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: sanitizedEmail }),
+      }
+    );
 
-     const [, edgeResult] = await Promise.all([webhookPromise, edgeFnPromise]);
-      if (edgeResult.error) throw edgeResult.error;
+    setIsSubscribed(true);
+    setEmail('');
 
-      setIsSubscribed(true);
-      setEmail('');
-      toast({
-        title: "You're subscribed! 🎉",
-        description: "Thanks for joining our newsletter. Stay tuned for AI insights!",
-      });
-    } catch (error) {
-      console.error('Newsletter subscription error:', error);
-      toast({
-        title: "Subscription failed",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubscribing(false);
-    }
-  };
+    toast({
+      title: "You're subscribed! 🎉",
+      description: "Thanks for joining our newsletter. Stay tuned for AI insights!",
+    });
+
+  } catch (error) {
+    console.error('Newsletter subscription error:', error);
+
+    toast({
+      title: "Subscription failed",
+      description: "Please try again later.",
+      variant: "destructive",
+    });
+
+  } finally {
+    setIsSubscribing(false);
+  }
+};
   return (
     <div className="min-h-screen bg-background">
       <SkipToContent />
