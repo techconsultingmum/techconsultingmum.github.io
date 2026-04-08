@@ -1,39 +1,52 @@
-// pages/unsubscribe.tsx
+// src/pages/Unsubscribe.tsx
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useSearchParams } from "react-router-dom";
 
 const UnsubscribePage = () => {
-  const router = useRouter();
-  const { email } = router.query; // Get email from query params
-  const [message, setMessage] = useState("Processing your unsubscribe request...");
+  const [searchParams] = useSearchParams();
+  const email = searchParams.get("email"); // get ?email=...
+
+  const [message, setMessage] = useState(
+    "Processing your unsubscribe request..."
+  );
 
   useEffect(() => {
     if (email) {
-      const apiUrl = `https://licimis.app.n8n.cloud/webhook/Newsletter?action=unsubscribe&Email=${encodeURIComponent(email as string)}`;
-      
+      const apiUrl = `https://licimis.app.n8n.cloud/webhook/Newsletter?action=unsubscribe&Email=${encodeURIComponent(
+        email
+      )}`;
+
       fetch(apiUrl)
-        .then(res => res.json())
+        .then((res) => res.json())
         .then(() => {
-          setMessage("You have been unsubscribed successfully. You may now close this tab.");
+          setMessage(
+            "You have been unsubscribed successfully. You may now close this tab."
+          );
         })
         .catch(() => {
-          setMessage("There was an error unsubscribing. Please close this tab and try again later.");
+          setMessage(
+            "There was an error unsubscribing. Please close this tab and try again later."
+          );
         });
     } else {
-      setMessage("Email not provided. Cannot process unsubscribe request.");
+      setMessage(
+        "Email not provided. Cannot process unsubscribe request."
+      );
     }
   }, [email]);
 
   return (
-    <div style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "100vh",
-      textAlign: "center",
-      padding: "20px",
-      fontFamily: "Arial, sans-serif"
-    }}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        textAlign: "center",
+        padding: "20px",
+        fontFamily: "Arial, sans-serif",
+      }}
+    >
       <h1 style={{ color: "#1a73e8" }}>{message}</h1>
     </div>
   );
