@@ -117,11 +117,17 @@ const Blog = () => {
       const sanitizedEmail = email.trim().toLowerCase();
 
       // Send to newsletter webhook (fire and forget)
-      const webhookPromise = fetch(`https://licimis.app.n8n.cloud/webhook/Newsletter?email=${encodeURIComponent(sanitizedEmail)}`, {
-        method: 'GET',
-      }).then(res => {
-        if (!res.ok) console.warn('Newsletter webhook returned', res.status);
-      }).catch(err => console.warn('Newsletter webhook error (non-blocking):', err));
+      //const webhookPromise = fetch(`https://licimis.app.n8n.cloud/webhook/Newsletter?email=${encodeURIComponent(sanitizedEmail)}`, {
+     //   method: 'GET',
+     // }).then(res => {
+     //   if (!res.ok) console.warn('Newsletter webhook returned', res.status);
+    //  }).catch(err => console.warn('Newsletter webhook error (non-blocking):', err));
+
+     // Only call the Newsletter webhook
+     fetch(`https://licimis.app.n8n.cloud/webhook/Newsletter?email=${encodeURIComponent(sanitizedEmail)}`, { method: 'GET',
+     }).then(res => {
+     if (!res.ok) console.warn('Newsletter webhook returned', res.status);
+     }).catch(err => console.warn('Newsletter webhook error (non-blocking):', err));
 
       const [, edgeResult] = await Promise.all([webhookPromise, edgeFnPromise]);
       if (edgeResult.error) throw edgeResult.error;
