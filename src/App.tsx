@@ -10,7 +10,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingSpinner from "./components/LoadingSpinner";
 
-// Lazy-loaded pages for better performance
+// Lazy-loaded pages for better performance 
 const Index = lazy(() => import("./pages/Index"));
 const CaseStudies = lazy(() => import("./pages/CaseStudies"));
 const GetStarted = lazy(() => import("./pages/GetStarted"));
