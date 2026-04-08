@@ -56,7 +56,7 @@ const UnsubscribePage = () => {
 
       {status === "success" && (
         <div style={{ marginTop: "20px", fontSize: "16px", color: "#333" }}>
-          <p>Cheers,</p>
+          <p>Wishing you all the best,</p>
           <p><strong>The AgenticAI Lab Team</strong></p>
           <p>© 2026 AgenticAI Lab. All rights reserved.</p>
         </div>
