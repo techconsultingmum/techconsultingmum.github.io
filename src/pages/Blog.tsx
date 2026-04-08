@@ -123,16 +123,6 @@ const Blog = () => {
         if (!res.ok) console.warn('Newsletter webhook returned', res.status);
       }).catch(err => console.warn('Newsletter webhook error (non-blocking):', err));
 
-      // Also send via edge function for email notification
-      const edgeFnPromise = supabase.functions.invoke('send-contact-email', {
-        body: {
-          name: 'Newsletter Subscriber',
-          email: sanitizedEmail,
-          message: 'Newsletter subscription request',
-          formType: 'Newsletter Subscription',
-        },
-      });
-
       const [, edgeResult] = await Promise.all([webhookPromise, edgeFnPromise]);
       if (edgeResult.error) throw edgeResult.error;
 
