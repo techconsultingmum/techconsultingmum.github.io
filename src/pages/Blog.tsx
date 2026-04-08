@@ -116,16 +116,21 @@ const Blog = () => {
   try {
     const sanitizedEmail = email.trim().toLowerCase();
 
-    // Send to newsletter webhook (ONLY this)
-    await fetch(
-      'https://licimis.app.n8n.cloud/webhook/Newsletter',
+    console.log('Sending email:', sanitizedEmail); // debug (optional)
+
+    // ✅ Send to n8n webhook (GET with query param)
+    const response = await fetch(
+      `https://licimis.app.n8n.cloud/webhook/Newsletter?email=${encodeURIComponent(sanitizedEmail)}`,
       {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: sanitizedEmail }),
+        method: 'GET',
       }
     );
 
+    if (!response.ok) {
+      throw new Error(`Webhook failed: ${response.status}`);
+    }
+
+    // ✅ Success UI
     setIsSubscribed(true);
     setEmail('');
 
