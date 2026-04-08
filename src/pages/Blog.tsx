@@ -116,8 +116,8 @@ const Blog = () => {
     try {
       const sanitizedEmail = email.trim().toLowerCase();
 
-// Send to newsletter webhook (fire and forget) 
-      const webhookPromise = fetch(https://licimis.app.n8n.cloud/webhook/Newsletter?email=${encodeURIComponent(sanitizedEmail)}, {
+      // Send to newsletter webhook (fire and forget) 
+      const webhookPromise = fetch(`https://licimis.app.n8n.cloud/webhook/Newsletter?email=${encodeURIComponent(sanitizedEmail)}`, {
         method: 'GET',
       }).then(res => {
         if (!res.ok) console.warn('Newsletter webhook returned', res.status);
@@ -133,7 +133,7 @@ const Blog = () => {
         },
       });
 
-      const [, edgeResult] = await Promise.all([webhookPromise, edgeFnPromise]);
+     const [, edgeResult] = await Promise.all([webhookPromise, edgeFnPromise]);
       if (edgeResult.error) throw edgeResult.error;
 
       setIsSubscribed(true);
