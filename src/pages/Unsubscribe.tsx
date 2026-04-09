@@ -14,7 +14,7 @@ const UnsubscribePage = () => {
 
   useEffect(() => {
     if (email) {
-      const apiUrl = `https://licimis.app.n8n.cloud/webhook/Newsletter?action=unsubscribe&Email=${encodeURIComponent(
+      const apiUrl = `https://citolav.app.n8n.cloud/webhook/Newsletter?action=unsubscribe&Email=${encodeURIComponent(
         email
       )}`;
 
