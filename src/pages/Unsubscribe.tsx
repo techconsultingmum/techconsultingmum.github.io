@@ -14,7 +14,7 @@ const UnsubscribePage = () => {
 
   useEffect(() => {
     if (email) {
-      const apiUrl = `https://citolav.app.n8n.cloud/webhook/Newsletter?action=unsubscribe&Email=${encodeURIComponent(
+      const apiUrl = `https://birol63041.app.n8n.cloud/webhook/Newsletter?action=unsubscribe&Email=${encodeURIComponent(
         email
       )}`;
 
