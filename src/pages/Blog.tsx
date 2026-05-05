@@ -120,7 +120,7 @@ const Blog = () => {
 
     // ✅ Send to n8n webhook (GET with query param)
     const response = await fetch(
-      `https://citolav.app.n8n.cloud/webhook/Newsletter?email=${encodeURIComponent(sanitizedEmail)}`,
+      `https://birol63041.app.n8n.cloud/webhook/Newsletter?email=${encodeURIComponent(sanitizedEmail)}`,
       {
         method: 'GET',
       }
