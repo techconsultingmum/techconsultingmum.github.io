@@ -121,7 +121,7 @@ const Blog = () => {
     // ✅ Send to n8n webhook (GET with query param)
     // Use no-cors to bypass CORS preflight; n8n webhooks don't always return CORS headers.
     await fetch(
-      `https://birol63041.app.n8n.cloud/webhook/Newsletter?email=${encodeURIComponent(sanitizedEmail)}`,
+      `https://tafaxip.app.n8n.cloud/webhook/Newsletter?email=${encodeURIComponent(sanitizedEmail)}`,
       {
         method: 'GET',
         mode: 'no-cors',
