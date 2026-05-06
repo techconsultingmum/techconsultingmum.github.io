@@ -9,6 +9,7 @@ import CookieConsent from "./components/CookieConsent";
 import ScrollToTop from "./components/ScrollToTop";
 import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingSpinner from "./components/LoadingSpinner";
+import ChatBot from "./components/ChatBot";
 
 // Lazy-loaded pages for better performance 
 const Index = lazy(() => import("./pages/Index"));
@@ -71,6 +72,7 @@ const App = () => (
             </Suspense>
             <CookieConsent />
             <ScrollToTop />
+            <ChatBot />
           </ErrorBoundary>
         </BrowserRouter>
       </TooltipProvider>
