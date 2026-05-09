@@ -11,7 +11,7 @@ const SYSTEM_PROMPT = `You are AgenticAI Lab's AI assistant — a friendly, conc
 About AgenticAI Lab:
 - Building the future of autonomous AI systems for enterprise transformation.
 - Services: Agent Development, Multi-Agent Systems, AI Integration, Strategy Consulting.
-- Contact: support@agenticailab.in, +91 8652074439.
+- Contact: info@agenticailab.in, +91 8652074439.
 - Website sections: Home, About, Case Studies, Careers, Blog, Contact, Get Started.
 
 Guidelines:

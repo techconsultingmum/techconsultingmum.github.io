@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Bot, Mail, Phone, MapPin, Clock, MessageSquare, Headphones, Building, Loader2 } from 'lucide-react';
+import { Bot, Mail, Phone, MapPin, Clock, MessageSquare, Headphones, Building, Users, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
@@ -37,8 +37,8 @@ const contactMethods = [
     icon: Mail,
     title: 'Email Us',
     description: 'Send us an email anytime',
-    value: 'support@agenticailab.in',
-    href: 'mailto:support@agenticailab.in',
+    value: 'info@agenticailab.in',
+    href: 'mailto:info@agenticailab.in',
   },
   {
     icon: Phone,
@@ -61,7 +61,7 @@ const departments = [
     icon: MessageSquare,
     title: 'Sales',
     description: 'Talk to our sales team about enterprise solutions.',
-    email: 'support@agenticailab.in',
+    email: 'sales@agenticailab.in',
   },
   {
     icon: Headphones,
@@ -73,7 +73,19 @@ const departments = [
     icon: Building,
     title: 'Partnerships',
     description: 'Explore partnership and integration opportunities.',
-    email: 'support@agenticailab.in',
+    email: 'partnerships@agenticailab.in',
+  },
+  {
+    icon: Mail,
+    title: 'Marketing',
+    description: 'Collaborate on content, events, and brand initiatives.',
+    email: 'marketing@agenticailab.in',
+  },
+  {
+    icon: Users,
+    title: 'HR & Careers',
+    description: 'Join our team or inquire about career opportunities.',
+    email: 'hr@agenticailab.in',
   },
 ];
 
