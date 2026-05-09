@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Bot, Mail, Phone, MapPin, Clock, MessageSquare, Headphones, Building, Loader2 } from 'lucide-react';
+import { Bot, Mail, Phone, MapPin, Clock, MessageSquare, Headphones, Building, Users, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
