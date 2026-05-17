@@ -8,7 +8,7 @@ import { Calendar, Clock, ArrowRight, User, Bot, Brain, Shield, Code, TrendingUp
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
- import SEOHead from '@/components/SEOHead';
+import SEOHead from '@/components/SEOHead';
 import { useToast } from '@/hooks/use-toast';
 import { newsletterSchema } from '@/lib/validations';
 import { supabase } from '@/integrations/supabase/client';
