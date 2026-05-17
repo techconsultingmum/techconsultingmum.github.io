@@ -101,55 +101,43 @@ const Blog = () => {
   const regularPosts = filteredPosts.filter(post => !post.featured || selectedCategory !== 'All');
 
   const handleSubscribe = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setEmailError('');
+    e.preventDefault();
+    setEmailError('');
 
-  // Validate email
-  const result = newsletterSchema.safeParse({ email });
-  if (!result.success) {
-    setEmailError(result.error.errors[0]?.message || 'Invalid email');
-    return;
-  }
+    // Validate email
+    const result = newsletterSchema.safeParse({ email });
+    if (!result.success) {
+      setEmailError(result.error.errors[0]?.message || 'Invalid email');
+      return;
+    }
 
-  setIsSubscribing(true);
+    setIsSubscribing(true);
 
-  try {
-    const sanitizedEmail = email.trim().toLowerCase();
+    try {
+      const { error } = await supabase.functions.invoke('newsletter-subscribe', {
+        body: { email: email.trim().toLowerCase() },
+      });
 
-    console.log('Sending email:', sanitizedEmail); // debug (optional)
+      if (error) throw error;
 
-    // ✅ Send to n8n webhook (GET with query param)
-    // Use no-cors to bypass CORS preflight; n8n webhooks don't always return CORS headers.
-    await fetch(
-      `https://tafaxip.app.n8n.cloud/webhook/Newsletter?email=${encodeURIComponent(sanitizedEmail)}`,
-      {
-        method: 'GET',
-        mode: 'no-cors',
-      }
-    );
+      setIsSubscribed(true);
+      setEmail('');
 
-    // ✅ Success UI
-    setIsSubscribed(true);
-    setEmail('');
-
-    toast({
-      title: "You're subscribed! 🎉",
-      description: "Thanks for joining our newsletter. Stay tuned for AI insights!",
-    });
-
-  } catch (error) {
-    console.error('Newsletter subscription error:', error);
-
-    toast({
-      title: "Subscription failed",
-      description: "Please try again later.",
-      variant: "destructive",
-    });
-
-  } finally {
-    setIsSubscribing(false);
-  }
-};
+      toast({
+        title: "You're subscribed! 🎉",
+        description: "Thanks for joining our newsletter. Stay tuned for AI insights!",
+      });
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      toast({
+        title: "Subscription failed",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
   return (
     <div className="min-h-screen bg-background">
       <SkipToContent />
