@@ -16,7 +16,7 @@ const PrivacyPolicy = () => {
           </h1>
           <p className="text-xl text-primary font-medium mb-2">AgenticAI Lab</p>
           <p className="text-muted-foreground mb-8">
-            Last updated: February 1, 2026
+            Last updated: May 17, 2026
           </p>
 
           <div className="prose prose-invert max-w-none space-y-8">
