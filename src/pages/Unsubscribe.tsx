@@ -15,7 +15,7 @@ const UnsubscribePage = () => {
 
   useEffect(() => {
     if (email) {
-      const apiUrl = `https://tafaxip.app.n8n.cloud/webhook/Newsletter?action=unsubscribe&Email=${encodeURIComponent(
+      const apiUrl = `https://kasewa.app.n8n.cloud/webhook/Newsletter?action=unsubscribe&Email=${encodeURIComponent(
         email
       )}`;
 
