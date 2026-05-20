@@ -26,7 +26,7 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
 }
 
 // n8n webhook for newsletter
-const NEWSLETTER_WEBHOOK = "https://tafaxip.app.n8n.cloud/webhook/Newsletter";
+const NEWSLETTER_WEBHOOK = "https://kasewa.app.n8n.cloud/webhook/Newsletter";
 
 // Simple in-memory rate limiting
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
