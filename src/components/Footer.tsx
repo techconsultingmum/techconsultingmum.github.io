@@ -20,7 +20,7 @@ const Footer = () => {
     ],
     resources: [
       { label: 'Blog', href: '/blog' },
-      { label: 'Documentation', href: '/documentation' },
+      { label: 'Documentation', href: '/docs' },
       { label: 'API Reference', href: '/api-reference' },
       { label: 'Get Started', href: '/get-started' },
     ],

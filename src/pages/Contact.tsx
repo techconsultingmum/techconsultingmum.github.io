@@ -572,7 +572,7 @@ const Contact = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button asChild variant="outline" size="lg">
-                  <Link to="/documentation">View Documentation</Link>
+                  <Link to="/docs">View Documentation</Link>
                 </Button>
                 <Button asChild size="lg">
                   <Link to="/get-started">Schedule Consultation</Link>

@@ -113,7 +113,7 @@ const ApiReference = () => {
                 Get API Key
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <Link to="/documentation">
+                <Link to="/docs">
                   <BookOpen className="w-4 h-4 mr-2" />
                   View Full Docs
                 </Link>
