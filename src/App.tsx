@@ -28,7 +28,7 @@ const StrategyConsulting = lazy(() => import("./pages/services/StrategyConsultin
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const ApiReference = lazy(() => import("./pages/ApiReference"));
-const Documentation = lazy(() => import("./pages/Documentation"));
+const Docs = lazy(() => import("./pages/Docs"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 
 const queryClient = new QueryClient();
@@ -60,7 +60,9 @@ const App = () => (
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms-of-service" element={<TermsOfService />} />
                 <Route path="/api-reference" element={<ApiReference />} />
-                <Route path="/documentation" element={<Documentation />} />
+                <Route path="/docs" element={<Docs />} />
+                <Route path="/docs/*" element={<Docs />} />
+                <Route path="/documentation" element={<Docs />} />
                 <Route path="/services/agent-development" element={<AgentDevelopment />} />
                 <Route path="/services/multi-agent-systems" element={<MultiAgentSystems />} />
                 <Route path="/services/ai-integration" element={<AIIntegration />} />
