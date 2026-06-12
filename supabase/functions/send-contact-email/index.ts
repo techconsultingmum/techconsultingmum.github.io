@@ -5,6 +5,30 @@ const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 // Webhook URL stored server-side only
 const WEBHOOK_URL = Deno.env.get("N8N_WEBHOOK_URL") || "https://vikipaw.app.n8n.cloud/webhook/agenticai-lead";
+const WEBHOOK_TIMEOUT_MS = 8000;
+const WEBHOOK_MAX_ATTEMPTS = 3;
+
+function genRequestId(): string {
+  return crypto.randomUUID();
+}
+
+function log(level: "info" | "warn" | "error", requestId: string, msg: string, extra?: Record<string, unknown>) {
+  const entry = { level, requestId, msg, ts: new Date().toISOString(), ...(extra || {}) };
+  const line = JSON.stringify(entry);
+  if (level === "error") console.error(line);
+  else if (level === "warn") console.warn(line);
+  else console.log(line);
+}
+
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 // Allowed origins for CORS - restrict to known domains
 const ALLOWED_ORIGINS = [
@@ -184,30 +208,67 @@ function checkRateLimit(clientIp: string): boolean {
   return true;
 }
 
-async function sendToWebhook(payload: Record<string, unknown>): Promise<void> {
-  try {
-    const response = await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-    
-    if (!response.ok) {
-      console.warn(`Webhook returned status ${response.status}`);
-    } else {
-      console.log("Webhook notification sent successfully");
+async function sendToWebhook(payload: Record<string, unknown>, requestId: string): Promise<void> {
+  const body = JSON.stringify({ ...payload, requestId });
+  const summary = {
+    requestId,
+    target: WEBHOOK_URL,
+    formType: payload.formType,
+    emailDomain: typeof payload.email === "string" ? payload.email.split("@")[1] : null,
+    payloadBytes: body.length,
+  };
+
+  for (let attempt = 1; attempt <= WEBHOOK_MAX_ATTEMPTS; attempt++) {
+    const startedAt = Date.now();
+    try {
+      const response = await fetchWithTimeout(
+        WEBHOOK_URL,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
+          body,
+        },
+        WEBHOOK_TIMEOUT_MS,
+      );
+      const durationMs = Date.now() - startedAt;
+
+      if (response.ok) {
+        log("info", requestId, "webhook.success", { ...summary, attempt, status: response.status, durationMs });
+        return;
+      }
+
+      // 4xx (except 408/429) — non-retryable
+      if (response.status >= 400 && response.status < 500 && response.status !== 408 && response.status !== 429) {
+        const text = await response.text().catch(() => "");
+        log("error", requestId, "webhook.client_error", { ...summary, attempt, status: response.status, durationMs, responseSnippet: text.slice(0, 300) });
+        return;
+      }
+
+      log("warn", requestId, "webhook.retryable_status", { ...summary, attempt, status: response.status, durationMs });
+    } catch (error) {
+      const durationMs = Date.now() - startedAt;
+      const isAbort = error instanceof DOMException && error.name === "AbortError";
+      log("warn", requestId, isAbort ? "webhook.timeout" : "webhook.network_error", {
+        ...summary,
+        attempt,
+        durationMs,
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
-  } catch (error) {
-    // Fire and forget - don't fail the main request
-    console.error("Webhook error (non-blocking):", error);
+
+    if (attempt < WEBHOOK_MAX_ATTEMPTS) {
+      const backoffMs = 250 * Math.pow(2, attempt - 1) + Math.floor(Math.random() * 150);
+      await new Promise((r) => setTimeout(r, backoffMs));
+    }
   }
+
+  log("error", requestId, "webhook.exhausted", { ...summary, attempts: WEBHOOK_MAX_ATTEMPTS });
 }
 
 const handler = async (req: Request): Promise<Response> => {
   const origin = req.headers.get("origin");
   const corsHeaders = getCorsHeaders(origin);
+  const requestId = req.headers.get("x-request-id") || genRequestId();
 
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -222,46 +283,60 @@ const handler = async (req: Request): Promise<Response> => {
     
     // Check rate limit
     if (!checkRateLimit(clientIp)) {
-      console.warn(`Rate limit exceeded for IP: ${clientIp}`);
+      log("warn", requestId, "rate_limit.exceeded", { clientIp });
       return new Response(
-        JSON.stringify({ error: "Too many requests. Please try again later." }),
+        JSON.stringify({ error: "Too many requests. Please try again later.", requestId }),
         {
           status: 429,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+          headers: { "Content-Type": "application/json", "X-Request-Id": requestId, ...corsHeaders },
         }
       );
     }
 
-    const rawData = await req.json();
+    const rawData = await req.json().catch(() => null);
+    if (!rawData || typeof rawData !== "object") {
+      log("warn", requestId, "request.invalid_json");
+      return new Response(
+        JSON.stringify({ error: "Invalid JSON body.", requestId }),
+        { status: 400, headers: { "Content-Type": "application/json", "X-Request-Id": requestId, ...corsHeaders } },
+      );
+    }
     
     // Validate and sanitize input
     const { valid, errors, sanitized, isBot } = validateAndSanitizeInput(rawData);
     
     // Silently accept but don't process bot submissions (honeypot)
     if (isBot) {
-      return new Response(JSON.stringify({ success: true }), {
+      log("warn", requestId, "honeypot.triggered", { clientIp });
+      return new Response(JSON.stringify({ success: true, requestId }), {
         status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", "X-Request-Id": requestId, ...corsHeaders },
       });
     }
     
     if (!valid) {
-      console.warn("Validation failed:", errors);
+      log("warn", requestId, "validation.failed", { errors });
       return new Response(
-        JSON.stringify({ error: "Invalid input. Please check your form data." }),
+        JSON.stringify({
+          error: "Invalid input. Please check your form data.",
+          fieldErrors: errors,
+          requestId,
+        }),
         {
           status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+          headers: { "Content-Type": "application/json", "X-Request-Id": requestId, ...corsHeaders },
         }
       );
     }
     
     const { name, email, phone, company, jobTitle, industry, message, formType, budget, timeline, serviceInterest, problemStatement } = sanitized;
 
-    console.log("Received contact form submission:", { 
-      name: name.slice(0, 20) + "...", 
-      emailDomain: email.split("@")[1], 
-      formType 
+    log("info", requestId, "lead.received", {
+      clientIp,
+      emailDomain: email.split("@")[1],
+      formType,
+      hasCompany: !!company,
+      hasPhone: !!phone,
     });
 
     // Send to n8n webhook (fire and forget)
@@ -280,7 +355,7 @@ const handler = async (req: Request): Promise<Response> => {
       formType,
       submittedAt: new Date().toISOString(),
       source: 'agenticailab.in',
-    });
+    }, requestId);
 
     // Send notification email to the business
     const notificationEmail = await resend.emails.send({
@@ -326,10 +401,12 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Confirmation email sent:", confirmationEmail.data?.id || "success");
 
-    return new Response(JSON.stringify({ success: true }), {
+    log("info", requestId, "lead.completed");
+    return new Response(JSON.stringify({ success: true, requestId }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
+        "X-Request-Id": requestId,
         ...corsHeaders,
       },
     });
@@ -337,17 +414,14 @@ const handler = async (req: Request): Promise<Response> => {
     // Log full error details server-side for debugging
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : undefined;
-    console.error("Error in send-contact-email function:", {
-      message: errorMessage,
-      stack: errorStack,
-    });
+    log("error", requestId, "handler.unhandled_error", { message: errorMessage, stack: errorStack });
     
     // Return generic error message to client - never expose internal details
     return new Response(
-      JSON.stringify({ error: "Unable to send message. Please try again later." }),
+      JSON.stringify({ error: "Unable to send message. Please try again later.", requestId }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", "X-Request-Id": requestId, ...corsHeaders },
       }
     );
   }
