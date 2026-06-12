@@ -357,12 +357,13 @@ const handler = async (req: Request): Promise<Response> => {
       source: 'agenticailab.in',
     }, requestId);
 
-    // Send notification email to the business
-    const notificationEmail = await resend.emails.send({
-      from: "Contact Form <onboarding@resend.dev>",
-      to: ["info@agenticailab.in"],
-      subject: `New ${formType} Request from ${name}`,
-      html: `
+    // Send notification email to the business (non-blocking failure)
+    try {
+      const notificationEmail = await resend.emails.send({
+        from: "Contact Form <onboarding@resend.dev>",
+        to: ["info@agenticailab.in"],
+        subject: `New ${formType} Request from ${name}`,
+        html: `
         <h2>New ${formType} Request</h2>
         <p><strong>Name:</strong> ${name}</p>
         <p><strong>Email:</strong> ${email}</p>
@@ -378,17 +379,20 @@ const handler = async (req: Request): Promise<Response> => {
         <p>${message}</p>
         <hr>
         <p><em>Sent from your website contact form</em></p>
-      `,
-    });
+        `,
+      });
+      log("info", requestId, "email.notification_sent", { id: notificationEmail.data?.id });
+    } catch (err) {
+      log("error", requestId, "email.notification_failed", { error: err instanceof Error ? err.message : String(err) });
+    }
 
-    console.log("Notification email sent:", notificationEmail.data?.id || "success");
-
-    // Send confirmation email to the user
-    const confirmationEmail = await resend.emails.send({
-      from: "AgenticAI Lab <onboarding@resend.dev>",
-      to: [email],
-      subject: "We received your message!",
-      html: `
+    // Send confirmation email to the user (non-blocking failure)
+    try {
+      const confirmationEmail = await resend.emails.send({
+        from: "AgenticAI Lab <onboarding@resend.dev>",
+        to: [email],
+        subject: "We received your message!",
+        html: `
         <h1>Thank you for contacting us, ${name}!</h1>
         <p>We have received your ${formType.toLowerCase()} request and will get back to you within 24 hours.</p>
         <p>Here's a summary of your message:</p>
@@ -396,10 +400,12 @@ const handler = async (req: Request): Promise<Response> => {
           ${message}
         </blockquote>
         <p>Best regards,<br>The AgenticAI Lab Team</p>
-      `,
-    });
-
-    console.log("Confirmation email sent:", confirmationEmail.data?.id || "success");
+        `,
+      });
+      log("info", requestId, "email.confirmation_sent", { id: confirmationEmail.data?.id });
+    } catch (err) {
+      log("error", requestId, "email.confirmation_failed", { error: err instanceof Error ? err.message : String(err) });
+    }
 
     log("info", requestId, "lead.completed");
     return new Response(JSON.stringify({ success: true, requestId }), {
