@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import {
   budgetOptions,
   timelineOptions,
@@ -42,6 +42,8 @@ const ContactFormDialog = ({ children }: ContactFormDialogProps) => {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitState, setSubmitState] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitMessage, setSubmitMessage] = useState<string>('');
   const { toast } = useToast();
   const [formData, setFormData] = useState(initialFormData);
   const [honeypot, setHoneypot] = useState('');
@@ -73,11 +75,15 @@ const ContactFormDialog = ({ children }: ContactFormDialogProps) => {
     setFormData(initialFormData);
     setErrors({});
     setHoneypot('');
+    setSubmitState('idle');
+    setSubmitMessage('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+    setSubmitState('idle');
+    setSubmitMessage('');
     
     // Validate using Zod schema
     const result = contactFormSchema.safeParse(formData);
@@ -127,7 +133,7 @@ const ContactFormDialog = ({ children }: ContactFormDialogProps) => {
       ].filter(Boolean).join('\n\n');
 
       // Send via edge function (webhook handled server-side)
-      const { error } = await supabase.functions.invoke('send-contact-email', {
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
         body: {
           name: formData.name.trim(),
           email: formData.email.trim(),
@@ -145,20 +151,44 @@ const ContactFormDialog = ({ children }: ContactFormDialogProps) => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Surface server-side field errors when present
+        const ctx = (error as { context?: { fieldErrors?: string[] } }).context;
+        if (ctx?.fieldErrors?.length) {
+          throw new Error(ctx.fieldErrors.join(' '));
+        }
+        throw error;
+      }
+
+      const requestId = (data as { requestId?: string })?.requestId;
+      if (requestId) console.info('[lead] request id:', requestId);
+
+      setSubmitState('success');
+      setSubmitMessage("Thanks — we've received your request and will reply within 24 hours.");
 
       toast({
         title: "Thanks! 🎉",
         description: "Our AI team will review your request shortly.",
       });
 
-      resetForm();
-      setOpen(false);
+      setFormData(initialFormData);
+      setHoneypot('');
+      // Close after a short delay so the user sees the inline confirmation
+      setTimeout(() => {
+        setOpen(false);
+        setSubmitState('idle');
+        setSubmitMessage('');
+      }, 1800);
     } catch (error: unknown) {
       console.error('Error sending message:', error);
+      const message = error instanceof Error && error.message
+        ? error.message
+        : "We couldn't send your message. Please try again in a moment.";
+      setSubmitState('error');
+      setSubmitMessage(message);
       toast({
         title: "Error",
-        description: "Failed to send message. Please try again later.",
+        description: message,
         variant: "destructive",
       });
     } finally {
@@ -394,6 +424,27 @@ const ContactFormDialog = ({ children }: ContactFormDialogProps) => {
               'Get AI Solution'
             )}
           </Button>
+
+          {submitState === 'success' && (
+            <div
+              role="status"
+              aria-live="polite"
+              className="flex items-start gap-2 rounded-md border border-primary/30 bg-primary/10 p-3 text-sm text-foreground"
+            >
+              <CheckCircle2 className="h-4 w-4 mt-0.5 text-primary shrink-0" />
+              <span>{submitMessage}</span>
+            </div>
+          )}
+          {submitState === 'error' && (
+            <div
+              role="alert"
+              aria-live="assertive"
+              className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-foreground"
+            >
+              <AlertCircle className="h-4 w-4 mt-0.5 text-destructive shrink-0" />
+              <span>{submitMessage}</span>
+            </div>
+          )}
         </form>
       </DialogContent>
     </Dialog>
