@@ -15,7 +15,7 @@ const UnsubscribePage = () => {
 
   useEffect(() => {
     if (email) {
-      const apiUrl = `https://lolesa.app.n8n.cloud/webhook/Newsletter?action=unsubscribe&Email=${encodeURIComponent(
+      const apiUrl = `https://miwibav.app.n8n.cloud/webhook/Newsletter?action=unsubscribe&Email=${encodeURIComponent(
         email
       )}`;
 
