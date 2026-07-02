@@ -33,7 +33,7 @@ const useCases = [
 const AgentDevelopment = () => {
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead title="Agent Development" description="Custom autonomous AI agent development with natural language understanding, decision-making, and continuous learning capabilities." canonicalUrl="/services/agent-development" />
+      <SEOHead title="Agent Development" description="Custom autonomous AI agents with natural language understanding, decision-making & continuous learning." canonicalUrl="/services/agent-development" />
       <SkipToContent />
       <Header />
       <main id="main-content">

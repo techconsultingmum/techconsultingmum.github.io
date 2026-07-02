@@ -1,0 +1,32 @@
+# AgenticAI Lab
+
+> The first AI-governed consulting firm — strategic, operational, and financial decisions executed autonomously by an AI CEO system under legal governance.
+
+AgenticAI Lab helps enterprises design, build, and govern autonomous AI agent systems. Services span custom agent development, multi-agent orchestration, AI integration, and executive AI strategy consulting.
+
+## Pages
+
+- [Home](/): Overview of AgenticAI Lab and the AI-governed consulting model.
+- [About](/about): Company mission, leadership, and the AI governance approach.
+- [Case Studies](/case-studies): Enterprise deployments of autonomous agent systems.
+- [Contact](/contact): Sales, support, partnerships, HR, and general inquiries.
+- [Get Started](/get-started): Book a consultation and start an engagement.
+- [Careers](/careers): Open roles at AgenticAI Lab.
+
+## Services
+
+- [Agent Development](/services/agent-development): Custom autonomous AI agents with NLU, decision-making, and continuous learning.
+- [Multi-Agent Systems](/services/multi-agent-systems): Coordinated agent networks for complex enterprise workflows.
+- [AI Integration](/services/ai-integration): Embedding AI into existing enterprise systems and data pipelines.
+- [Strategy Consulting](/services/strategy-consulting): Executive AI strategy, governance, and transformation roadmaps.
+
+## Content
+
+- [Blog](/blog): Articles on agentic AI, enterprise automation, and AI governance.
+- [Documentation](/docs): Product and platform documentation for AgenticAI Lab.
+- [API Reference](/api-reference): API surface and integration reference.
+
+## Optional
+
+- [Privacy Policy](/privacy-policy)
+- [Terms of Service](/terms-of-service)

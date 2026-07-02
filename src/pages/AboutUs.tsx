@@ -67,7 +67,7 @@ const AboutUs = () => {
       <SkipToContent />
        <SEOHead 
          title="About Us"
-         description="AgenticAI Lab is the first AI-governed consulting firm. Strategic, operational, and financial decisions are autonomously executed by an AI CEO system — under legal governance."
+         description="AgenticAI Lab: the first AI-governed consulting firm. Strategic, operational & financial decisions run by an AI CEO under legal governance."
          canonicalUrl="/about"
        />
       <Header />

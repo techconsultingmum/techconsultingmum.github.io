@@ -18,7 +18,7 @@
 const defaultMeta = {
    title: 'AgenticAI Lab — The First AI-Governed Consulting Firm',
    description:
-     'AgenticAI Lab is the first AI-governed consulting firm where strategic, operational, and financial decisions are autonomously executed by an AI CEO system — under legal governance.',
+      'The first AI-governed consulting firm — strategic, operational & financial decisions executed autonomously by an AI CEO under legal governance.',
    ogImage: '/og-image.png',
    siteUrl: 'https://agenticailab.in',
  };
@@ -46,6 +46,7 @@ const defaultMeta = {
  
     // Build JSON-LD for homepage
     const isHomePage = canonicalUrl === '/';
+    const isContactPage = canonicalUrl === '/contact';
 
     return (
       <Helmet>
@@ -97,6 +98,53 @@ const defaultMeta = {
                 "target": `${defaultMeta.siteUrl}/blog?q={search_term_string}`,
                 "query-input": "required name=search_term_string"
               }
+            })}
+          </script>
+        )}
+
+        {/* Organization schema — homepage only */}
+        {isHomePage && (
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "AgenticAI Lab",
+              "description": "The First AI-Governed Consulting Firm",
+              "url": defaultMeta.siteUrl,
+              "logo": `${defaultMeta.siteUrl}/og-image.png`,
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "email": "info@agenticailab.in",
+                "telephone": "+91-8652074439",
+                "contactType": "customer service"
+              },
+              "sameAs": [
+                "https://www.linkedin.com/company/agenticai-lab/",
+                "https://x.com/AgenticAILab",
+                "https://github.com/techconsultingmum"
+              ]
+            })}
+          </script>
+        )}
+
+        {/* LocalBusiness schema — contact page */}
+        {(isContactPage || canonicalUrl === '/about') && (
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "LocalBusiness",
+              "name": "AgenticAI Lab",
+              "image": `${defaultMeta.siteUrl}/og-image.png`,
+              "url": defaultMeta.siteUrl,
+              "telephone": "+91-8652074439",
+              "email": "info@agenticailab.in",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Mumbai",
+                "addressRegion": "MH",
+                "addressCountry": "IN"
+              },
+              "priceRange": "$$$"
             })}
           </script>
         )}
