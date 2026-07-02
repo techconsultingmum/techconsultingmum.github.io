@@ -25,6 +25,11 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
+function isAllowedOrigin(origin: string | null): boolean {
+  if (!origin) return false;
+  return ALLOWED_ORIGINS.includes(origin) || LOVABLE_PREVIEW_PATTERN.test(origin);
+}
+
 const SYSTEM_PROMPT = `You are AgenticAI Lab's AI assistant — a friendly, concise expert on AgenticAI Lab's services.
 
 About AgenticAI Lab:
@@ -61,8 +66,25 @@ function isValidMessages(value: unknown): value is ChatMessage[] {
 
 // Simple in-memory rate limiting (resets on function cold start)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT_MAX = 10; // Max requests per window
+const RATE_LIMIT_MAX = 8; // Max requests per window
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour window
+
+// Short burst limiter to blunt cold-start resets
+const burstMap = new Map<string, { count: number; resetTime: number }>();
+const BURST_MAX = 4;
+const BURST_WINDOW_MS = 60 * 1000; // 1 minute
+
+function checkBurst(clientIp: string): boolean {
+  const now = Date.now();
+  const rec = burstMap.get(clientIp);
+  if (!rec || now > rec.resetTime) {
+    burstMap.set(clientIp, { count: 1, resetTime: now + BURST_WINDOW_MS });
+    return true;
+  }
+  if (rec.count >= BURST_MAX) return false;
+  rec.count++;
+  return true;
+}
 
 function checkRateLimit(clientIp: string): boolean {
   const now = Date.now();
@@ -90,13 +112,39 @@ serve(async (req) => {
   }
 
   try {
+    // Enforce same-origin: block direct/scripted calls from disallowed origins
+    // (browsers always send Origin on cross-origin fetch/XHR). This prevents
+    // third-party sites and most bots from consuming the AI budget.
+    if (!isAllowedOrigin(origin)) {
+      return new Response(JSON.stringify({ error: "Forbidden origin." }), {
+        status: 403,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Require the project publishable/anon key so random callers without the
+    // token cannot hit the endpoint. This is not a user auth boundary, but it
+    // filters out drive-by abuse.
+    const EXPECTED_ANON = Deno.env.get("SUPABASE_ANON_KEY") ||
+      Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
+    const authHeader = req.headers.get("authorization") || "";
+    const bearer = authHeader.toLowerCase().startsWith("bearer ")
+      ? authHeader.slice(7).trim()
+      : "";
+    if (!EXPECTED_ANON || bearer !== EXPECTED_ANON) {
+      return new Response(JSON.stringify({ error: "Unauthorized." }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
     // Get client IP for rate limiting
     const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
                        req.headers.get("cf-connecting-ip") ||
                        "unknown";
 
-    // Check rate limit
-    if (!checkRateLimit(clientIp)) {
+    // Burst + hourly rate limits
+    if (!checkBurst(clientIp) || !checkRateLimit(clientIp)) {
       console.warn(`Rate limit exceeded for IP: ${clientIp}`);
       return new Response(
         JSON.stringify({ error: "Too many requests. Please try again later." }),
