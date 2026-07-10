@@ -83,6 +83,17 @@ const blogPosts = [
     readTime: '5 min read',
     icon: Sparkles,
   },
+  {
+    id: 7,
+    slug: 'what-is-an-ai-agent',
+    title: 'What is an AI Agent: A Guide for Enterprise Leaders',
+    excerpt: 'A foundational guide to AI agents for enterprise leaders — how autonomous agentic systems differ from static chatbots, and why governance matters.',
+    category: 'AI Trends',
+    author: 'Sateesh Singh',
+    date: 'Feb 3, 2026',
+    readTime: '9 min read',
+    icon: Bot,
+  },
 ];
 
 const Blog = () => {
