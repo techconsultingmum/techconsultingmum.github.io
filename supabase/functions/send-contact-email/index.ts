@@ -4,7 +4,7 @@ import { Resend } from "https://esm.sh/resend@2.0.0";
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 // Webhook URL stored server-side only
-const WEBHOOK_URL = Deno.env.get("N8N_WEBHOOK_URL") || "https://pilabil3.app.n8n.cloud/webhook/agenticai-lead";
+const WEBHOOK_URL = Deno.env.get("N8N_WEBHOOK_URL") || "https://dafija.app.n8n.cloud/webhook/agenticai-lead";
 const WEBHOOK_TIMEOUT_MS = 8000;
 const WEBHOOK_MAX_ATTEMPTS = 3;
 
