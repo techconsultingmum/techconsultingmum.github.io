@@ -61,6 +61,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://agenticailab.in/blog/what-is-an-ai-agent</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://agenticailab.in/careers</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
