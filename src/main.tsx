@@ -2,12 +2,12 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-
-// Force dark mode since the design system is dark-only
-document.documentElement.classList.add('dark');
+import { ThemeProvider } from "./components/theme-provider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
   </StrictMode>
 );

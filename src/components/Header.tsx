@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
+import ThemeToggle from './ThemeToggle';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -83,7 +84,8 @@ const Header = () => {
           </nav>
 
           {/* CTA Button */}
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center gap-2">
+            <ThemeToggle />
             <Link to="/get-started">
               <Button variant="default" size="lg">
                 Get Started
@@ -92,15 +94,18 @@ const Header = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 text-foreground rounded-lg hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-menu"
-            aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-          >
-            {isMenuOpen ? <X className="w-6 h-6" aria-hidden="true" /> : <Menu className="w-6 h-6" aria-hidden="true" />}
-          </button>
+          <div className="md:hidden flex items-center gap-1">
+            <ThemeToggle />
+            <button
+              className="p-2 text-foreground rounded-lg hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
+              aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            >
+              {isMenuOpen ? <X className="w-6 h-6" aria-hidden="true" /> : <Menu className="w-6 h-6" aria-hidden="true" />}
+            </button>
+          </div>
         </div>
       </div>
 
