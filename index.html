@@ -10,6 +10,21 @@
     <meta name="theme-color" content="#3B82F6" />
     <link rel="canonical" href="https://agenticailab.in/" />
 
+    <!-- Prevent FOUC: apply theme before render -->
+    <script>
+      (function() {
+        try {
+          var stored = localStorage.getItem('theme');
+          var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var isDark = stored ? stored === 'dark' || (stored === 'system' && systemDark) : true;
+          document.documentElement.classList.toggle('dark', isDark);
+          document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://agenticailab.in/" />
