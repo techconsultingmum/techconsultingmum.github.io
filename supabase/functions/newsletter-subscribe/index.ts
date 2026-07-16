@@ -28,7 +28,7 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
-const NEWSLETTER_WEBHOOK = "https://jeceto5.app.n8n.cloud/webhook/Newsletter";
+const NEWSLETTER_WEBHOOK = "https://citot.app.n8n.cloud/webhook/Newsletter";
 const WEBHOOK_TIMEOUT_MS = 8000;
 const WEBHOOK_MAX_ATTEMPTS = 3;
 
