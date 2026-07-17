@@ -1,50 +1,34 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
-type Theme = "light" | "dark" | "system";
+type Theme = "light" | "dark";
 
 type ThemeContextValue = {
   theme: Theme;
-  resolvedTheme: "light" | "dark";
+  resolvedTheme: Theme;
   setTheme: (t: Theme) => void;
+  toggleTheme: () => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 const STORAGE_KEY = "theme";
 
-function getSystemTheme(): "light" | "dark" {
-  if (typeof window === "undefined") return "dark";
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
-
-function applyTheme(theme: Theme): "light" | "dark" {
-  const resolved = theme === "system" ? getSystemTheme() : theme;
+function applyTheme(theme: Theme): Theme {
   const root = document.documentElement;
-  root.classList.toggle("dark", resolved === "dark");
-  root.style.colorScheme = resolved;
-  return resolved;
+  root.classList.toggle("dark", theme === "dark");
+  root.style.colorScheme = theme;
+  return theme;
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window === "undefined") return "dark";
-    const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    return stored ?? "dark";
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored === "light" || stored === "dark" ? stored : "dark";
   });
-  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">(() =>
-    theme === "system" ? getSystemTheme() : theme
-  );
 
   useEffect(() => {
-    setResolvedTheme(applyTheme(theme));
-  }, [theme]);
-
-  useEffect(() => {
-    if (theme !== "system") return;
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = () => setResolvedTheme(applyTheme("system"));
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
+    applyTheme(theme);
   }, [theme]);
 
   const setTheme = (t: Theme) => {
@@ -52,8 +36,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setThemeState(t);
   };
 
+  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
+
   return (
-    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, resolvedTheme: theme, setTheme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
