@@ -12,6 +12,7 @@ import SEOHead from '@/components/SEOHead';
 import { useToast } from '@/hooks/use-toast';
 import { newsletterSchema } from '@/lib/validations';
 import { supabase } from '@/integrations/supabase/client';
+import { FunctionsHttpError } from '@supabase/supabase-js';
 
 const categories = ['All', 'AI Trends', 'Development', 'Case Study', 'Security', 'Tutorials'];
 
@@ -126,7 +127,7 @@ const Blog = () => {
 
     try {
       const { error } = await supabase.functions.invoke('newsletter-subscribe', {
-        body: { email: email.trim().toLowerCase() },
+        body: { email: email.trim().toLowerCase(), action: 'subscribe' },
       });
 
       if (error) throw error;
@@ -138,11 +139,33 @@ const Blog = () => {
         title: "You're subscribed! 🎉",
         description: "Thanks for joining our newsletter. Stay tuned for AI insights!",
       });
-    } catch (error) {
-      console.error('Newsletter subscription error:', error);
+    } catch (err) {
+      let status = 0;
+      let serverMessage = '';
+      let requestId = '';
+      if (err instanceof FunctionsHttpError) {
+        status = err.context?.status ?? 0;
+        try {
+          const body = await err.context.json();
+          serverMessage = body?.error || '';
+          requestId = body?.requestId || '';
+        } catch { /* body not JSON */ }
+      }
+      console.error('Newsletter subscription error:', {
+        status,
+        message: serverMessage || (err as Error)?.message,
+        requestId,
+      });
+
+      let description = "We couldn't complete your subscription right now. Please try again shortly.";
+      if (status === 400) description = serverMessage || "Please enter a valid email address.";
+      else if (status === 429) description = "Too many attempts. Please wait a minute and try again.";
+      else if (status === 502 || status === 503) description = "Our newsletter service is temporarily unavailable. Please try again shortly.";
+      else if (!navigator.onLine) description = "You appear to be offline. Check your connection and try again.";
+
       toast({
         title: "Subscription failed",
-        description: "Please try again later.",
+        description: requestId ? `${description} (Ref: ${requestId.slice(0, 8)})` : description,
         variant: "destructive",
       });
     } finally {
