@@ -125,13 +125,15 @@ serve(async (req) => {
     // Require the project publishable/anon key so random callers without the
     // token cannot hit the endpoint. This is not a user auth boundary, but it
     // filters out drive-by abuse.
-    const EXPECTED_ANON = Deno.env.get("SUPABASE_ANON_KEY") ||
-      Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
+    const expectedKeys = [
+      Deno.env.get("SUPABASE_ANON_KEY"),
+      Deno.env.get("SUPABASE_PUBLISHABLE_KEY"),
+    ].filter((v): v is string => typeof v === "string" && v.length > 0);
     const authHeader = req.headers.get("authorization") || "";
     const bearer = authHeader.toLowerCase().startsWith("bearer ")
       ? authHeader.slice(7).trim()
       : "";
-    if (!EXPECTED_ANON || bearer !== EXPECTED_ANON) {
+    if (expectedKeys.length === 0 || !expectedKeys.includes(bearer)) {
       return new Response(JSON.stringify({ error: "Unauthorized." }), {
         status: 401,
         headers: { "Content-Type": "application/json", ...corsHeaders },
