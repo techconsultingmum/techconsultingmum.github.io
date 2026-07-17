@@ -14,7 +14,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
        <SEOHead 
          canonicalUrl="/"
-         description="The first AI-governed consulting firm — strategic, operational & financial decisions executed autonomously by an AI CEO under legal governance."
+          description="Build intelligent agentic AI solutions for enterprise transformation with autonomous agents, AI integration, and governed consulting systems."
        />
        <SkipToContent />
       <Header />

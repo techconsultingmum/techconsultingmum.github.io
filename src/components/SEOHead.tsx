@@ -18,10 +18,21 @@
 const defaultMeta = {
    title: 'AgenticAI Lab — The First AI-Governed Consulting Firm',
    description:
-      'The first AI-governed consulting firm — strategic, operational & financial decisions executed autonomously by an AI CEO under legal governance.',
+      'Build intelligent agentic AI solutions for enterprise transformation with autonomous agents, AI integration, and governed consulting systems.',
    ogImage: '/og-image.png',
    siteUrl: 'https://agenticailab.in',
  };
+
+const normalizeCanonicalPath = (path: string) => {
+  if (path === '/') return '/';
+  return path.endsWith('/') ? path : `${path}/`;
+};
+
+const toIsoDate = (value?: string) => {
+  if (!value) return undefined;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? value : parsed.toISOString();
+};
  
  const SEOHead = ({
    title,
@@ -40,13 +51,17 @@ const defaultMeta = {
      ? ogImage
      : `${defaultMeta.siteUrl}${ogImage}`;
  
-   const canonical = canonicalUrl
-     ? `${defaultMeta.siteUrl}${canonicalUrl}`
+   const canonicalPath = canonicalUrl ? normalizeCanonicalPath(canonicalUrl) : undefined;
+
+   const canonical = canonicalPath
+     ? `${defaultMeta.siteUrl}${canonicalPath}`
      : undefined;
  
     // Build JSON-LD for homepage
-    const isHomePage = canonicalUrl === '/';
-    const isContactPage = canonicalUrl === '/contact';
+    const isHomePage = canonicalPath === '/';
+    const isContactPage = canonicalPath === '/contact/';
+    const publishedTime = toIsoDate(article?.publishedTime);
+    const modifiedTime = toIsoDate(article?.modifiedTime || article?.publishedTime);
 
     return (
       <Helmet>
@@ -71,11 +86,11 @@ const defaultMeta = {
         <meta name="twitter:image" content={fullOgImage} />
   
         {/* Article-specific meta (for blog posts) */}
-        {ogType === 'article' && article?.publishedTime && (
-          <meta property="article:published_time" content={article.publishedTime} />
+        {ogType === 'article' && publishedTime && (
+          <meta property="article:published_time" content={publishedTime} />
         )}
-        {ogType === 'article' && article?.modifiedTime && (
-          <meta property="article:modified_time" content={article.modifiedTime} />
+        {ogType === 'article' && modifiedTime && (
+          <meta property="article:modified_time" content={modifiedTime} />
         )}
         {ogType === 'article' && article?.author && (
           <meta property="article:author" content={article.author} />
@@ -128,7 +143,7 @@ const defaultMeta = {
         )}
 
         {/* LocalBusiness schema — contact page */}
-        {(isContactPage || canonicalUrl === '/about') && (
+        {(isContactPage || canonicalPath === '/about/') && (
           <script type="application/ld+json">
             {JSON.stringify({
               "@context": "https://schema.org",
@@ -170,8 +185,9 @@ const defaultMeta = {
                   "url": `${defaultMeta.siteUrl}/og-image.png`
                 }
               },
-              ...(article.publishedTime && { "datePublished": article.publishedTime }),
-              ...(article.modifiedTime && { "dateModified": article.modifiedTime })
+              "mainEntityOfPage": canonical,
+              ...(publishedTime && { "datePublished": publishedTime }),
+              ...(modifiedTime && { "dateModified": modifiedTime })
             })}
           </script>
         )}

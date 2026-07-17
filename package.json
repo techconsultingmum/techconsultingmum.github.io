@@ -94,6 +94,9 @@
     "dev": "vite dev",
     "format": "prettier --write .",
     "lint": "eslint .",
+    "lighthouse:ci": "node scripts/lighthouse-check.mjs",
+    "postbuild": "node scripts/generate-static-routes.mjs",
+    "smoke:test": "node scripts/smoke-test.mjs",
     "preview": "vite preview"
   },
   "sideEffects": false,

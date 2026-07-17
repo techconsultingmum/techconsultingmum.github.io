@@ -43,4 +43,18 @@ jobs:
           path: dist   # ✅ Vite output
 
       - name: Deploy
+        id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Smoke test production endpoints
+        env:
+          SITE_URL: https://agenticailab.in
+        run: npm run smoke:test
+
+      - name: Lighthouse production audit
+        env:
+          SITE_URL: https://agenticailab.in
+          LIGHTHOUSE_MIN_PERFORMANCE: "0.70"
+          LIGHTHOUSE_MIN_SEO: "0.90"
+          LIGHTHOUSE_MAX_LCP_MS: "4000"
+        run: npm run lighthouse:ci

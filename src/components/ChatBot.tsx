@@ -9,6 +9,7 @@ type Msg = { role: "user" | "assistant"; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const isChatConfigured = Boolean(import.meta.env.VITE_SUPABASE_URL && PUBLISHABLE_KEY);
 
 const INITIAL_MSG: Msg = {
   role: "assistant",
@@ -41,6 +42,12 @@ const ChatBot = () => {
     }
 
     setError(null);
+
+    if (!isChatConfigured) {
+      setError("Chat is temporarily unavailable. Please try again later.");
+      return;
+    }
+
     const userMsg: Msg = { role: "user", content: text };
     const next = [...messages, userMsg];
     setMessages(next);
@@ -56,7 +63,9 @@ const ChatBot = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          apikey: PUBLISHABLE_KEY,
           Authorization: `Bearer ${PUBLISHABLE_KEY}`,
+          "X-Client-Info": "agenticailab-chat/1.0",
         },
         signal: controller.signal,
         body: JSON.stringify({
@@ -66,6 +75,7 @@ const ChatBot = () => {
 
       if (!resp.ok || !resp.body) {
         let msg = "Something went wrong. Please try again.";
+        if (resp.status === 401) msg = "Chat is temporarily unavailable. Please refresh the page and try again.";
         if (resp.status === 429) msg = "Too many requests. Please wait a moment.";
         else if (resp.status === 402) msg = "AI service unavailable. Please contact support.";
         try {

@@ -4,13 +4,18 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 const ALLOWED_ORIGINS = [
   "https://agenticailab.in",
   "https://www.agenticailab.in",
+  "https://agenticailab.lovable.app",
   "http://localhost:8080",
   "http://localhost:5173",
   "http://localhost:3000",
 ];
 
 // Include Lovable preview domains
-const LOVABLE_PREVIEW_PATTERN = /^https:\/\/[a-z0-9-]+--[a-z0-9-]+\.lovable\.app$/;
+const LOVABLE_PREVIEW_PATTERN = /^https:\/\/[a-z0-9-]+(--[a-z0-9-]+)?\.lovable\.app$/;
+const ALERT_TO = "support@agenticailab.in";
+const ALERT_FROM = "AgenticAI Lab Alerts <onboarding@resend.dev>";
+const alertThrottle = new Map<string, number>();
+const ALERT_THROTTLE_MS = 15 * 60 * 1000;
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
   const allowedOrigin = origin && (
@@ -22,12 +27,50 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
     "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Vary": "Origin",
+    "X-Content-Type-Options": "nosniff",
   };
 }
 
 function isAllowedOrigin(origin: string | null): boolean {
   if (!origin) return false;
   return ALLOWED_ORIGINS.includes(origin) || LOVABLE_PREVIEW_PATTERN.test(origin);
+}
+
+function log(level: "info" | "warn" | "error", event: string, data: Record<string, unknown> = {}) {
+  const line = JSON.stringify({ level, event, ts: new Date().toISOString(), ...data });
+  if (level === "error") console.error(line);
+  else if (level === "warn") console.warn(line);
+  else console.log(line);
+}
+
+async function sendAlert(event: string, details: Record<string, unknown>) {
+  const key = `${event}:${String(details.clientIp || details.origin || "unknown")}`;
+  const now = Date.now();
+  const last = alertThrottle.get(key) || 0;
+  if (now - last < ALERT_THROTTLE_MS) return;
+  alertThrottle.set(key, now);
+
+  const apiKey = Deno.env.get("RESEND_API_KEY");
+  if (!apiKey) return;
+
+  try {
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: ALERT_FROM,
+        to: [ALERT_TO],
+        subject: `[AgenticAI Lab] ${event}`,
+        html: `<pre>${JSON.stringify({ event, ...details }, null, 2)}</pre>`,
+      }),
+    });
+  } catch (error) {
+    log("warn", "alert.email_failed", { event, error: (error as Error)?.message });
+  }
 }
 
 const SYSTEM_PROMPT = `You are AgenticAI Lab's AI assistant — a friendly, concise expert on AgenticAI Lab's services.
@@ -106,6 +149,7 @@ function checkRateLimit(clientIp: string): boolean {
 serve(async (req) => {
   const origin = req.headers.get("origin");
   const corsHeaders = getCorsHeaders(origin);
+  const requestId = crypto.randomUUID();
 
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -116,6 +160,11 @@ serve(async (req) => {
     // (browsers always send Origin on cross-origin fetch/XHR). This prevents
     // third-party sites and most bots from consuming the AI budget.
     if (!isAllowedOrigin(origin)) {
+      const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+                       req.headers.get("cf-connecting-ip") ||
+                       "unknown";
+      log("warn", "chat.forbidden_origin", { requestId, origin, clientIp });
+      await sendAlert("chat.forbidden_origin", { requestId, origin, clientIp });
       return new Response(JSON.stringify({ error: "Forbidden origin." }), {
         status: 403,
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -133,7 +182,13 @@ serve(async (req) => {
     const bearer = authHeader.toLowerCase().startsWith("bearer ")
       ? authHeader.slice(7).trim()
       : "";
-    if (expectedKeys.length === 0 || !expectedKeys.includes(bearer)) {
+    const apiKeyHeader = req.headers.get("apikey")?.trim() || "";
+    if (expectedKeys.length === 0 || (!expectedKeys.includes(bearer) && !expectedKeys.includes(apiKeyHeader))) {
+      const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+                       req.headers.get("cf-connecting-ip") ||
+                       "unknown";
+      log("warn", "chat.unauthorized", { requestId, origin, clientIp, hasBearer: Boolean(bearer), hasApikey: Boolean(apiKeyHeader) });
+      await sendAlert("chat.unauthorized", { requestId, origin, clientIp, hasBearer: Boolean(bearer), hasApikey: Boolean(apiKeyHeader) });
       return new Response(JSON.stringify({ error: "Unauthorized." }), {
         status: 401,
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -148,6 +203,7 @@ serve(async (req) => {
     // Burst + hourly rate limits
     if (!checkBurst(clientIp) || !checkRateLimit(clientIp)) {
       console.warn(`Rate limit exceeded for IP: ${clientIp}`);
+      log("warn", "chat.rate_limited", { requestId, clientIp, origin });
       return new Response(
         JSON.stringify({ error: "Too many requests. Please try again later." }),
         { status: 429, headers: { "Content-Type": "application/json", ...corsHeaders } },
@@ -173,7 +229,7 @@ serve(async (req) => {
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Lovable-API-Key": LOVABLE_API_KEY,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -198,6 +254,7 @@ serve(async (req) => {
       }
       const errText = await response.text();
       console.error("AI gateway error:", response.status, errText);
+      log("error", "chat.ai_gateway_error", { requestId, status: response.status, detail: errText.slice(0, 500) });
       return new Response(JSON.stringify({ error: "AI service error." }), {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -209,6 +266,7 @@ serve(async (req) => {
     });
   } catch (e) {
     console.error("chat error:", e);
+    log("error", "chat.unhandled_error", { requestId, error: (e as Error)?.message });
     return new Response(JSON.stringify({ error: "Unexpected server error." }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },

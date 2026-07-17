@@ -31,6 +31,10 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
 const NEWSLETTER_WEBHOOK = "https://citot.app.n8n.cloud/webhook/Newsletter";
 const WEBHOOK_TIMEOUT_MS = 8000;
 const WEBHOOK_MAX_ATTEMPTS = 3;
+const ALERT_TO = "support@agenticailab.in";
+const ALERT_FROM = "AgenticAI Lab Alerts <onboarding@resend.dev>";
+const alertThrottle = new Map<string, number>();
+const ALERT_THROTTLE_MS = 15 * 60 * 1000;
 
 // Simple in-memory rate limiting (per-IP, sliding window)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -67,6 +71,35 @@ function log(level: "info" | "warn" | "error", requestId: string, event: string,
   if (level === "error") console.error(line);
   else if (level === "warn") console.warn(line);
   else console.log(line);
+}
+
+async function sendAlert(event: string, requestId: string, data: Record<string, unknown>) {
+  const key = `${event}:${String(data.action || "unknown")}:${String(data.emailDomain || "unknown")}`;
+  const now = Date.now();
+  const last = alertThrottle.get(key) || 0;
+  if (now - last < ALERT_THROTTLE_MS) return;
+  alertThrottle.set(key, now);
+
+  const apiKey = Deno.env.get("RESEND_API_KEY");
+  if (!apiKey) return;
+
+  try {
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: ALERT_FROM,
+        to: [ALERT_TO],
+        subject: `[AgenticAI Lab] ${event}`,
+        html: `<pre>${JSON.stringify({ requestId, event, ...data }, null, 2)}</pre>`,
+      }),
+    });
+  } catch (error) {
+    log("warn", requestId, "alert.email_failed", { event, error: (error as Error)?.message });
+  }
 }
 
 async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number): Promise<Response> {
@@ -168,12 +201,19 @@ serve(async (req) => {
     const action: "subscribe" | "unsubscribe" =
       body.action === "unsubscribe" ? "unsubscribe" : "subscribe";
     const email = body.email.trim().toLowerCase();
+    const emailDomain = email.split("@")[1];
 
-    log("info", requestId, "newsletter.received", { action, emailDomain: email.split("@")[1] });
+    log("info", requestId, "newsletter.received", { action, emailDomain });
 
     const result = await callNewsletterWebhook(email, action, requestId);
 
     if (!result.ok) {
+      await sendAlert("newsletter.webhook_failed", requestId, {
+        action,
+        emailDomain,
+        status: result.status,
+        webhookHost: new URL(NEWSLETTER_WEBHOOK).host,
+      });
       return new Response(
         JSON.stringify({
           error: action === "unsubscribe"
@@ -181,7 +221,7 @@ serve(async (req) => {
             : "We couldn't complete your subscription right now. Please try again shortly.",
           requestId,
         }),
-        { status: 502, headers: jsonHeaders },
+        { status: 502, headers: { ...jsonHeaders, "X-Request-Id": requestId } },
       );
     }
 
@@ -194,10 +234,11 @@ serve(async (req) => {
           : "Subscribed successfully!",
         requestId,
       }),
-      { status: 200, headers: jsonHeaders },
+      { status: 200, headers: { ...jsonHeaders, "X-Request-Id": requestId } },
     );
   } catch (error) {
     log("error", requestId, "newsletter.unhandled_error", { error: (error as Error)?.message });
+    await sendAlert("newsletter.unhandled_error", requestId, { error: (error as Error)?.message });
     return new Response(
       JSON.stringify({ error: "Unable to process request. Please try again later.", requestId }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } },
