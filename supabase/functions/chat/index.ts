@@ -10,8 +10,16 @@ const ALLOWED_ORIGINS = [
   "http://localhost:3000",
 ];
 
-// Include Lovable preview domains
-const LOVABLE_PREVIEW_PATTERN = /^https:\/\/[a-z0-9-]+(--[a-z0-9-]+)?\.lovable\.app$/;
+// Include Lovable preview/sandbox domains
+const LOVABLE_PREVIEW_PATTERNS = [
+  /^https:\/\/[a-z0-9-]+(--[a-z0-9-]+)?\.lovable\.app$/,
+  /^https:\/\/[a-z0-9-]+(--[a-z0-9-]+)?\.lovableproject\.com$/,
+  /^https:\/\/[a-z0-9-]+(--[a-z0-9-]+)?\.sandbox\.lovable\.dev$/,
+];
+
+function isLovablePreview(origin: string): boolean {
+  return LOVABLE_PREVIEW_PATTERNS.some((re) => re.test(origin));
+}
 const ALERT_TO = "support@agenticailab.in";
 const ALERT_FROM = "AgenticAI Lab Alerts <onboarding@resend.dev>";
 const alertThrottle = new Map<string, number>();
@@ -20,7 +28,7 @@ const ALERT_THROTTLE_MS = 15 * 60 * 1000;
 function getCorsHeaders(origin: string | null): Record<string, string> {
   const allowedOrigin = origin && (
     ALLOWED_ORIGINS.includes(origin) ||
-    LOVABLE_PREVIEW_PATTERN.test(origin)
+    isLovablePreview(origin)
   ) ? origin : ALLOWED_ORIGINS[0];
 
   return {
@@ -34,7 +42,7 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
 
 function isAllowedOrigin(origin: string | null): boolean {
   if (!origin) return false;
-  return ALLOWED_ORIGINS.includes(origin) || LOVABLE_PREVIEW_PATTERN.test(origin);
+  return ALLOWED_ORIGINS.includes(origin) || isLovablePreview(origin);
 }
 
 function log(level: "info" | "warn" | "error", event: string, data: Record<string, unknown> = {}) {
