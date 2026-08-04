@@ -37,32 +37,6 @@ function isAllowedOrigin(origin: string | null): boolean {
   return ALLOWED_ORIGINS.includes(origin) || LOVABLE_PREVIEW_PATTERN.test(origin);
 }
 
-function getConfiguredPublicKeys(): string[] {
-  const keys = new Set<string>();
-  const add = (value: unknown) => {
-    if (typeof value === "string" && value.trim().length > 0) keys.add(value.trim());
-  };
-
-  add(Deno.env.get("SUPABASE_ANON_KEY"));
-  add(Deno.env.get("SUPABASE_PUBLISHABLE_KEY"));
-
-  // Lovable Cloud may expose rotated publishable keys as a JSON array/object
-  // rather than the legacy singular environment variable.
-  const configuredKeys = Deno.env.get("SUPABASE_PUBLISHABLE_KEYS");
-  if (configuredKeys) {
-    try {
-      const parsed: unknown = JSON.parse(configuredKeys);
-      if (Array.isArray(parsed)) parsed.forEach(add);
-      else if (parsed && typeof parsed === "object") Object.values(parsed).forEach(add);
-      else add(parsed);
-    } catch {
-      add(configuredKeys);
-    }
-  }
-
-  return [...keys];
-}
-
 function log(level: "info" | "warn" | "error", event: string, data: Record<string, unknown> = {}) {
   const line = JSON.stringify({ level, event, ts: new Date().toISOString(), ...data });
   if (level === "error") console.error(line);
@@ -200,13 +174,16 @@ serve(async (req) => {
     // Require the project publishable/anon key so random callers without the
     // token cannot hit the endpoint. This is not a user auth boundary, but it
     // filters out drive-by abuse.
-    const expectedKeys = getConfiguredPublicKeys();
     const authHeader = req.headers.get("authorization") || "";
     const bearer = authHeader.toLowerCase().startsWith("bearer ")
       ? authHeader.slice(7).trim()
       : "";
     const apiKeyHeader = req.headers.get("apikey")?.trim() || "";
-    if (expectedKeys.length === 0 || (!expectedKeys.includes(bearer) && !expectedKeys.includes(apiKeyHeader))) {
+    // The gateway has already accepted the project's public API key before
+    // invoking this function. Require the client to provide that same key in
+    // both conventional headers without comparing it to runtime secrets,
+    // which can differ during publishable-key rotation.
+    if (!bearer || !apiKeyHeader || bearer !== apiKeyHeader) {
       const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
                        req.headers.get("cf-connecting-ip") ||
                        "unknown";
