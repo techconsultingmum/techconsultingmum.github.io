@@ -103,7 +103,7 @@
   "type": "module",
   "version": "0.0.0",
   "overrides": {
-    "seroval": "1.6.2",
-    "seroval-plugins": "1.6.2"
+    "seroval": "^1.5.6",
+    "seroval-plugins": "^1.5.6"
   }
 }
