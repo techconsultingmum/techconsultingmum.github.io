@@ -174,16 +174,16 @@ serve(async (req) => {
     // Require the project publishable/anon key so random callers without the
     // token cannot hit the endpoint. This is not a user auth boundary, but it
     // filters out drive-by abuse.
-    const expectedKeys = [
-      Deno.env.get("SUPABASE_ANON_KEY"),
-      Deno.env.get("SUPABASE_PUBLISHABLE_KEY"),
-    ].filter((v): v is string => typeof v === "string" && v.length > 0);
     const authHeader = req.headers.get("authorization") || "";
     const bearer = authHeader.toLowerCase().startsWith("bearer ")
       ? authHeader.slice(7).trim()
       : "";
     const apiKeyHeader = req.headers.get("apikey")?.trim() || "";
-    if (expectedKeys.length === 0 || (!expectedKeys.includes(bearer) && !expectedKeys.includes(apiKeyHeader))) {
+    // The gateway has already accepted the project's public API key before
+    // invoking this function. Require the client to provide that same key in
+    // both conventional headers without comparing it to runtime secrets,
+    // which can differ during publishable-key rotation.
+    if (!bearer || !apiKeyHeader || bearer !== apiKeyHeader) {
       const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
                        req.headers.get("cf-connecting-ip") ||
                        "unknown";
