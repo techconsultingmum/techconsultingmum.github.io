@@ -1,11 +1,30 @@
-import { useEffect, useRef, useState, FormEvent } from "react";
-import { MessageCircle, X, Send, Loader2, Sparkles } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, FormEvent } from "react";
+import { MessageCircle, X, Send, Loader2, Sparkles, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 type Msg = { role: "user" | "assistant"; content: string };
+
+// Minimal typings for the Web Speech API (not in lib.dom for all TS targets)
+interface SpeechRecognitionLike extends EventTarget {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+  onresult: ((event: any) => void) | null;
+  onerror: ((event: any) => void) | null;
+  onend: (() => void) | null;
+}
+
+function getSpeechRecognitionCtor(): (new () => SpeechRecognitionLike) | null {
+  if (typeof window === "undefined") return null;
+  const w = window as unknown as Record<string, unknown>;
+  return (w.SpeechRecognition || w.webkitSpeechRecognition) as (new () => SpeechRecognitionLike) | null;
+}
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -23,14 +42,135 @@ const ChatBot = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isListening, setIsListening] = useState(false);
+  const [speakReplies, setSpeakReplies] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(false);
+  const [ttsSupported, setTtsSupported] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const autoSendRef = useRef(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, isLoading]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
+
+  useEffect(() => {
+    setVoiceSupported(Boolean(getSpeechRecognitionCtor()));
+    setTtsSupported(typeof window !== "undefined" && "speechSynthesis" in window);
+  }, []);
+
+  const stopSpeaking = useCallback(() => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+  }, []);
+
+  const speak = useCallback(
+    (text: string) => {
+      if (!speakReplies || !text.trim()) return;
+      if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+      // Strip markdown so the voice doesn't read symbols aloud
+      const plain = text
+        .replace(/```[\s\S]*?```/g, " ")
+        .replace(/[*_`#>|]/g, "")
+        .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 1000);
+      if (!plain) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(plain);
+      utterance.lang = "en-US";
+      utterance.rate = 1;
+      window.speechSynthesis.speak(utterance);
+    },
+    [speakReplies],
+  );
+
+  const stopListening = useCallback(() => {
+    recognitionRef.current?.stop();
+    recognitionRef.current = null;
+    setIsListening(false);
+  }, []);
+
+  const startListening = useCallback(() => {
+    const Ctor = getSpeechRecognitionCtor();
+    if (!Ctor) {
+      setError("Voice input isn't supported in this browser. Please type your message.");
+      return;
+    }
+    stopSpeaking();
+    setError(null);
+
+    const recognition = new Ctor();
+    recognition.lang = "en-US";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    recognition.onresult = (event: any) => {
+      let transcript = "";
+      let isFinal = false;
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+        if (event.results[i].isFinal) isFinal = true;
+      }
+      setInput(transcript.trim().slice(0, 2000));
+      if (isFinal && transcript.trim()) {
+        autoSendRef.current = true;
+        setSpeakReplies(true);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      setIsListening(false);
+      recognitionRef.current = null;
+      if (event?.error === "not-allowed" || event?.error === "service-not-allowed") {
+        setError("Microphone access was blocked. Enable it in your browser settings to use voice.");
+      } else if (event?.error !== "aborted" && event?.error !== "no-speech") {
+        setError("Voice input failed. Please try again or type your message.");
+      }
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+      recognitionRef.current = null;
+      if (autoSendRef.current) {
+        autoSendRef.current = false;
+        // Submit whatever was transcribed
+        setTimeout(() => formRef.current?.requestSubmit(), 60);
+      }
+    };
+
+    recognitionRef.current = recognition;
+    setIsListening(true);
+    try {
+      recognition.start();
+    } catch {
+      setIsListening(false);
+      recognitionRef.current = null;
+    }
+  }, [stopSpeaking]);
+
+  // Clean up voice sessions when the widget closes or unmounts
+  useEffect(() => {
+    if (!open) {
+      recognitionRef.current?.abort();
+      recognitionRef.current = null;
+      setIsListening(false);
+      stopSpeaking();
+    }
+  }, [open, stopSpeaking]);
+
+  useEffect(() => {
+    return () => {
+      recognitionRef.current?.abort();
+      if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
+    };
+  }, []);
 
   const send = async (e: FormEvent) => {
     e.preventDefault();
@@ -42,6 +182,7 @@ const ChatBot = () => {
     }
 
     setError(null);
+    stopSpeaking();
 
     if (!isChatConfigured) {
       setError("Chat is temporarily unavailable. Please try again later.");
@@ -126,6 +267,7 @@ const ChatBot = () => {
           }
         }
       }
+      speak(assistantSoFar);
     } catch (err) {
       if ((err as Error).name === "AbortError") return;
       const msg = err instanceof Error ? err.message : "Failed to get a response.";
