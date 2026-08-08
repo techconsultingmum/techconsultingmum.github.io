@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Linkedin, Twitter, Github, Mail, Phone } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
+import FeedbackDialog from '@/components/FeedbackDialog';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -126,6 +127,14 @@ const Footer = () => {
             © {currentYear} AgenticAI Lab. All rights reserved.
           </p>
           <div className="flex gap-6">
+            <FeedbackDialog>
+              <button
+                type="button"
+                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+              >
+                Feedback
+              </button>
+            </FeedbackDialog>
             <Link to="/privacy-policy" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
               Privacy Policy
             </Link>
