@@ -309,8 +309,33 @@ const ChatBot = () => {
             </div>
             <div className="flex-1">
               <p className="text-sm font-semibold text-foreground">AgenticAI Assistant</p>
-              <p className="text-xs text-muted-foreground">Typically replies instantly</p>
+              <p className="text-xs text-muted-foreground">
+                {isListening ? "Listening..." : "Chat by text or voice"}
+              </p>
             </div>
+            {ttsSupported && (
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8"
+                onClick={() => {
+                  setSpeakReplies((v) => {
+                    if (v) stopSpeaking();
+                    return !v;
+                  });
+                }}
+                aria-pressed={speakReplies}
+                aria-label={speakReplies ? "Turn off spoken replies" : "Turn on spoken replies"}
+                title={speakReplies ? "Spoken replies on" : "Spoken replies off"}
+              >
+                {speakReplies ? (
+                  <Volume2 className="w-4 h-4 text-primary" />
+                ) : (
+                  <VolumeX className="w-4 h-4 text-muted-foreground" />
+                )}
+              </Button>
+            )}
           </div>
 
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
@@ -345,16 +370,29 @@ const ChatBot = () => {
             )}
           </div>
 
-          <form onSubmit={send} className="border-t border-border p-3 flex gap-2 bg-card">
+          <form ref={formRef} onSubmit={send} className="border-t border-border p-3 flex gap-2 bg-card">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask anything..."
+              placeholder={isListening ? "Listening..." : "Ask anything, or tap the mic..."}
               maxLength={2000}
               disabled={isLoading}
               aria-label="Chat message"
               className="flex-1"
             />
+            {voiceSupported && (
+              <Button
+                type="button"
+                size="icon"
+                variant={isListening ? "default" : "secondary"}
+                onClick={isListening ? stopListening : startListening}
+                disabled={isLoading}
+                aria-pressed={isListening}
+                aria-label={isListening ? "Stop voice input" : "Start voice input"}
+              >
+                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </Button>
+            )}
             <Button type="submit" size="icon" disabled={isLoading || !input.trim()} aria-label="Send">
               {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             </Button>
