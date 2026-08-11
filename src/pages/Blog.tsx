@@ -9,6 +9,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
 import SEOHead from '@/components/SEOHead';
+import LinkedInArticles from '@/components/LinkedInArticles';
 import { useToast } from '@/hooks/use-toast';
 import { newsletterSchema } from '@/lib/validations';
 import { supabase } from '@/integrations/supabase/client';
