@@ -339,6 +339,9 @@ const Blog = () => {
         </div>
       </section>
 
+      {/* Blog / Article feed (synced from the editorial Google Sheet) */}
+      <LinkedInArticles />
+
       {/* Newsletter CTA */}
       <section className="py-20 px-4">
         <div className="container mx-auto">
