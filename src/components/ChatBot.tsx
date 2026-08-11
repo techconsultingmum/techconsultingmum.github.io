@@ -307,7 +307,7 @@ const ChatBot = () => {
             <div className="flex-1">
               <p className="text-sm font-semibold text-foreground">AgenticAI Assistant</p>
               <p className="text-xs text-muted-foreground">
-                {isListening ? "Listening..." : "Chat by text or voice"}
+                {isListening ? "Listening..." : isSpeaking ? "Speaking..." : "Chat by text or voice"}
               </p>
             </div>
             {ttsSupported && (
@@ -318,7 +318,12 @@ const ChatBot = () => {
                 className="h-8 w-8"
                 onClick={() => {
                   setSpeakReplies((v) => {
-                    if (v) stopSpeaking();
+                    if (v) {
+                      stopSpeaking();
+                    } else {
+                      warmUpSpeech();
+                    }
+                    speakRepliesRef.current = !v;
                     return !v;
                   });
                 }}
@@ -327,10 +332,22 @@ const ChatBot = () => {
                 title={speakReplies ? "Spoken replies on" : "Spoken replies off"}
               >
                 {speakReplies ? (
-                  <Volume2 className="w-4 h-4 text-primary" />
+                  <Volume2 className={cn("w-4 h-4 text-primary", isSpeaking && "animate-pulse")} />
                 ) : (
                   <VolumeX className="w-4 h-4 text-muted-foreground" />
                 )}
+              </Button>
+            )}
+            {isSpeaking && (
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="h-8 px-2 text-xs"
+                onClick={stopSpeaking}
+                aria-label="Stop audio playback"
+              >
+                Stop
               </Button>
             )}
           </div>
