@@ -80,7 +80,11 @@ function buildManagedHead(route) {
 
 function writeRoute(route) {
   const managedHead = buildManagedHead(route);
-  const html = stripManagedHead(baseHtml).replace(/<meta name="viewport"[^>]*>/i, (match) => `${match}${managedHead}`);
+  let html = stripManagedHead(baseHtml).replace(/<meta name="viewport"[^>]*>/i, (match) => `${match}${managedHead}`);
+  // The inlined hero shell is only correct for the landing page.
+  if (route.path !== "/") {
+    html = html.replace(/<div id="boot-hero">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/, "");
+  }
   const target = route.path === "/" ? indexPath : join(distDir, route.path, "index.html");
   mkdirSync(dirname(target), { recursive: true });
   writeFileSync(target, html);

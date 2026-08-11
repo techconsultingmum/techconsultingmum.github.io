@@ -1,17 +1,18 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import { lazy, Suspense } from "react";
-import CookieConsent from "./components/CookieConsent";
+import { lazy, Suspense, useEffect, useState } from "react";
 import ScrollToTop from "./components/ScrollToTop";
 import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingSpinner from "./components/LoadingSpinner";
-import ChatBot from "./components/ChatBot";
 
-// Lazy-loaded pages for better performance 
+// Deferred, non-critical UI (kept out of the initial bundle for faster LCP)
+const ChatBot = lazy(() => import("./components/ChatBot"));
+const CookieConsent = lazy(() => import("./components/CookieConsent"));
+const Toaster = lazy(() => import("@/components/ui/toaster").then((m) => ({ default: m.Toaster })));
+const Sonner = lazy(() => import("@/components/ui/sonner").then((m) => ({ default: m.Toaster })));
+
+// Lazy-loaded pages for better performance
 const Index = lazy(() => import("./pages/Index"));
 const CaseStudies = lazy(() => import("./pages/CaseStudies"));
 const GetStarted = lazy(() => import("./pages/GetStarted"));
@@ -31,20 +32,40 @@ const ApiReference = lazy(() => import("./pages/ApiReference"));
 const Docs = lazy(() => import("./pages/Docs"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 
-const queryClient = new QueryClient();
-
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
     <LoadingSpinner size="lg" label="Loading page..." />
   </div>
 );
 
+/** Mounts non-critical widgets after the browser is idle so they never block first paint. */
+const DeferredWidgets = () => {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const w = window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    if (typeof w.requestIdleCallback === "function") {
+      const id = w.requestIdleCallback(() => setReady(true), { timeout: 3000 });
+      return () => (window as any).cancelIdleCallback?.(id);
+    }
+    const t = window.setTimeout(() => setReady(true), 2000);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  if (!ready) return null;
+  return (
+    <Suspense fallback={null}>
+      <Toaster />
+      <Sonner />
+      <CookieConsent />
+      <ChatBot />
+    </Suspense>
+  );
+};
+
 const App = () => (
   <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
         <BrowserRouter>
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
@@ -72,13 +93,11 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
-            <CookieConsent />
             <ScrollToTop />
-            <ChatBot />
+            <DeferredWidgets />
           </ErrorBoundary>
         </BrowserRouter>
       </TooltipProvider>
-    </QueryClientProvider>
   </HelmetProvider>
 );
 

@@ -9,6 +9,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
 import SEOHead from '@/components/SEOHead';
+import LinkedInArticles from '@/components/LinkedInArticles';
 import { useToast } from '@/hooks/use-toast';
 import { newsletterSchema } from '@/lib/validations';
 import { supabase } from '@/integrations/supabase/client';
@@ -337,6 +338,9 @@ const Blog = () => {
           )}
         </div>
       </section>
+
+      {/* Blog / Article feed (synced from the editorial Google Sheet) */}
+      <LinkedInArticles />
 
       {/* Newsletter CTA */}
       <section className="py-20 px-4">

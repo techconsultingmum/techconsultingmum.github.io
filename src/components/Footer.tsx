@@ -123,18 +123,20 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-muted-foreground text-sm">
-            © {currentYear} AgenticAI Lab. All rights reserved.
-          </p>
-          <div className="flex gap-6">
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
+            <p className="text-muted-foreground text-sm">
+              © {currentYear} AgenticAI Lab. All rights reserved.
+            </p>
             <FeedbackDialog>
               <button
                 type="button"
-                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                className="text-muted-foreground hover:text-primary text-sm font-medium transition-colors underline-offset-4 hover:underline"
               >
                 Feedback
               </button>
             </FeedbackDialog>
+          </div>
+          <div className="flex gap-6">
             <Link to="/privacy-policy" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
               Privacy Policy
             </Link>

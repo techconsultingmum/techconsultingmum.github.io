@@ -36,10 +36,11 @@ import { contactFormSchema } from '@/lib/validations';
 
 interface ContactFormDialogProps {
   children: React.ReactNode;
+  defaultOpen?: boolean;
 }
 
-const ContactFormDialog = ({ children }: ContactFormDialogProps) => {
-  const [open, setOpen] = useState(false);
+const ContactFormDialog = ({ children, defaultOpen = false }: ContactFormDialogProps) => {
+  const [open, setOpen] = useState(defaultOpen);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitState, setSubmitState] = useState<'idle' | 'success' | 'error'>('idle');
