@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
-import ContactFormDialog from './ContactFormDialog';
+import ContactFormDialog from './LazyContactFormDialog';
 
 const HeroSection = () => {
   return (
