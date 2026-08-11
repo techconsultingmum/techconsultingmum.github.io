@@ -1,7 +1,4 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { lazy, Suspense, useEffect, useState } from "react";
@@ -12,6 +9,8 @@ import LoadingSpinner from "./components/LoadingSpinner";
 // Deferred, non-critical UI (kept out of the initial bundle for faster LCP)
 const ChatBot = lazy(() => import("./components/ChatBot"));
 const CookieConsent = lazy(() => import("./components/CookieConsent"));
+const Toaster = lazy(() => import("@/components/ui/toaster").then((m) => ({ default: m.Toaster })));
+const Sonner = lazy(() => import("@/components/ui/sonner").then((m) => ({ default: m.Toaster })));
 
 // Lazy-loaded pages for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -32,8 +31,6 @@ const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const ApiReference = lazy(() => import("./pages/ApiReference"));
 const Docs = lazy(() => import("./pages/Docs"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
-
-const queryClient = new QueryClient();
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
@@ -58,6 +55,8 @@ const DeferredWidgets = () => {
   if (!ready) return null;
   return (
     <Suspense fallback={null}>
+      <Toaster />
+      <Sonner />
       <CookieConsent />
       <ChatBot />
     </Suspense>
@@ -66,10 +65,7 @@ const DeferredWidgets = () => {
 
 const App = () => (
   <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
         <BrowserRouter>
           <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
@@ -102,7 +98,6 @@ const App = () => (
           </ErrorBoundary>
         </BrowserRouter>
       </TooltipProvider>
-    </QueryClientProvider>
   </HelmetProvider>
 );
 
