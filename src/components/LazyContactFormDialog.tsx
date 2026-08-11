@@ -11,12 +11,7 @@ const LazyContactFormDialog = ({ children }: { children: React.ReactNode }) => {
 
   if (!loaded) {
     return (
-      <span
-        className="contents"
-        onClick={() => setLoaded(true)}
-        onMouseEnter={() => setLoaded(true)}
-        onFocus={() => setLoaded(true)}
-      >
+      <span className="contents" onClick={() => setLoaded(true)}>
         {children}
       </span>
     );
