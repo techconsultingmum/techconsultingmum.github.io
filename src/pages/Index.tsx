@@ -1,13 +1,16 @@
- import Header from '@/components/Header';
- import SEOHead from '@/components/SEOHead';
+import { lazy, Suspense } from 'react';
+import Header from '@/components/Header';
+import SEOHead from '@/components/SEOHead';
 import HeroSection from '@/components/HeroSection';
-import ServicesSection from '@/components/ServicesSection';
-import ProcessSection from '@/components/ProcessSection';
-import AboutSection from '@/components/AboutSection';
-import TestimonialsSection from '@/components/TestimonialsSection';
-import CTASection from '@/components/CTASection';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
+
+// Below-the-fold sections load after the hero paints (better LCP).
+const ServicesSection = lazy(() => import('@/components/ServicesSection'));
+const ProcessSection = lazy(() => import('@/components/ProcessSection'));
+const AboutSection = lazy(() => import('@/components/AboutSection'));
+const TestimonialsSection = lazy(() => import('@/components/TestimonialsSection'));
+const CTASection = lazy(() => import('@/components/CTASection'));
 
 const Index = () => {
   return (
@@ -20,11 +23,13 @@ const Index = () => {
       <Header />
       <main id="main-content">
         <HeroSection />
-        <ServicesSection />
-        <ProcessSection />
-        <AboutSection />
-        <TestimonialsSection />
-        <CTASection />
+        <Suspense fallback={<div className="min-h-[40vh]" aria-hidden="true" />}>
+          <ServicesSection />
+          <ProcessSection />
+          <AboutSection />
+          <TestimonialsSection />
+          <CTASection />
+        </Suspense>
       </main>
       <Footer />
     </div>
