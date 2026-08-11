@@ -4,12 +4,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import { lazy, Suspense } from "react";
-import CookieConsent from "./components/CookieConsent";
+import { lazy, Suspense, useEffect, useState } from "react";
 import ScrollToTop from "./components/ScrollToTop";
 import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingSpinner from "./components/LoadingSpinner";
-import ChatBot from "./components/ChatBot";
+
+// Deferred, non-critical UI (kept out of the initial bundle for faster LCP)
+const ChatBot = lazy(() => import("./components/ChatBot"));
+const CookieConsent = lazy(() => import("./components/CookieConsent"));
 
 // Lazy-loaded pages for better performance 
 const Index = lazy(() => import("./pages/Index"));
@@ -38,6 +40,29 @@ const PageLoader = () => (
     <LoadingSpinner size="lg" label="Loading page..." />
   </div>
 );
+
+/** Mounts non-critical widgets after the browser is idle so they never block first paint. */
+const DeferredWidgets = () => {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const w = window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    if (typeof w.requestIdleCallback === "function") {
+      const id = w.requestIdleCallback(() => setReady(true), { timeout: 3000 });
+      return () => (window as any).cancelIdleCallback?.(id);
+    }
+    const t = window.setTimeout(() => setReady(true), 2000);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  if (!ready) return null;
+  return (
+    <Suspense fallback={null}>
+      <CookieConsent />
+      <ChatBot />
+    </Suspense>
+  );
+};
 
 const App = () => (
   <HelmetProvider>
@@ -72,9 +97,8 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
-            <CookieConsent />
             <ScrollToTop />
-            <ChatBot />
+            <DeferredWidgets />
           </ErrorBoundary>
         </BrowserRouter>
       </TooltipProvider>
