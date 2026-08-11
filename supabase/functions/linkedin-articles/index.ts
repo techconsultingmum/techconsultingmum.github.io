@@ -48,9 +48,18 @@ interface Article {
   comments: number;
 }
 
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/^#+\s*/gm, "")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/__(.*?)__/g, "$1")
+    .replace(/[*_`]/g, "")
+    .trim();
+}
+
 function toTitle(content: string, topic: string, day: string): string {
-  const firstLine = content.split("\n").map((l) => l.trim()).find(Boolean);
-  if (firstLine) return firstLine.replace(/^#+\s*/, "").slice(0, 120);
+  const firstLine = content.split("\n").map((l) => stripMarkdown(l).trim()).find(Boolean);
+  if (firstLine) return firstLine.slice(0, 120);
   return `${topic || "Update"} — ${day || ""}`.trim();
 }
 
@@ -76,7 +85,9 @@ function buildArticles(values: string[][]): Article[] {
       const content = cell(row, iContent);
       const urn = cell(row, iUrn);
       if (!content && !urn) return null;
-      const withoutTags = content.replace(/(^|\s)#[\p{L}\d_]+/gu, " ").replace(/\s+/g, " ").trim();
+      const plain = stripMarkdown(content);
+      const withoutTags = plain.replace(/(^|\s)#[\p{L}\d_]+/gu, " ").replace(/\s+/g, " ").trim();
+      const title = toTitle(content, cell(row, iTopic).replace(/_/g, " "), cell(row, iDay));
       return {
         id: urn || `row-${n + 2}`,
         date: cell(row, iDate),
@@ -84,8 +95,8 @@ function buildArticles(values: string[][]): Article[] {
         topic: cell(row, iTopic).replace(/_/g, " "),
         audience: cell(row, iAudience),
         language: cell(row, iLanguage) || "en",
-        title: toTitle(content, cell(row, iTopic).replace(/_/g, " "), cell(row, iDay)),
-        excerpt: withoutTags.slice(0, 260),
+        title,
+        excerpt: withoutTags.replace(title, "").trim().slice(0, 260) || withoutTags.slice(0, 260),
         content,
         url: urn ? `https://www.linkedin.com/feed/update/${urn}/` : null,
         likes: Number(cell(row, iLikes)) || 0,
