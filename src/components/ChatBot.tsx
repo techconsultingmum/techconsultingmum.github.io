@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { isSpeechSupported, speakText, stopSpeaking as stopSpeechOutput, warmUpSpeech } from "@/lib/speech";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -46,11 +47,17 @@ const ChatBot = () => {
   const [speakReplies, setSpeakReplies] = useState(false);
   const [voiceSupported, setVoiceSupported] = useState(false);
   const [ttsSupported, setTtsSupported] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const autoSendRef = useRef(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const speakRepliesRef = useRef(false);
+
+  useEffect(() => {
+    speakRepliesRef.current = speakReplies;
+  }, [speakReplies]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -60,36 +67,22 @@ const ChatBot = () => {
 
   useEffect(() => {
     setVoiceSupported(Boolean(getSpeechRecognitionCtor()));
-    setTtsSupported(typeof window !== "undefined" && "speechSynthesis" in window);
+    setTtsSupported(isSpeechSupported());
   }, []);
 
   const stopSpeaking = useCallback(() => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-    }
+    stopSpeechOutput();
+    setIsSpeaking(false);
   }, []);
 
-  const speak = useCallback(
-    (text: string) => {
-      if (!speakReplies || !text.trim()) return;
-      if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-      // Strip markdown so the voice doesn't read symbols aloud
-      const plain = text
-        .replace(/```[\s\S]*?```/g, " ")
-        .replace(/[*_`#>|]/g, "")
-        .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
-        .replace(/\s+/g, " ")
-        .trim()
-        .slice(0, 1000);
-      if (!plain) return;
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(plain);
-      utterance.lang = "en-US";
-      utterance.rate = 1;
-      window.speechSynthesis.speak(utterance);
-    },
-    [speakReplies],
-  );
+  const speak = useCallback((text: string) => {
+    if (!speakRepliesRef.current || !text.trim()) return;
+    void speakText(text, {
+      onStart: () => setIsSpeaking(true),
+      onEnd: () => setIsSpeaking(false),
+      onError: (message) => setError(message),
+    });
+  }, []);
 
   const stopListening = useCallback(() => {
     recognitionRef.current?.stop();
@@ -105,6 +98,10 @@ const ChatBot = () => {
     }
     stopSpeaking();
     setError(null);
+    // Voice conversation: unlock audio output while we're still inside the click gesture.
+    warmUpSpeech();
+    setSpeakReplies(true);
+    speakRepliesRef.current = true;
 
     const recognition = new Ctor();
     recognition.lang = "en-US";
@@ -168,7 +165,7 @@ const ChatBot = () => {
   useEffect(() => {
     return () => {
       recognitionRef.current?.abort();
-      if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
+      stopSpeechOutput();
     };
   }, []);
 
