@@ -13,10 +13,8 @@ import LoadingSpinner from "./components/LoadingSpinner";
 const ChatBot = lazy(() => import("./components/ChatBot"));
 const CookieConsent = lazy(() => import("./components/CookieConsent"));
 
-// The landing page is the LCP-critical route, so it ships in the initial graph.
-import Index from "./pages/Index";
-
 // Lazy-loaded pages for better performance
+const Index = lazy(() => import("./pages/Index"));
 const CaseStudies = lazy(() => import("./pages/CaseStudies"));
 const GetStarted = lazy(() => import("./pages/GetStarted"));
 const AboutUs = lazy(() => import("./pages/AboutUs"));
