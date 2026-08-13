@@ -1,6 +1,5 @@
 import { Search, Lightbulb, Code2, Rocket } from 'lucide-react';
  import AnimatedSection from './AnimatedSection';
- import AnimatedSection from './AnimatedSection';
 
 const steps = [
   {

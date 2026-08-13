@@ -1,7 +1,6 @@
 import { Bot, Brain, Cog, LineChart } from 'lucide-react';
 import { Link } from 'react-router-dom';
  import AnimatedSection from './AnimatedSection';
- import AnimatedSection from './AnimatedSection';
 
 const services = [
   {

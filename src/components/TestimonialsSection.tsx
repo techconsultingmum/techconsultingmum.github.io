@@ -1,6 +1,5 @@
 import { Quote } from 'lucide-react';
  import AnimatedSection from './AnimatedSection';
- import AnimatedSection from './AnimatedSection';
 
 const testimonials = [
   {
