@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
- import { motion } from 'framer-motion';
+ import AnimatedSection from './AnimatedSection';
 import ContactFormDialog from './ContactFormDialog';
 
 const CTASection = () => {
@@ -12,13 +12,7 @@ const CTASection = () => {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-glow opacity-50" />
       
       <div className="container mx-auto px-4 relative z-10">
-         <motion.div 
-           initial={{ opacity: 0, y: 40 }}
-           whileInView={{ opacity: 1, y: 0 }}
-           viewport={{ once: true, margin: '-100px' }}
-           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-           className="max-w-3xl mx-auto text-center"
-         >
+         <AnimatedSection duration={0.7} className="max-w-3xl mx-auto text-center">
            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
             Ready to Build Your
             <br />
@@ -47,7 +41,7 @@ const CTASection = () => {
           <p className="mt-8 text-sm text-muted-foreground">
             No commitment required • Response within 24 hours
           </p>
-         </motion.div>
+         </AnimatedSection>
       </div>
     </section>
   );

@@ -1,5 +1,5 @@
 import { Quote } from 'lucide-react';
- import { motion } from 'framer-motion';
+ import AnimatedSection from './AnimatedSection';
  import AnimatedSection from './AnimatedSection';
 
 const testimonials = [
@@ -41,14 +41,7 @@ const TestimonialsSection = () => {
         {/* Testimonials Grid */}
         <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {testimonials.map((testimonial, index) => (
-             <motion.div
-              key={testimonial.author}
-               initial={{ opacity: 0, y: 40 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               viewport={{ once: true, margin: '-50px' }}
-               transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="p-8 rounded-2xl bg-glass border border-border/50 hover:border-primary/30 transition-all duration-500"
-            >
+             <AnimatedSection key={testimonial.author} delay={index * 0.1} className="p-8 rounded-2xl bg-glass border border-border/50 hover:border-primary/30 transition-all duration-500">
               <Quote className="w-10 h-10 text-primary/30 mb-6" />
               <p className="text-foreground text-lg leading-relaxed mb-8">
                 "{testimonial.quote}"
@@ -59,7 +52,7 @@ const TestimonialsSection = () => {
                   {testimonial.role}, {testimonial.company}
                 </div>
               </div>
-             </motion.div>
+             </AnimatedSection>
           ))}
         </div>
       </div>

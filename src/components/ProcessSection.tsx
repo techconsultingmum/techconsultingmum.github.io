@@ -1,5 +1,5 @@
 import { Search, Lightbulb, Code2, Rocket } from 'lucide-react';
- import { motion } from 'framer-motion';
+ import AnimatedSection from './AnimatedSection';
  import AnimatedSection from './AnimatedSection';
 
 const steps = [
@@ -47,14 +47,7 @@ const ProcessSection = () => {
         {/* Process Steps */}
         <div className="max-w-4xl mx-auto">
           {steps.map((step, index) => (
-             <motion.div
-              key={step.number}
-               initial={{ opacity: 0, x: -30 }}
-               whileInView={{ opacity: 1, x: 0 }}
-               viewport={{ once: true, margin: '-50px' }}
-               transition={{ duration: 0.6, delay: index * 0.15, ease: [0.22, 1, 0.36, 1] }}
-               className="flex gap-6 md:gap-10 mb-12 last:mb-0"
-            >
+             <AnimatedSection key={step.number} animation="slideLeft" delay={index * 0.15} className="flex gap-6 md:gap-10 mb-12 last:mb-0">
               {/* Left: Number & Line */}
               <div className="flex flex-col items-center">
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0">
@@ -75,7 +68,7 @@ const ProcessSection = () => {
                   {step.description}
                 </p>
               </div>
-             </motion.div>
+             </AnimatedSection>
           ))}
         </div>
       </div>
