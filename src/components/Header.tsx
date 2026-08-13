@@ -24,7 +24,7 @@ const Header = () => {
 
   const navLinks = [
     { label: 'Case Studies', href: '/case-studies', isRoute: true },
-    { label: 'Blog', href: '/blog', isRoute: true },
+    { label: 'Blog / Article', href: '/blog', isRoute: true },
     { label: 'About Us', href: '/about', isRoute: true },
     { label: 'Contact Us', href: '/contact', isRoute: true },
   ];
