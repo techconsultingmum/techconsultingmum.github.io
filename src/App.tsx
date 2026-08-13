@@ -9,6 +9,7 @@ import LoadingSpinner from "./components/LoadingSpinner";
 // Deferred, non-critical UI (kept out of the initial bundle for faster LCP)
 const ChatBot = lazy(() => import("./components/ChatBot"));
 const CookieConsent = lazy(() => import("./components/CookieConsent"));
+const FeedbackFab = lazy(() => import("./components/FeedbackFab"));
 const Toaster = lazy(() => import("@/components/ui/toaster").then((m) => ({ default: m.Toaster })));
 const Sonner = lazy(() => import("@/components/ui/sonner").then((m) => ({ default: m.Toaster })));
 
@@ -58,6 +59,7 @@ const DeferredWidgets = () => {
       <Toaster />
       <Sonner />
       <CookieConsent />
+      <FeedbackFab />
       <ChatBot />
     </Suspense>
   );

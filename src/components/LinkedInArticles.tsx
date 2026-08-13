@@ -30,18 +30,26 @@ const LinkedInArticles = () => {
   const load = async () => {
     setIsLoading(true);
     setError(null);
-    try {
-      const { data, error: fnError } = await supabase.functions.invoke('linkedin-articles', {
-        method: 'GET',
-      });
-      if (fnError) throw fnError;
-      setArticles(Array.isArray(data?.articles) ? data.articles : []);
-    } catch (err) {
-      console.error('Failed to load LinkedIn articles:', err);
-      setError("We couldn't load the latest articles right now.");
-    } finally {
-      setIsLoading(false);
+    // Cold starts on the edge runtime occasionally drop the first request; retry briefly.
+    let lastErr: unknown = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const { data, error: fnError } = await supabase.functions.invoke('linkedin-articles', {
+          method: 'GET',
+        });
+        if (fnError) throw fnError;
+        if (data?.error) throw new Error(String(data.error));
+        setArticles(Array.isArray(data?.articles) ? data.articles : []);
+        setIsLoading(false);
+        return;
+      } catch (err) {
+        lastErr = err;
+        if (attempt < 2) await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+      }
     }
+    console.error('Failed to load LinkedIn articles:', lastErr);
+    setError("We couldn't load the latest articles right now.");
+    setIsLoading(false);
   };
 
   useEffect(() => {
