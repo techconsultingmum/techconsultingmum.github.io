@@ -1,65 +1,77 @@
- import { useRef } from 'react';
- import { motion, useInView, Variants } from 'framer-motion';
- 
- interface AnimatedSectionProps {
-   children: React.ReactNode;
-   className?: string;
-   delay?: number;
-   duration?: number;
-   animation?: 'fadeUp' | 'fadeIn' | 'slideLeft' | 'slideRight' | 'scale';
-   once?: boolean;
- }
- 
- const animations: Record<string, Variants> = {
-   fadeUp: {
-     hidden: { opacity: 0, y: 40 },
-     visible: { opacity: 1, y: 0 },
-   },
-   fadeIn: {
-     hidden: { opacity: 0 },
-     visible: { opacity: 1 },
-   },
-   slideLeft: {
-     hidden: { opacity: 0, x: -60 },
-     visible: { opacity: 1, x: 0 },
-   },
-   slideRight: {
-     hidden: { opacity: 0, x: 60 },
-     visible: { opacity: 1, x: 0 },
-   },
-   scale: {
-     hidden: { opacity: 0, scale: 0.9 },
-     visible: { opacity: 1, scale: 1 },
-   },
- };
- 
- const AnimatedSection = ({
-   children,
-   className = '',
-   delay = 0,
-   duration = 0.6,
-   animation = 'fadeUp',
-   once = true,
- }: AnimatedSectionProps) => {
-   const ref = useRef(null);
-   const isInView = useInView(ref, { once, margin: '-100px' });
- 
-   return (
-     <motion.div
-       ref={ref}
-       initial="hidden"
-       animate={isInView ? 'visible' : 'hidden'}
-       variants={animations[animation]}
-       transition={{
-         duration,
-         delay,
-         ease: [0.22, 1, 0.36, 1],
-       }}
-       className={className}
-     >
-       {children}
-     </motion.div>
-   );
- };
- 
- export default AnimatedSection;
+import { useEffect, useRef, useState } from 'react';
+
+type Animation = 'fadeUp' | 'fadeIn' | 'slideLeft' | 'slideRight' | 'scale';
+
+interface AnimatedSectionProps {
+  children: React.ReactNode;
+  className?: string;
+  /** seconds */
+  delay?: number;
+  /** seconds */
+  duration?: number;
+  animation?: Animation;
+  once?: boolean;
+}
+
+const hiddenTransform: Record<Animation, string> = {
+  fadeUp: 'translate3d(0, 40px, 0)',
+  fadeIn: 'none',
+  slideLeft: 'translate3d(-60px, 0, 0)',
+  slideRight: 'translate3d(60px, 0, 0)',
+  scale: 'scale(0.9)',
+};
+
+/**
+ * Zero-dependency scroll reveal. Uses IntersectionObserver + CSS transitions
+ * instead of a full animation runtime, which keeps the main-thread cost near zero.
+ */
+const AnimatedSection = ({
+  children,
+  className = '',
+  delay = 0,
+  duration = 0.6,
+  animation = 'fadeUp',
+  once = true,
+}: AnimatedSectionProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setVisible(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          if (once) observer.disconnect();
+        } else if (!once) {
+          setVisible(false);
+        }
+      },
+      { rootMargin: '-100px 0px', threshold: 0 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [once]);
+
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'none' : hiddenTransform[animation],
+        transition: `opacity ${duration}s cubic-bezier(0.22, 1, 0.36, 1) ${delay}s, transform ${duration}s cubic-bezier(0.22, 1, 0.36, 1) ${delay}s`,
+        willChange: visible ? undefined : 'opacity, transform',
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+export default AnimatedSection;

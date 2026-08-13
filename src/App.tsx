@@ -3,17 +3,19 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { lazy, Suspense, useEffect, useState } from "react";
 import ScrollToTop from "./components/ScrollToTop";
+// Landing page is eager: it holds the LCP element, so an extra chunk hop hurts.
+import Index from "./pages/Index";
 import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingSpinner from "./components/LoadingSpinner";
 
 // Deferred, non-critical UI (kept out of the initial bundle for faster LCP)
 const ChatBot = lazy(() => import("./components/ChatBot"));
 const CookieConsent = lazy(() => import("./components/CookieConsent"));
+const FeedbackFab = lazy(() => import("./components/FeedbackFab"));
 const Toaster = lazy(() => import("@/components/ui/toaster").then((m) => ({ default: m.Toaster })));
 const Sonner = lazy(() => import("@/components/ui/sonner").then((m) => ({ default: m.Toaster })));
 
 // Lazy-loaded pages for better performance
-const Index = lazy(() => import("./pages/Index"));
 const CaseStudies = lazy(() => import("./pages/CaseStudies"));
 const GetStarted = lazy(() => import("./pages/GetStarted"));
 const AboutUs = lazy(() => import("./pages/AboutUs"));
@@ -58,6 +60,7 @@ const DeferredWidgets = () => {
       <Toaster />
       <Sonner />
       <CookieConsent />
+      <FeedbackFab />
       <ChatBot />
     </Suspense>
   );

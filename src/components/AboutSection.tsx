@@ -1,6 +1,5 @@
 import { CheckCircle2 } from 'lucide-react';
- import { motion } from 'framer-motion';
- import AnimatedSection from './AnimatedSection';
+  import AnimatedSection from './AnimatedSection';
 
 const features = [
   'Deep expertise in LLMs, RAG, and agent frameworks',

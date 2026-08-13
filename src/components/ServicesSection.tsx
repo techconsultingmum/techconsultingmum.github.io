@@ -1,6 +1,5 @@
 import { Bot, Brain, Cog, LineChart } from 'lucide-react';
 import { Link } from 'react-router-dom';
- import { motion } from 'framer-motion';
  import AnimatedSection from './AnimatedSection';
 
 const services = [
@@ -48,13 +47,7 @@ const ServicesSection = () => {
         {/* Services Grid */}
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           {services.map((service, index) => (
-             <motion.div
-              key={service.title}
-               initial={{ opacity: 0, y: 40 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               viewport={{ once: true, margin: '-50px' }}
-               transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-            >
+             <AnimatedSection key={service.title} delay={index * 0.1}>
                <Link
                  to={service.href}
                  className="group p-8 rounded-2xl bg-glass border border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-glow block h-full"
@@ -69,7 +62,7 @@ const ServicesSection = () => {
                    {service.description}
                  </p>
                </Link>
-             </motion.div>
+             </AnimatedSection>
           ))}
         </div>
       </div>
