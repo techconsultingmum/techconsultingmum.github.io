@@ -1,5 +1,5 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Suspense, useEffect, useState } from "react";
 import { lazyWithRetry } from "./lib/lazy-with-retry";
@@ -57,21 +57,25 @@ const DeferredWidgets = () => {
 
   if (!ready) return null;
   return (
-    <Suspense fallback={null}>
-      <Toaster />
-      <Sonner />
-      <CookieConsent />
-      <FeedbackFab />
-      <ChatBot />
-    </Suspense>
+    // Widgets are non-critical: if one fails it must never blank the page.
+    <ErrorBoundary silent>
+      <Suspense fallback={null}>
+        <Toaster />
+        <Sonner />
+        <CookieConsent />
+        <FeedbackFab />
+        <ChatBot />
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 
-const App = () => (
-  <HelmetProvider>
-      <TooltipProvider>
-        <BrowserRouter>
-          <ErrorBoundary>
+/** Routed content, isolated in a boundary that resets whenever the URL changes. */
+const RoutedApp = () => {
+  const location = useLocation();
+  return (
+    <>
+      <ErrorBoundary resetKey={location.pathname}>
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
@@ -97,9 +101,18 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
-            <ScrollToTop />
-            <DeferredWidgets />
-          </ErrorBoundary>
+      </ErrorBoundary>
+      <ScrollToTop />
+      <DeferredWidgets />
+    </>
+  );
+};
+
+const App = () => (
+  <HelmetProvider>
+      <TooltipProvider>
+        <BrowserRouter>
+          <RoutedApp />
         </BrowserRouter>
       </TooltipProvider>
   </HelmetProvider>
