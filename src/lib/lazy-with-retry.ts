@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { lazy, type ComponentType } from "react";
 
 const RELOAD_FLAG = "chunk-reload-at";
@@ -30,7 +31,7 @@ export function reloadOnceForStaleChunk(): boolean {
  * lazy() with transient-failure retries. Network blips and cold CDN edges are
  * retried with backoff; a genuinely stale chunk triggers one page reload.
  */
-export function lazyWithRetry<T extends ComponentType<unknown>>(
+export function lazyWithRetry<T extends ComponentType<any>>(
   factory: () => Promise<{ default: T }>,
   retries = 2,
 ) {
