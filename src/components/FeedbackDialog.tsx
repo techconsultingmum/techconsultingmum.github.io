@@ -73,6 +73,14 @@ const FeedbackDialog = ({ children }: FeedbackDialogProps) => {
     const nextErrors = validate(values);
     if (Object.keys(nextErrors).length) {
       setErrors(nextErrors);
+      // Move focus to the first invalid field so keyboard and screen-reader
+      // users land directly on the problem.
+      const order: (keyof Values)[] = ["name", "phone", "email", "feedback"];
+      const first = order.find((key) => nextErrors[key]);
+      if (first) {
+        const id = first === "feedback" ? "feedback-message" : `feedback-${first}`;
+        requestAnimationFrame(() => document.getElementById(id)?.focus());
+      }
       return;
     }
 
@@ -222,6 +230,8 @@ const FeedbackDialog = ({ children }: FeedbackDialogProps) => {
             {serverError && (
               <div
                 role="alert"
+                tabIndex={-1}
+                ref={(node) => node?.focus()}
                 className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2"
               >
                 {serverError}

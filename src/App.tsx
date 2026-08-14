@@ -1,7 +1,8 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { lazyWithRetry } from "./lib/lazy-with-retry";
 import ScrollToTop from "./components/ScrollToTop";
 // Landing page is eager: it holds the LCP element, so an extra chunk hop hurts.
 import Index from "./pages/Index";
@@ -9,30 +10,30 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingSpinner from "./components/LoadingSpinner";
 
 // Deferred, non-critical UI (kept out of the initial bundle for faster LCP)
-const ChatBot = lazy(() => import("./components/ChatBot"));
-const CookieConsent = lazy(() => import("./components/CookieConsent"));
-const FeedbackFab = lazy(() => import("./components/FeedbackFab"));
-const Toaster = lazy(() => import("@/components/ui/toaster").then((m) => ({ default: m.Toaster })));
-const Sonner = lazy(() => import("@/components/ui/sonner").then((m) => ({ default: m.Toaster })));
+const ChatBot = lazyWithRetry(() => import("./components/ChatBot"));
+const CookieConsent = lazyWithRetry(() => import("./components/CookieConsent"));
+const FeedbackFab = lazyWithRetry(() => import("./components/FeedbackFab"));
+const Toaster = lazyWithRetry(() => import("@/components/ui/toaster").then((m) => ({ default: m.Toaster })));
+const Sonner = lazyWithRetry(() => import("@/components/ui/sonner").then((m) => ({ default: m.Toaster })));
 
 // Lazy-loaded pages for better performance
-const CaseStudies = lazy(() => import("./pages/CaseStudies"));
-const GetStarted = lazy(() => import("./pages/GetStarted"));
-const AboutUs = lazy(() => import("./pages/AboutUs"));
-const Careers = lazy(() => import("./pages/Careers"));
-const Contact = lazy(() => import("./pages/Contact"));
-const Blog = lazy(() => import("./pages/Blog"));
-const BlogArticle = lazy(() => import("./pages/BlogArticle"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const AgentDevelopment = lazy(() => import("./pages/services/AgentDevelopment"));
-const MultiAgentSystems = lazy(() => import("./pages/services/MultiAgentSystems"));
-const AIIntegration = lazy(() => import("./pages/services/AIIntegration"));
-const StrategyConsulting = lazy(() => import("./pages/services/StrategyConsulting"));
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
-const TermsOfService = lazy(() => import("./pages/TermsOfService"));
-const ApiReference = lazy(() => import("./pages/ApiReference"));
-const Docs = lazy(() => import("./pages/Docs"));
-const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
+const CaseStudies = lazyWithRetry(() => import("./pages/CaseStudies"));
+const GetStarted = lazyWithRetry(() => import("./pages/GetStarted"));
+const AboutUs = lazyWithRetry(() => import("./pages/AboutUs"));
+const Careers = lazyWithRetry(() => import("./pages/Careers"));
+const Contact = lazyWithRetry(() => import("./pages/Contact"));
+const Blog = lazyWithRetry(() => import("./pages/Blog"));
+const BlogArticle = lazyWithRetry(() => import("./pages/BlogArticle"));
+const NotFound = lazyWithRetry(() => import("./pages/NotFound"));
+const AgentDevelopment = lazyWithRetry(() => import("./pages/services/AgentDevelopment"));
+const MultiAgentSystems = lazyWithRetry(() => import("./pages/services/MultiAgentSystems"));
+const AIIntegration = lazyWithRetry(() => import("./pages/services/AIIntegration"));
+const StrategyConsulting = lazyWithRetry(() => import("./pages/services/StrategyConsulting"));
+const PrivacyPolicy = lazyWithRetry(() => import("./pages/PrivacyPolicy"));
+const TermsOfService = lazyWithRetry(() => import("./pages/TermsOfService"));
+const ApiReference = lazyWithRetry(() => import("./pages/ApiReference"));
+const Docs = lazyWithRetry(() => import("./pages/Docs"));
+const Unsubscribe = lazyWithRetry(() => import("./pages/Unsubscribe"));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
@@ -56,21 +57,25 @@ const DeferredWidgets = () => {
 
   if (!ready) return null;
   return (
-    <Suspense fallback={null}>
-      <Toaster />
-      <Sonner />
-      <CookieConsent />
-      <FeedbackFab />
-      <ChatBot />
-    </Suspense>
+    // Widgets are non-critical: if one fails it must never blank the page.
+    <ErrorBoundary silent>
+      <Suspense fallback={null}>
+        <Toaster />
+        <Sonner />
+        <CookieConsent />
+        <FeedbackFab />
+        <ChatBot />
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 
-const App = () => (
-  <HelmetProvider>
-      <TooltipProvider>
-        <BrowserRouter>
-          <ErrorBoundary>
+/** Routed content, isolated in a boundary that resets whenever the URL changes. */
+const RoutedApp = () => {
+  const location = useLocation();
+  return (
+    <>
+      <ErrorBoundary resetKey={location.pathname}>
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
@@ -96,9 +101,18 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
-            <ScrollToTop />
-            <DeferredWidgets />
-          </ErrorBoundary>
+      </ErrorBoundary>
+      <ScrollToTop />
+      <DeferredWidgets />
+    </>
+  );
+};
+
+const App = () => (
+  <HelmetProvider>
+      <TooltipProvider>
+        <BrowserRouter>
+          <RoutedApp />
         </BrowserRouter>
       </TooltipProvider>
   </HelmetProvider>
