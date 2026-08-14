@@ -29,7 +29,8 @@ const GATEWAY_URL = "https://connector-gateway.lovable.dev/google_sheets";
 const SPREADSHEET_ID = "13M0ms0wi2-nLBOh8RHSVyIyGvh51SFlgxfAFsMxBYsc";
 const RANGE = "A1:Z500";
 const CACHE_TTL_MS = 10 * 60 * 1000;
-const REQUEST_TIMEOUT_MS = 10000;
+const REQUEST_TIMEOUT_MS = 15000;
+const UPSTREAM_ATTEMPTS = 2;
 
 let cache: { at: number; payload: unknown } | null = null;
 
@@ -126,28 +127,42 @@ serve(async (req) => {
     const sheetsKey = Deno.env.get("GOOGLE_SHEETS_API_KEY");
     if (!lovableKey || !sheetsKey) {
       console.error("linkedin-articles: missing connector credentials");
+      if (cache) return json({ ...(cache.payload as object), stale: true });
       return json({ error: "Article source is not configured." }, 503);
     }
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-    let resp: Response;
-    try {
-      resp = await fetch(`${GATEWAY_URL}/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}`, {
-        headers: {
-          Authorization: `Bearer ${lovableKey}`,
-          "X-Connection-Api-Key": sheetsKey,
-        },
-        signal: controller.signal,
-      });
-    } finally {
-      clearTimeout(timeout);
+    let resp: Response | null = null;
+    let lastErr: unknown = null;
+    for (let attempt = 0; attempt < UPSTREAM_ATTEMPTS; attempt++) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+      try {
+        resp = await fetch(`${GATEWAY_URL}/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}`, {
+          headers: {
+            Authorization: `Bearer ${lovableKey}`,
+            "X-Connection-Api-Key": sheetsKey,
+          },
+          signal: controller.signal,
+        });
+        if (resp.ok) break;
+        // 4xx (other than rate limiting) will not improve on a retry.
+        if (resp.status < 500 && resp.status !== 429) break;
+        lastErr = `status ${resp.status}`;
+      } catch (err) {
+        lastErr = err;
+        resp = null;
+      } finally {
+        clearTimeout(timeout);
+      }
+      if (attempt < UPSTREAM_ATTEMPTS - 1) await new Promise((r) => setTimeout(r, 500));
     }
 
-    if (!resp.ok) {
-      const details = await resp.text();
-      console.error(`linkedin-articles: gateway failed [${resp.status}]: ${details}`);
-      return json({ error: "Could not load articles.", status: resp.status, details }, resp.status);
+    if (!resp || !resp.ok) {
+      const details = resp ? await resp.text() : String(lastErr);
+      console.error(`linkedin-articles: gateway failed [${resp?.status ?? "network"}]: ${details}`);
+      // Serving the last good snapshot beats showing an error to the reader.
+      if (cache) return json({ ...(cache.payload as object), stale: true });
+      return json({ error: "Could not load articles." }, 503);
     }
 
     const data = await resp.json();
@@ -157,6 +172,7 @@ serve(async (req) => {
     return json(payload);
   } catch (err) {
     console.error("linkedin-articles: unexpected error", err);
+    if (cache) return json({ ...(cache.payload as object), stale: true });
     return json({ error: "Could not load articles right now." }, 500);
   }
 });
