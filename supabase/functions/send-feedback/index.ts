@@ -31,7 +31,7 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
-const FEEDBACK_WEBHOOK = "https://jawepah.app.n8n.cloud/webhook/feedback";
+const FEEDBACK_WEBHOOK = "https://kayoge6.app.n8n.cloud/webhook/feedback";
 const WEBHOOK_TIMEOUT_MS = 8000;
 const WEBHOOK_MAX_ATTEMPTS = 3;
 
