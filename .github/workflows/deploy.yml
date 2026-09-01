@@ -10,7 +10,6 @@ permissions:
   contents: read
   pages: write
   id-token: write
-  actions: write
 
 # Only one Pages build/deploy at a time; avoids duplicate artifacts from
 # overlapping runs of the same workflow.
@@ -35,14 +34,6 @@ jobs:
 
       - name: Build project
         run: npm run build
-
-      # Guards against "Multiple artifacts named github-pages" when a previous
-      # attempt of this same run already uploaded one.
-      - name: Remove stale github-pages artifacts from this run
-        uses: geekyeggo/delete-artifact@v5
-        with:
-          name: github-pages
-          failOnError: false
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
