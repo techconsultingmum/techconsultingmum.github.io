@@ -4,24 +4,23 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
+  actions: write
 
-env:
-  # ✅ Removes Node 20 warning (forces Node 24)
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+# Only one Pages build/deploy at a time; avoids duplicate artifacts from
+# overlapping runs of the same workflow.
+concurrency:
+  group: github-pages-deploy
+  cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
-    # ✅ REQUIRED for Pages deployment
-    environment:
-      name: github-pages
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,14 +36,47 @@ jobs:
       - name: Build project
         run: npm run build
 
+      # Guards against "Multiple artifacts named github-pages" when a previous
+      # attempt of this same run already uploaded one.
+      - name: Remove stale github-pages artifacts from this run
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: github-pages
+          failOnError: false
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist   # ✅ Vite output
+          name: github-pages
+          path: dist # Vite output
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages
+
+  verify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Smoke test production endpoints
         env:
