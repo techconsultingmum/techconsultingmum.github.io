@@ -125,17 +125,23 @@ async function callNewsletterWebhook(
   const url = `${NEWSLETTER_WEBHOOK}?${params.toString()}`;
   const payload = JSON.stringify({ email, Email: email, action });
 
+  // Primary method is POST; if the n8n workflow node only accepts GET we fall back
+  // transparently (query params are always included for compatibility).
+  let method: "POST" | "GET" = "POST";
+
   let lastStatus = 0;
   for (let attempt = 1; attempt <= WEBHOOK_MAX_ATTEMPTS; attempt++) {
     const startedAt = Date.now();
     try {
       const response = await fetchWithTimeout(
         url,
-        {
-          method: "POST",
-          headers: { "Accept": "application/json", "Content-Type": "application/json" },
-          body: payload,
-        },
+        method === "POST"
+          ? {
+            method: "POST",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: payload,
+          }
+          : { method: "GET", headers: { "Accept": "application/json" } },
         WEBHOOK_TIMEOUT_MS,
       );
       const durationMs = Date.now() - startedAt;
@@ -144,8 +150,13 @@ async function callNewsletterWebhook(
       try { await response.text(); } catch { /* ignore */ }
 
       if (response.ok) {
-        log("info", requestId, "newsletter.webhook.success", { action, attempt, status: response.status, durationMs });
+        log("info", requestId, "newsletter.webhook.success", { action, attempt, method, status: response.status, durationMs });
         return { ok: true, status: response.status };
+      }
+      if ((response.status === 404 || response.status === 405) && method === "POST") {
+        log("warn", requestId, "newsletter.webhook.method_fallback", { action, attempt, status: response.status, durationMs });
+        method = "GET";
+        continue;
       }
       if (response.status >= 400 && response.status < 500 && response.status !== 408 && response.status !== 429) {
         log("error", requestId, "newsletter.webhook.client_error", { action, attempt, status: response.status, durationMs });
