@@ -28,7 +28,7 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
-const NEWSLETTER_WEBHOOK = "https://xabab.app.n8n.cloud/webhook/Newsletter";
+const NEWSLETTER_WEBHOOK = "https://tojiv.app.n8n.cloud/webhook/Newsletter";
 const WEBHOOK_TIMEOUT_MS = 8000;
 const WEBHOOK_MAX_ATTEMPTS = 3;
 const ALERT_TO = "support@agenticailab.in";
@@ -121,7 +121,9 @@ async function callNewsletterWebhook(
   params.set("email", email);
   params.set("Email", email);
   params.set("action", action);
+  // Keep query params for backward compatibility with existing n8n workflow nodes
   const url = `${NEWSLETTER_WEBHOOK}?${params.toString()}`;
+  const payload = JSON.stringify({ email, Email: email, action });
 
   let lastStatus = 0;
   for (let attempt = 1; attempt <= WEBHOOK_MAX_ATTEMPTS; attempt++) {
