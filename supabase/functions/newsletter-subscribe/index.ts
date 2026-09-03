@@ -131,7 +131,11 @@ async function callNewsletterWebhook(
     try {
       const response = await fetchWithTimeout(
         url,
-        { method: "GET", headers: { "Accept": "application/json" } },
+        {
+          method: "POST",
+          headers: { "Accept": "application/json", "Content-Type": "application/json" },
+          body: payload,
+        },
         WEBHOOK_TIMEOUT_MS,
       );
       const durationMs = Date.now() - startedAt;
