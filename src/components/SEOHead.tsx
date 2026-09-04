@@ -136,7 +136,7 @@ const toIsoDate = (value?: string) => {
               "sameAs": [
                 "https://www.linkedin.com/company/agenticai-lab/",
                 "https://x.com/AgenticAILab",
-                "https://github.com/techconsultingmum"
+                "https://www.youtube.com/@AgenticAI-Lab"
               ]
             })}
           </script>
