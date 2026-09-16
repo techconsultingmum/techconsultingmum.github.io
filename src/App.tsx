@@ -21,6 +21,7 @@ const CaseStudies = lazyWithRetry(() => import("./pages/CaseStudies"));
 const GetStarted = lazyWithRetry(() => import("./pages/GetStarted"));
 const AboutUs = lazyWithRetry(() => import("./pages/AboutUs"));
 const Careers = lazyWithRetry(() => import("./pages/Careers"));
+const JobApplication = lazyWithRetry(() => import("./pages/JobApplication"));
 const Contact = lazyWithRetry(() => import("./pages/Contact"));
 const Blog = lazyWithRetry(() => import("./pages/Blog"));
 const BlogArticle = lazyWithRetry(() => import("./pages/BlogArticle"));
@@ -83,6 +84,7 @@ const RoutedApp = () => {
                 <Route path="/get-started" element={<GetStarted />} />
                 <Route path="/about" element={<AboutUs />} />
                 <Route path="/careers" element={<Careers />} />
+                <Route path="/careers/:slug" element={<JobApplication />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogArticle />} />
