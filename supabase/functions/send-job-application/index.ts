@@ -4,6 +4,7 @@ import { Resend } from "https://esm.sh/resend@2.0.0";
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const RECIPIENT = "support@agenticailab.in";
+const FALLBACK_RECIPIENT = "tech.consulting.mum@gmail.com";
 
 const ALLOWED_ORIGINS = [
   "https://agenticailab.in",
@@ -187,9 +188,9 @@ serve(async (req) => {
       <p style="color:#888;font-size:12px">Submitted ${new Date().toISOString()} · ref ${requestId}${jobSlug ? ` · /careers/${escapeHtml(jobSlug)}` : ""}</p>
     `;
 
-    const sent = await resend.emails.send({
+    const payload = (to: string[]) => ({
       from: "Careers <onboarding@resend.dev>",
-      to: [RECIPIENT],
+      to,
       reply_to: email,
       subject: `Job Application — ${jobTitle} — ${name}`,
       html,
@@ -201,6 +202,16 @@ serve(async (req) => {
         },
       ],
     } as Record<string, unknown>);
+
+    let sent = await resend.emails.send(payload([RECIPIENT]));
+
+    // Until the sending domain is verified, Resend only allows delivery to the
+    // account owner address. Fall back so applications are never lost.
+    const firstError = (sent as { error?: { message?: string } })?.error;
+    if (firstError && /only send testing emails/i.test(firstError.message ?? "")) {
+      log("warn", requestId, "application.fallback_recipient", {});
+      sent = await resend.emails.send(payload([FALLBACK_RECIPIENT]));
+    }
 
     if ((sent as { error?: unknown })?.error) {
       log("error", requestId, "application.email_failed", { detail: JSON.stringify((sent as { error: unknown }).error) });
