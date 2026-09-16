@@ -6,7 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SkipToContent from '@/components/SkipToContent';
 import SEOHead from '@/components/SEOHead';
-import ContactFormDialog from '@/components/ContactFormDialog';
+import { jobOpenings } from '@/lib/jobs';
 
 const benefits = [
   {
@@ -31,50 +31,7 @@ const benefits = [
   },
 ];
 
-const openings = [
-  {
-    title: 'Senior AI/ML Engineer',
-    department: 'Engineering',
-    location: 'Remote / San Francisco',
-    type: 'Full-time',
-    description: 'Design and implement cutting-edge AI agents and machine learning models.',
-  },
-  {
-    title: 'Full Stack Developer',
-    department: 'Engineering',
-    location: 'Remote / New York',
-    type: 'Full-time',
-    description: 'Build and scale our enterprise AI platform using React, Node.js, and cloud technologies.',
-  },
-  {
-    title: 'AI Solutions Architect',
-    department: 'Solutions',
-    location: 'Remote / London',
-    type: 'Full-time',
-    description: 'Design custom AI solutions for enterprise clients and lead implementation projects.',
-  },
-  {
-    title: 'Product Manager - AI Platform',
-    department: 'Product',
-    location: 'Remote / San Francisco',
-    type: 'Full-time',
-    description: 'Define and drive the product roadmap for our AI agent platform.',
-  },
-  {
-    title: 'Technical Writer',
-    department: 'Documentation',
-    location: 'Remote',
-    type: 'Full-time',
-    description: 'Create clear, comprehensive documentation for our AI products and APIs.',
-  },
-  {
-    title: 'Enterprise Sales Executive',
-    department: 'Sales',
-    location: 'Remote / Chicago',
-    type: 'Full-time',
-    description: 'Drive enterprise sales and build relationships with Fortune 500 clients.',
-  },
-];
+const openings = jobOpenings;
 
 const Careers = () => {
   return (
@@ -214,9 +171,9 @@ const Careers = () => {
                         <CardTitle className="text-foreground">{job.title}</CardTitle>
                         <CardDescription className="mt-1">{job.description}</CardDescription>
                       </div>
-                      <ContactFormDialog>
-                        <Button>Apply Now</Button>
-                      </ContactFormDialog>
+                      <Button asChild>
+                        <Link to={`/careers/${job.slug}`}>Apply Now</Link>
+                      </Button>
                     </div>
                   </CardHeader>
                   <CardContent>
