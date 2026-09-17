@@ -49,6 +49,7 @@ const FeedbackDialog = ({ children }: FeedbackDialogProps) => {
         setErrors({});
         setStatus("idle");
         setServerError(null);
+        setFallbackUrl(null);
       }, 250);
       return () => clearTimeout(t);
     }
