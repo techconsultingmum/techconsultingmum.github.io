@@ -240,9 +240,19 @@ const FeedbackDialog = ({ children }: FeedbackDialogProps) => {
                 role="alert"
                 tabIndex={-1}
                 ref={(node) => node?.focus()}
-                className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2"
+                className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2 space-y-2"
               >
-                {serverError}
+                <p>{serverError}</p>
+                {fallbackUrl && (
+                  <a
+                    href={fallbackUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-primary underline underline-offset-2 hover:text-primary/80"
+                  >
+                    Open feedback form ↗
+                  </a>
+                )}
               </div>
             )}
 
