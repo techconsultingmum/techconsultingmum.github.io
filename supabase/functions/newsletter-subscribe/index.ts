@@ -28,7 +28,7 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
-const NEWSLETTER_WEBHOOK = "https://tojiv.app.n8n.cloud/webhook/Newsletter";
+const NEWSLETTER_WEBHOOK = "https://weworo.app.n8n.cloud/webhook/Newsletter";
 const WEBHOOK_TIMEOUT_MS = 8000;
 const WEBHOOK_MAX_ATTEMPTS = 3;
 const ALERT_TO = "support@agenticailab.in";
