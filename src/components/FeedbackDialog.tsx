@@ -97,12 +97,17 @@ const FeedbackDialog = ({ children }: FeedbackDialogProps) => {
 
       if (error) {
         let detail = "";
+        let fallbackUrl = "";
         try {
           detail = (await (error as { context?: Response }).context?.text?.()) || "";
           const parsed = detail ? JSON.parse(detail) : null;
           if (parsed?.error) detail = parsed.error;
+          if (parsed?.fallbackUrl) fallbackUrl = parsed.fallbackUrl;
         } catch {
           /* ignore parse issues */
+        }
+        if (fallbackUrl) {
+          throw Object.assign(new Error(detail || "Submission failed."), { fallbackUrl });
         }
         throw new Error(detail || error.message || "Submission failed.");
       }
@@ -113,9 +118,10 @@ const FeedbackDialog = ({ children }: FeedbackDialogProps) => {
       setStatus("success");
     } catch (err) {
       setStatus("idle");
-      setServerError(
-        err instanceof Error ? err.message : "We couldn't submit your feedback. Please try again.",
-      );
+      const message = err instanceof Error ? err.message : "We couldn't submit your feedback. Please try again.";
+      const fallbackUrl = (err as { fallbackUrl?: string })?.fallbackUrl;
+      setServerError(fallbackUrl ? `${message}` : message);
+      setFallbackUrl(fallbackUrl || null);
     }
   };
 
