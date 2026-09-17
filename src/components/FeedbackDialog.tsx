@@ -40,6 +40,7 @@ const FeedbackDialog = ({ children }: FeedbackDialogProps) => {
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [serverError, setServerError] = useState<string | null>(null);
+  const [fallbackUrl, setFallbackUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) {
@@ -48,6 +49,7 @@ const FeedbackDialog = ({ children }: FeedbackDialogProps) => {
         setErrors({});
         setStatus("idle");
         setServerError(null);
+        setFallbackUrl(null);
       }, 250);
       return () => clearTimeout(t);
     }
@@ -97,12 +99,17 @@ const FeedbackDialog = ({ children }: FeedbackDialogProps) => {
 
       if (error) {
         let detail = "";
+        let fallbackUrl = "";
         try {
           detail = (await (error as { context?: Response }).context?.text?.()) || "";
           const parsed = detail ? JSON.parse(detail) : null;
           if (parsed?.error) detail = parsed.error;
+          if (parsed?.fallbackUrl) fallbackUrl = parsed.fallbackUrl;
         } catch {
           /* ignore parse issues */
+        }
+        if (fallbackUrl) {
+          throw Object.assign(new Error(detail || "Submission failed."), { fallbackUrl });
         }
         throw new Error(detail || error.message || "Submission failed.");
       }
@@ -113,9 +120,10 @@ const FeedbackDialog = ({ children }: FeedbackDialogProps) => {
       setStatus("success");
     } catch (err) {
       setStatus("idle");
-      setServerError(
-        err instanceof Error ? err.message : "We couldn't submit your feedback. Please try again.",
-      );
+      const message = err instanceof Error ? err.message : "We couldn't submit your feedback. Please try again.";
+      const fallbackUrl = (err as { fallbackUrl?: string })?.fallbackUrl;
+      setServerError(fallbackUrl ? `${message}` : message);
+      setFallbackUrl(fallbackUrl || null);
     }
   };
 
@@ -232,9 +240,19 @@ const FeedbackDialog = ({ children }: FeedbackDialogProps) => {
                 role="alert"
                 tabIndex={-1}
                 ref={(node) => node?.focus()}
-                className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2"
+                className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2 space-y-2"
               >
-                {serverError}
+                <p>{serverError}</p>
+                {fallbackUrl && (
+                  <a
+                    href={fallbackUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-primary underline underline-offset-2 hover:text-primary/80"
+                  >
+                    Open feedback form ↗
+                  </a>
+                )}
               </div>
             )}
 
