@@ -40,6 +40,7 @@ const FeedbackDialog = ({ children }: FeedbackDialogProps) => {
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [serverError, setServerError] = useState<string | null>(null);
+  const [fallbackUrl, setFallbackUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) {
