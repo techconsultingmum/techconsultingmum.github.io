@@ -31,7 +31,8 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
-const FEEDBACK_WEBHOOK = "https://mibikef.app.n8n.cloud/webhook/feedback";
+const FEEDBACK_WEBHOOK = "https://xacade.app.n8n.cloud/webhook/feedback";
+const FEEDBACK_FALLBACK_FORM_URL = "https://xacade.app.n8n.cloud/form/cfcf4fd4-dba8-417c-ba04-19438a58409a";
 const WEBHOOK_TIMEOUT_MS = 8000;
 const WEBHOOK_MAX_ATTEMPTS = 3;
 
@@ -150,7 +151,10 @@ serve(async (req) => {
     if (!result.ok) {
       log("error", requestId, "feedback.failed", { detail: result.error });
       return new Response(
-        JSON.stringify({ error: "We couldn't submit your feedback right now. Please try again." }),
+        JSON.stringify({
+          error: "We couldn't submit your feedback right now. Please try again or use the feedback form link.",
+          fallbackUrl: FEEDBACK_FALLBACK_FORM_URL,
+        }),
         { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders } },
       );
     }
