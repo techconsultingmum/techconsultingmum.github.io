@@ -136,6 +136,11 @@ serve(async (req) => {
       });
     }
 
+    const [target, fallbackForm] = await Promise.all([
+      getWebhookUrl("feedback", FEEDBACK_WEBHOOK_DEFAULT),
+      getWebhookUrl("feedback_fallback", FEEDBACK_FALLBACK_FORM_DEFAULT),
+    ]);
+
     const result = await postWithRetry(
       {
         name,
@@ -147,6 +152,7 @@ serve(async (req) => {
         requestId,
       },
       requestId,
+      target,
     );
 
     if (!result.ok) {
@@ -154,7 +160,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({
           error: "We couldn't submit your feedback right now. Please try again or use the feedback form link.",
-          fallbackUrl: FEEDBACK_FALLBACK_FORM_URL,
+          fallbackUrl: fallbackForm,
         }),
         { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders } },
       );
