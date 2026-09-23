@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { getWebhook } from "../_shared/webhooks.ts";
 
 // Allowed origins for CORS - restrict to known domains
 const ALLOWED_ORIGINS = [
@@ -28,7 +29,7 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
-const NEWSLETTER_WEBHOOK = "https://weworo.app.n8n.cloud/webhook/Newsletter";
+const NEWSLETTER_WEBHOOK_DEFAULT = "https://weworo.app.n8n.cloud/webhook/Newsletter";
 const WEBHOOK_TIMEOUT_MS = 8000;
 const WEBHOOK_MAX_ATTEMPTS = 3;
 const ALERT_TO = "support@agenticailab.in";
