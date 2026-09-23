@@ -123,12 +123,13 @@ async function callNewsletterWebhook(
   params.set("Email", email);
   params.set("action", action);
   // Keep query params for backward compatibility with existing n8n workflow nodes
-  const url = `${NEWSLETTER_WEBHOOK}?${params.toString()}`;
+  const configured = await getWebhook("newsletter", { url: NEWSLETTER_WEBHOOK_DEFAULT, method: "POST" });
+  const url = `${configured.url}?${params.toString()}`;
   const payload = JSON.stringify({ email, Email: email, action });
 
-  // Primary method is POST; if the n8n workflow node only accepts GET we fall back
-  // transparently (query params are always included for compatibility).
-  let method: "POST" | "GET" = "POST";
+  // Primary method comes from the admin settings; if the n8n workflow node only
+  // accepts GET we fall back transparently (query params are always included).
+  let method: "POST" | "GET" = configured.method;
 
   let lastStatus = 0;
   for (let attempt = 1; attempt <= WEBHOOK_MAX_ATTEMPTS; attempt++) {
