@@ -212,9 +212,10 @@ function checkRateLimit(clientIp: string): boolean {
 
 async function sendToWebhook(payload: Record<string, unknown>, requestId: string): Promise<void> {
   const body = JSON.stringify({ ...payload, requestId });
+  const target = await getWebhookUrl("lead", WEBHOOK_URL_DEFAULT);
   const summary = {
     requestId,
-    target: WEBHOOK_URL,
+    target,
     formType: payload.formType,
     emailDomain: typeof payload.email === "string" ? payload.email.split("@")[1] : null,
     payloadBytes: body.length,
@@ -224,7 +225,7 @@ async function sendToWebhook(payload: Record<string, unknown>, requestId: string
     const startedAt = Date.now();
     try {
       const response = await fetchWithTimeout(
-        WEBHOOK_URL,
+        target,
         {
           method: "POST",
           headers: { "Content-Type": "application/json", "X-Request-Id": requestId },
