@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { getWebhookUrl } from "../_shared/webhooks.ts";
 
 const ALLOWED_ORIGINS = [
   "https://agenticailab.in",
@@ -31,8 +32,8 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
-const FEEDBACK_WEBHOOK = "https://xacade.app.n8n.cloud/webhook/feedback";
-const FEEDBACK_FALLBACK_FORM_URL = "https://xacade.app.n8n.cloud/form/cfcf4fd4-dba8-417c-ba04-19438a58409a";
+const FEEDBACK_WEBHOOK_DEFAULT = "https://xacade.app.n8n.cloud/webhook/feedback";
+const FEEDBACK_FALLBACK_FORM_DEFAULT = "https://xacade.app.n8n.cloud/form/cfcf4fd4-dba8-417c-ba04-19438a58409a";
 const WEBHOOK_TIMEOUT_MS = 8000;
 const WEBHOOK_MAX_ATTEMPTS = 3;
 
