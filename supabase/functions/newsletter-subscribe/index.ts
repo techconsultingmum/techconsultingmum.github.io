@@ -231,7 +231,7 @@ serve(async (req) => {
         action,
         emailDomain,
         status: result.status,
-        webhookHost: new URL(NEWSLETTER_WEBHOOK).host,
+        webhookHost: new URL(NEWSLETTER_WEBHOOK_DEFAULT).host,
       });
       return new Response(
         JSON.stringify({
