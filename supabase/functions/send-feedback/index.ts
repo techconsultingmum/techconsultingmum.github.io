@@ -63,13 +63,13 @@ function log(level: "info" | "warn" | "error", requestId: string, event: string,
   else console.log(line);
 }
 
-async function postWithRetry(payload: Record<string, unknown>, requestId: string) {
+async function postWithRetry(payload: Record<string, unknown>, requestId: string, target: string) {
   let lastError = "";
   for (let attempt = 1; attempt <= WEBHOOK_MAX_ATTEMPTS; attempt++) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), WEBHOOK_TIMEOUT_MS);
     try {
-      const res = await fetch(FEEDBACK_WEBHOOK, {
+      const res = await fetch(target, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
