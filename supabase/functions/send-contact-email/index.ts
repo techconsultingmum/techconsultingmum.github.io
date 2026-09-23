@@ -1,10 +1,12 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { getWebhookUrl } from "../_shared/webhooks.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
-// Webhook URL stored server-side only
-const WEBHOOK_URL = Deno.env.get("N8N_WEBHOOK_URL") || "https://viwepar.app.n8n.cloud/webhook/agenticai-lead";
+// Webhook URL stored server-side only (admin-managed, with env/default fallback)
+const WEBHOOK_URL_DEFAULT = Deno.env.get("N8N_WEBHOOK_URL") ||
+  "https://viwepar.app.n8n.cloud/webhook/agenticai-lead";
 const WEBHOOK_TIMEOUT_MS = 8000;
 const WEBHOOK_MAX_ATTEMPTS = 3;
 
@@ -210,9 +212,10 @@ function checkRateLimit(clientIp: string): boolean {
 
 async function sendToWebhook(payload: Record<string, unknown>, requestId: string): Promise<void> {
   const body = JSON.stringify({ ...payload, requestId });
+  const target = await getWebhookUrl("lead", WEBHOOK_URL_DEFAULT);
   const summary = {
     requestId,
-    target: WEBHOOK_URL,
+    target,
     formType: payload.formType,
     emailDomain: typeof payload.email === "string" ? payload.email.split("@")[1] : null,
     payloadBytes: body.length,
@@ -222,7 +225,7 @@ async function sendToWebhook(payload: Record<string, unknown>, requestId: string
     const startedAt = Date.now();
     try {
       const response = await fetchWithTimeout(
-        WEBHOOK_URL,
+        target,
         {
           method: "POST",
           headers: { "Content-Type": "application/json", "X-Request-Id": requestId },

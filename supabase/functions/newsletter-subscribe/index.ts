@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { getWebhook } from "../_shared/webhooks.ts";
 
 // Allowed origins for CORS - restrict to known domains
 const ALLOWED_ORIGINS = [
@@ -28,7 +29,7 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
-const NEWSLETTER_WEBHOOK = "https://weworo.app.n8n.cloud/webhook/Newsletter";
+const NEWSLETTER_WEBHOOK_DEFAULT = "https://weworo.app.n8n.cloud/webhook/Newsletter";
 const WEBHOOK_TIMEOUT_MS = 8000;
 const WEBHOOK_MAX_ATTEMPTS = 3;
 const ALERT_TO = "support@agenticailab.in";
@@ -122,12 +123,13 @@ async function callNewsletterWebhook(
   params.set("Email", email);
   params.set("action", action);
   // Keep query params for backward compatibility with existing n8n workflow nodes
-  const url = `${NEWSLETTER_WEBHOOK}?${params.toString()}`;
+  const configured = await getWebhook("newsletter", { url: NEWSLETTER_WEBHOOK_DEFAULT, method: "POST" });
+  const url = `${configured.url}?${params.toString()}`;
   const payload = JSON.stringify({ email, Email: email, action });
 
-  // Primary method is POST; if the n8n workflow node only accepts GET we fall back
-  // transparently (query params are always included for compatibility).
-  let method: "POST" | "GET" = "POST";
+  // Primary method comes from the admin settings; if the n8n workflow node only
+  // accepts GET we fall back transparently (query params are always included).
+  let method: "POST" | "GET" = configured.method;
 
   let lastStatus = 0;
   for (let attempt = 1; attempt <= WEBHOOK_MAX_ATTEMPTS; attempt++) {
@@ -229,7 +231,7 @@ serve(async (req) => {
         action,
         emailDomain,
         status: result.status,
-        webhookHost: new URL(NEWSLETTER_WEBHOOK).host,
+        webhookHost: new URL(NEWSLETTER_WEBHOOK_DEFAULT).host,
       });
       return new Response(
         JSON.stringify({

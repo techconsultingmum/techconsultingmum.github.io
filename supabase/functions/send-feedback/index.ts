@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { getWebhookUrl } from "../_shared/webhooks.ts";
 
 const ALLOWED_ORIGINS = [
   "https://agenticailab.in",
@@ -31,8 +32,8 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
   };
 }
 
-const FEEDBACK_WEBHOOK = "https://xacade.app.n8n.cloud/webhook/feedback";
-const FEEDBACK_FALLBACK_FORM_URL = "https://xacade.app.n8n.cloud/form/cfcf4fd4-dba8-417c-ba04-19438a58409a";
+const FEEDBACK_WEBHOOK_DEFAULT = "https://xacade.app.n8n.cloud/webhook/feedback";
+const FEEDBACK_FALLBACK_FORM_DEFAULT = "https://xacade.app.n8n.cloud/form/cfcf4fd4-dba8-417c-ba04-19438a58409a";
 const WEBHOOK_TIMEOUT_MS = 8000;
 const WEBHOOK_MAX_ATTEMPTS = 3;
 
@@ -62,13 +63,13 @@ function log(level: "info" | "warn" | "error", requestId: string, event: string,
   else console.log(line);
 }
 
-async function postWithRetry(payload: Record<string, unknown>, requestId: string) {
+async function postWithRetry(payload: Record<string, unknown>, requestId: string, target: string) {
   let lastError = "";
   for (let attempt = 1; attempt <= WEBHOOK_MAX_ATTEMPTS; attempt++) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), WEBHOOK_TIMEOUT_MS);
     try {
-      const res = await fetch(FEEDBACK_WEBHOOK, {
+      const res = await fetch(target, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -135,6 +136,11 @@ serve(async (req) => {
       });
     }
 
+    const [target, fallbackForm] = await Promise.all([
+      getWebhookUrl("feedback", FEEDBACK_WEBHOOK_DEFAULT),
+      getWebhookUrl("feedback_fallback", FEEDBACK_FALLBACK_FORM_DEFAULT),
+    ]);
+
     const result = await postWithRetry(
       {
         name,
@@ -146,6 +152,7 @@ serve(async (req) => {
         requestId,
       },
       requestId,
+      target,
     );
 
     if (!result.ok) {
@@ -153,7 +160,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({
           error: "We couldn't submit your feedback right now. Please try again or use the feedback form link.",
-          fallbackUrl: FEEDBACK_FALLBACK_FORM_URL,
+          fallbackUrl: fallbackForm,
         }),
         { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders } },
       );
