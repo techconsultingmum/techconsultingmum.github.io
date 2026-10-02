@@ -52,18 +52,44 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setInfo(null);
+    if (mode === "signup" && password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
     setBusy(true);
+    if (mode === "signup") {
+      const { error: err } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: { emailRedirectTo: `${window.location.origin}/admin` },
+      });
+      setBusy(false);
+      if (err) {
+        setError(err.message);
+        return;
+      }
+      setInfo("Check your inbox and click the confirmation link, then sign in here.");
+      setMode("signin");
+      return;
+    }
     const { error: err } = await supabase.auth.signInWithPassword({
       email: email.trim(),
       password,
     });
     setBusy(false);
     if (err) {
-      setError(err.message);
+      setError(
+        /not confirmed/i.test(err.message)
+          ? "Please confirm your email first using the link we sent you."
+          : err.message,
+      );
       return;
     }
     toast({ title: "Signed in" });
@@ -77,7 +103,9 @@ const SignIn = () => {
       >
         <div className="space-y-1">
           <h1 className="text-xl font-semibold text-foreground">Backend settings</h1>
-          <p className="text-sm text-muted-foreground">Administrator sign in required.</p>
+          <p className="text-sm text-muted-foreground">
+            {mode === "signin" ? "Administrator sign in required." : "Create your administrator account."}
+          </p>
         </div>
 
         <div className="space-y-2">
@@ -97,7 +125,7 @@ const SignIn = () => {
           <Input
             id="admin-password"
             type="password"
-            autoComplete="current-password"
+            autoComplete={mode === "signin" ? "current-password" : "new-password"}
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -109,10 +137,25 @@ const SignIn = () => {
             {error}
           </p>
         )}
+        {info && (
+          <p role="status" className="text-sm text-primary">
+            {info}
+          </p>
+        )}
 
         <Button type="submit" className="w-full" disabled={busy}>
-          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign in"}
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : mode === "signin" ? "Sign in" : "Create account"}
         </Button>
+        <button
+          type="button"
+          className="w-full text-center text-sm text-muted-foreground underline-offset-4 hover:underline"
+          onClick={() => {
+            setMode(mode === "signin" ? "signup" : "signin");
+            setError(null);
+          }}
+        >
+          {mode === "signin" ? "First time? Create account" : "Already have an account? Sign in"}
+        </button>
       </form>
     </div>
   );

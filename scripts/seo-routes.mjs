@@ -75,6 +75,7 @@ const baseRoutes = [
   { path: "/documentation/", title: "AgenticAI Lab Documentation", description: "Browse AgenticAI Lab documentation for services, APIs, architecture, governance, and implementation guidance.", priority: "0.6", changefreq: "monthly" },
   { path: "/docs/", title: "AgenticAI Lab Docs", description: "Browse AgenticAI Lab docs for service categories, AI systems, APIs, and implementation guidance.", priority: "0.6", changefreq: "monthly" },
   { path: "/unsubscribe/", title: "Unsubscribe", description: "Manage your AgenticAI Lab newsletter subscription preferences.", priority: "0.2", changefreq: "yearly", noIndex: true },
+  { path: "/admin/", title: "Backend settings", description: "Internal configuration.", priority: "0.0", changefreq: "yearly", noIndex: true },
   { path: "/api-reference/", title: "API Reference", description: "Review AgenticAI Lab API reference documentation and integration guidance.", priority: "0.6", changefreq: "monthly" },
   { path: "/privacy-policy/", title: "Privacy Policy", description: "Read the AgenticAI Lab privacy policy and data handling practices.", priority: "0.3", changefreq: "yearly" },
   { path: "/terms-of-service/", title: "Terms of Service", description: "Read the AgenticAI Lab terms of service for website and consulting engagements.", priority: "0.3", changefreq: "yearly" },
