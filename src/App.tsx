@@ -35,6 +35,7 @@ const TermsOfService = lazyWithRetry(() => import("./pages/TermsOfService"));
 const ApiReference = lazyWithRetry(() => import("./pages/ApiReference"));
 const Docs = lazyWithRetry(() => import("./pages/Docs"));
 const Unsubscribe = lazyWithRetry(() => import("./pages/Unsubscribe"));
+const Admin = lazyWithRetry(() => import("./pages/Admin"));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
@@ -99,6 +100,7 @@ const RoutedApp = () => {
                 <Route path="/services/ai-integration" element={<AIIntegration />} />
                 <Route path="/services/strategy-consulting" element={<StrategyConsulting />} />
                 <Route path="/unsubscribe" element={<Unsubscribe />} />
+                <Route path="/admin" element={<Admin />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
