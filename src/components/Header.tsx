@@ -16,6 +16,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const services = [
+    { label: 'All Services', href: '/services' },
     { label: 'Agent Development', href: '/services/agent-development' },
     { label: 'Multi-Agent Systems', href: '/services/multi-agent-systems' },
     { label: 'AI Integration', href: '/services/ai-integration' },
