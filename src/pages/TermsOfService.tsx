@@ -116,7 +116,19 @@ const TermsOfService = () => {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-foreground mb-4">11. Contact Information</h2>
+              <h2 className="text-2xl font-semibold text-foreground mb-4">11. Company Registration Details</h2>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                AgenticAI Lab is a registered business in India. For reference, our official
+                registration details are:
+              </p>
+              <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
+                <li><strong>UDYAM Registration Certificate Number:</strong> UDYAM-MH-33-0834718</li>
+                <li><strong>GSTIN Registration Certificate Number:</strong> 27CBNPS4276G1Z2</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-semibold text-foreground mb-4">12. Contact Information</h2>
               <p className="text-muted-foreground leading-relaxed">
                 For questions about these Terms of Service, please contact us at:
               </p>
