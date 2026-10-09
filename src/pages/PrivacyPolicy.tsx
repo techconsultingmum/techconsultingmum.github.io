@@ -179,6 +179,12 @@ const PrivacyPolicy = () => {
                   <strong>Location:</strong> Mumbai, India
                 </p>
                 <p className="text-muted-foreground">
+                  <strong>UDYAM Registration Certificate Number:</strong> UDYAM-MH-33-0834718
+                </p>
+                <p className="text-muted-foreground">
+                  <strong>GSTIN Registration Certificate Number:</strong> 27CBNPS4276G1Z2
+                </p>
+                <p className="text-muted-foreground">
                   <strong>Website:</strong>{' '}
                   <a href="https://agenticailab.in" className="text-primary hover:underline">
                     agenticailab.in

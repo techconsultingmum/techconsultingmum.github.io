@@ -122,9 +122,12 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6 text-center">
             <p className="text-muted-foreground text-sm">
               © {currentYear} AgenticAI Lab. All rights reserved.
+            </p>
+            <p className="text-muted-foreground text-xs">
+              UDYAM: UDYAM-MH-33-0834718 · GSTIN: 27CBNPS4276G1Z2
             </p>
           </div>
           <div className="flex gap-6">
