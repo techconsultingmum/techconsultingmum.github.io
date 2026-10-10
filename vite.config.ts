@@ -18,5 +18,14 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom", "react-router-dom"],
+          helmet: ["react-helmet-async"],
+          supabase: ["@supabase/supabase-js"],
+        },
+      },
+    },
   },
 }));
