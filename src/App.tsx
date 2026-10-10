@@ -26,6 +26,7 @@ const Contact = lazyWithRetry(() => import("./pages/Contact"));
 const Blog = lazyWithRetry(() => import("./pages/Blog"));
 const BlogArticle = lazyWithRetry(() => import("./pages/BlogArticle"));
 const NotFound = lazyWithRetry(() => import("./pages/NotFound"));
+const Services = lazyWithRetry(() => import("./pages/services/Services"));
 const AgentDevelopment = lazyWithRetry(() => import("./pages/services/AgentDevelopment"));
 const MultiAgentSystems = lazyWithRetry(() => import("./pages/services/MultiAgentSystems"));
 const AIIntegration = lazyWithRetry(() => import("./pages/services/AIIntegration"));
@@ -95,6 +96,7 @@ const RoutedApp = () => {
                 <Route path="/docs" element={<Docs />} />
                 <Route path="/docs/*" element={<Docs />} />
                 <Route path="/documentation" element={<Docs />} />
+                <Route path="/services" element={<Services />} />
                 <Route path="/services/agent-development" element={<AgentDevelopment />} />
                 <Route path="/services/multi-agent-systems" element={<MultiAgentSystems />} />
                 <Route path="/services/ai-integration" element={<AIIntegration />} />
