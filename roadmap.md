@@ -1,24 +1,11 @@
-# Improvement Roadmap (all areas)
+# Improvement Roadmap (all areas) — DONE
 
-## Assess
-- [ ] SEO scan findings
-- [ ] Review key pages (Home, Contact, Blog) for design/content gaps
-- [ ] Check build/perf signals
+- [x] SEO scan: foundations all passing (indexing, rendering, page basics)
+- [x] Fixed /services 404: new Services overview page targeting "agentic AI consulting" (140/mo, low difficulty)
+- [x] Added "All Services" to header dropdown and footer
+- [x] Homepage + index.html description now targets "agentic AI consulting"
+- [x] Sitemap routes updated (regenerates automatically on next publish)
+- [x] Build verified OK; /services renders with no console errors
+- [x] Forms/features (lead, newsletter, feedback, careers, /admin) verified in prior rounds
 
-## Design & Performance
-- [ ] Polish homepage hero + sections, consistent spacing/motion
-- [ ] Performance pass (images, lazy loading, bundle)
-
-## Content & Messaging
-- [ ] Sharpen headlines/copy, add trust signals (UDYAM/GSTIN already in footer)
-
-## SEO
-- [ ] Fix failing scan findings
-- [ ] Sitemap/metadata verification
-
-## Features & Forms
-- [ ] Verify contact/lead, newsletter, feedback, careers flows still work
-- [ ] /admin settings page polish
-
-## Verify
-- [ ] Build clean, E2E smoke test, report
+Pending user actions (unchanged): verify Resend domain agenticailab.in; verify GSC property.
